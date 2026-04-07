@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#7c3aed" />
+    <title>NekoVerse | サイバーパンクゲーム</title>
+    <meta name="description" content="The ultimate Japanese cyberpunk anime gaming portal — discover the latest games, battles, and exclusive drops." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- No-flash theme script: must run before first paint -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('nv-theme')
+          document.documentElement.classList.add(t === 'light' ? 'light' : 'dark')
+        } catch (e) {}
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

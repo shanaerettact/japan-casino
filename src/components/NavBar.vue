@@ -14,7 +14,7 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
   { label: 'All Games',   slug: 'all',        to: '/category/all',        icon: Zap },
-  { label: 'Live',        slug: 'live',       to: '/category/live',       icon: Tv2 },
+  { label: '優惠',         slug: 'promotions', to: '/promotions',          icon: Tv2 },
   { label: 'Electronic',  slug: 'electronic', to: '/category/electronic', icon: Cpu },
   { label: 'Sports',      slug: 'sports',     to: '/category/sports',     icon: Trophy },
   { label: 'Fishing',     slug: 'fishing',    to: '/category/fishing',    icon: Fish },
@@ -41,9 +41,10 @@ function closeMenu() { open.value = false }
 
 // Is any category currently active?
 const isOnHome = computed(() => route.path === '/')
-const activeCategorySlug = computed(() =>
-  route.params.slug as string | undefined,
-)
+const activeCategorySlug = computed(() => {
+  if (route.name === 'promotions') return 'promotions'
+  return route.params.slug as string | undefined
+})
 
 let notifTimer: ReturnType<typeof setTimeout>
 

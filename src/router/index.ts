@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/pages/HomePage.vue'
 import CategoryPage from '@/pages/CategoryPage.vue'
+import PromotionsPage from '@/pages/PromotionsPage.vue'
 
 const routes = [
   {
@@ -13,6 +14,11 @@ const routes = [
     name: 'category',
     component: CategoryPage,
     props: true,
+  },
+  {
+    path: '/promotions',
+    name: 'promotions',
+    component: PromotionsPage,
   },
 ]
 

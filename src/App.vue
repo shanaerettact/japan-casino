@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { RouterView } from 'vue-router'
 import { provideTheme } from '@/composables/useTheme'
 import { cn } from '@/lib/utils'
 import { ChevronsUp } from 'lucide-vue-next'
 import NavBar from '@/components/NavBar.vue'
-import TickerBanner from '@/components/TickerBanner.vue'
-import HeroSection from '@/components/HeroSection.vue'
-import NewGamesSlider from '@/components/NewGamesSlider.vue'
-import RankingBanner from '@/components/RankingBanner.vue'
-import FeaturedSection from '@/components/FeaturedSection.vue'
 import SiteFooter from '@/components/SiteFooter.vue'
 
 provideTheme()
@@ -37,11 +33,7 @@ onUnmounted(() => {
     <NavBar />
 
     <main id="main-content" class="pb-16 md:pb-0">
-      <HeroSection />
-      <TickerBanner />
-      <NewGamesSlider />
-      <RankingBanner />
-      <FeaturedSection />
+      <RouterView />
     </main>
 
     <SiteFooter />

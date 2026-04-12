@@ -1,30 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { Menu, X, Zap, Gamepad2, Trophy, Star, ShoppingBag, Bell, Home } from 'lucide-vue-next'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+import { Menu, X, Zap, Tv2, Cpu, Trophy, Fish, Layers, Bell, Home } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 
 interface NavLink {
   label: string
-  labelEn: string
-  href: string
+  slug: string
+  to: string
   icon: unknown
 }
 
 const navLinks: NavLink[] = [
-  { label: 'ゲーム',    labelEn: 'Games',    href: '#games',    icon: Gamepad2 },
-  { label: 'ランキング', labelEn: 'Rankings', href: '#rankings', icon: Trophy },
-  { label: '注目作',    labelEn: 'Featured', href: '#featured', icon: Star },
-  { label: 'ショップ',  labelEn: 'Shop',     href: '#shop',     icon: ShoppingBag },
+  { label: 'Live',        slug: 'live',       to: '/category/live',       icon: Tv2 },
+  { label: 'Electronic',  slug: 'electronic', to: '/category/electronic', icon: Cpu },
+  { label: 'Sports',      slug: 'sports',     to: '/category/sports',     icon: Trophy },
+  { label: 'Fishing',     slug: 'fishing',    to: '/category/fishing',    icon: Fish },
+  { label: 'Cards',       slug: 'cards',      to: '/category/cards',      icon: Layers },
 ]
 
-const scrolled    = ref(false)
-const hidden      = ref(false)
-const open        = ref(false)
-const activeHref  = ref<string | null>(null)
-const notifPulse  = ref(true)
-// Which bottom nav item is "active" — tracked by scroll position
-const activeSection = ref<string>('#games')
+const route = useRoute()
+
+const scrolled   = ref(false)
+const hidden     = ref(false)
+const open       = ref(false)
+const notifPulse = ref(true)
 
 let prevScrollY = 0
 
@@ -33,19 +34,15 @@ function handleScroll() {
   scrolled.value = y > 20
   hidden.value   = y > prevScrollY && y > 80 && !open.value
   prevScrollY    = y
-
-  // Update active bottom nav by visible section
-  const ids = ['games', 'rankings', 'featured']
-  for (const id of [...ids].reverse()) {
-    const el = document.getElementById(id)
-    if (el && y + 120 >= el.offsetTop) {
-      activeSection.value = `#${id}`
-      break
-    }
-  }
 }
 
 function closeMenu() { open.value = false }
+
+// Is any category currently active?
+const isOnHome = computed(() => route.path === '/')
+const activeCategorySlug = computed(() =>
+  route.params.slug as string | undefined,
+)
 
 let notifTimer: ReturnType<typeof setTimeout>
 
@@ -77,7 +74,7 @@ onUnmounted(() => {
       class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4"
     >
       <!-- Logo -->
-      <a href="#" aria-label="NekoVerse home" class="flex items-center gap-2.5 group shrink-0 touch-press">
+      <RouterLink to="/" aria-label="NekoVerse home" class="flex items-center gap-2.5 group shrink-0 touch-press">
         <div class="relative w-8 h-8">
           <div class="absolute inset-0 rounded-lg bg-neon-purple/30 group-hover:bg-neon-purple/50 transition-colors duration-300 glow-purple" />
           <Zap class="absolute inset-0 m-auto w-5 h-5 text-neon-mint group-hover:text-foreground transition-colors duration-300" aria-hidden="true" />
@@ -86,39 +83,38 @@ onUnmounted(() => {
           NEKO<span class="text-neon-purple text-glow-purple">VERSE</span>
         </span>
         <span class="hidden sm:inline text-[10px] font-mono text-muted-foreground tracking-widest border border-border rounded px-1 py-0.5 ml-1">JP</span>
-      </a>
+      </RouterLink>
 
       <!-- Desktop nav links -->
       <ul class="hidden md:flex items-center gap-1" role="list">
-        <li v-for="link in navLinks" :key="link.href">
-          <a
-            :href="link.href"
+        <li v-for="link in navLinks" :key="link.slug">
+          <RouterLink
+            :to="link.to"
             :class="cn(
               'relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 group',
-              activeHref === link.href
+              activeCategorySlug === link.slug
                 ? 'text-neon-mint bg-neon-mint/10'
                 : 'text-muted-foreground hover:text-foreground hover:bg-surface-2',
             )"
-            @mouseenter="activeHref = link.href"
-            @mouseleave="activeHref = null"
           >
             <component
               :is="link.icon"
               :class="cn(
                 'w-4 h-4 transition-all duration-300',
-                activeHref === link.href ? 'text-neon-mint scale-110' : 'text-muted-foreground group-hover:text-neon-purple',
+                activeCategorySlug === link.slug ? 'text-neon-mint scale-110' : 'text-muted-foreground group-hover:text-neon-purple',
               )"
               aria-hidden="true"
             />
             <span class="font-body">{{ link.label }}</span>
+            <!-- Active underline -->
             <span
               :class="cn(
                 'absolute bottom-1 left-4 right-4 h-[1.5px] rounded-full bg-neon-mint transition-all duration-300 origin-left',
-                activeHref === link.href ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0',
+                activeCategorySlug === link.slug ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0',
               )"
               aria-hidden="true"
             />
-          </a>
+          </RouterLink>
         </li>
       </ul>
 
@@ -142,8 +138,8 @@ onUnmounted(() => {
         <ThemeToggle />
 
         <!-- CTA — desktop only -->
-        <a
-          href="#play"
+        <RouterLink
+          to="/category/live"
           :class="cn(
             'hidden sm:flex items-center gap-2 px-5 py-2 rounded-xl font-display font-bold text-sm tracking-wider',
             'bg-neon-purple text-primary-foreground',
@@ -153,10 +149,10 @@ onUnmounted(() => {
           )"
         >
           <Zap class="w-4 h-4" aria-hidden="true" />
-          プレイ
-        </a>
+          Play Now
+        </RouterLink>
 
-        <!-- Mobile hamburger — sheet toggle -->
+        <!-- Mobile hamburger -->
         <button
           type="button"
           :aria-label="open ? 'Close menu' : 'Open menu'"
@@ -170,12 +166,6 @@ onUnmounted(() => {
         </button>
       </div>
     </nav>
-
-    <!-- Desktop collapsible sub-menu strip (unchanged) -->
-    <div
-      id="desktop-menu"
-      class="hidden md:block overflow-hidden transition-all duration-400 ease-in-out"
-    />
   </header>
 
   <!-- Mobile full-screen sheet overlay -->
@@ -210,7 +200,7 @@ onUnmounted(() => {
 
         <!-- Sheet header -->
         <div class="flex items-center justify-between px-5 py-3 border-b border-border">
-          <span class="font-display font-bold text-sm text-foreground tracking-wider">メニュー / MENU</span>
+          <span class="font-display font-bold text-sm text-foreground tracking-wider">MENU</span>
           <button
             type="button"
             aria-label="Close menu"
@@ -223,12 +213,12 @@ onUnmounted(() => {
 
         <!-- Nav links -->
         <ul class="px-4 pt-3 pb-2 flex flex-col gap-1" role="list">
-          <li v-for="link in navLinks" :key="link.href">
-            <a
-              :href="link.href"
+          <li v-for="link in navLinks" :key="link.slug">
+            <RouterLink
+              :to="link.to"
               :class="cn(
                 'flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-body transition-all duration-200 touch-press',
-                activeSection === link.href
+                activeCategorySlug === link.slug
                   ? 'text-neon-mint bg-neon-mint/10 border border-neon-mint/20'
                   : 'text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10',
               )"
@@ -236,20 +226,19 @@ onUnmounted(() => {
             >
               <component :is="link.icon" class="w-5 h-5 text-neon-purple shrink-0" aria-hidden="true" />
               <span class="font-medium">{{ link.label }}</span>
-              <span class="ml-auto text-xs text-muted-foreground/50 font-mono">{{ link.labelEn }}</span>
               <span
-                v-if="activeSection === link.href"
-                class="w-1.5 h-1.5 rounded-full bg-neon-mint animate-neon-pulse shrink-0"
+                v-if="activeCategorySlug === link.slug"
+                class="ml-auto w-1.5 h-1.5 rounded-full bg-neon-mint animate-neon-pulse shrink-0"
                 aria-hidden="true"
               />
-            </a>
+            </RouterLink>
           </li>
         </ul>
 
         <!-- CTA inside sheet -->
         <div class="px-4 pb-4">
-          <a
-            href="#play"
+          <RouterLink
+            to="/category/live"
             :class="cn(
               'flex items-center justify-center gap-2 w-full px-5 py-4 rounded-2xl',
               'font-display font-bold text-base tracking-wider',
@@ -258,8 +247,8 @@ onUnmounted(() => {
             @click="closeMenu"
           >
             <Zap class="w-5 h-5" aria-hidden="true" />
-            今すぐプレイ — Play Now
-          </a>
+            Play Now
+          </RouterLink>
         </div>
       </nav>
     </Transition>
@@ -277,39 +266,39 @@ onUnmounted(() => {
     )"
     style="padding-bottom: env(safe-area-inset-bottom, 0px);"
   >
-    <a
-      href="#"
+    <!-- Home -->
+    <RouterLink
+      to="/"
       :class="cn(
         'flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-body transition-all duration-200 touch-press',
-        activeSection === '#' ? 'text-neon-purple' : 'text-muted-foreground',
+        isOnHome ? 'text-neon-purple' : 'text-muted-foreground',
       )"
       aria-label="Home"
-      @click="activeSection = '#'"
     >
       <Home class="w-5 h-5 mb-0.5" aria-hidden="true" />
-      <span>ホーム</span>
-    </a>
+      <span>Home</span>
+    </RouterLink>
 
-    <a
+    <!-- First 3 category links -->
+    <RouterLink
       v-for="link in navLinks.slice(0, 3)"
-      :key="link.href"
-      :href="link.href"
+      :key="link.slug"
+      :to="link.to"
       :class="cn(
         'flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-body transition-all duration-200 touch-press relative',
-        activeSection === link.href ? 'text-neon-purple' : 'text-muted-foreground',
+        activeCategorySlug === link.slug ? 'text-neon-purple' : 'text-muted-foreground',
       )"
-      :aria-label="link.labelEn"
-      :aria-current="activeSection === link.href ? 'page' : undefined"
+      :aria-label="link.label"
+      :aria-current="activeCategorySlug === link.slug ? 'page' : undefined"
     >
-      <!-- Active pip -->
       <span
-        v-if="activeSection === link.href"
+        v-if="activeCategorySlug === link.slug"
         class="absolute top-1 w-1 h-1 rounded-full bg-neon-purple animate-neon-pulse"
         aria-hidden="true"
       />
       <component :is="link.icon" class="w-5 h-5 mb-0.5" aria-hidden="true" />
       <span>{{ link.label }}</span>
-    </a>
+    </RouterLink>
 
     <!-- Menu button -->
     <button
@@ -323,7 +312,7 @@ onUnmounted(() => {
       @click="open = !open"
     >
       <Menu class="w-5 h-5 mb-0.5" aria-hidden="true" />
-      <span>メニュー</span>
+      <span>Menu</span>
     </button>
   </nav>
 </template>

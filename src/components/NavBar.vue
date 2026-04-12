@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { Menu, X, Zap, Tv2, Cpu, Trophy, Fish, Layers, Bell, Home } from 'lucide-vue-next'
+import { Menu, X, Zap, Tv2, MessageCircle, Trophy, Fish, Layers, Bell, Home } from 'lucide-vue-next'
+
 import { cn } from '@/lib/utils'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 
 interface NavLink {
   label: string
   slug: string
-  to: string
+  to: string | null   // null = action only, no navigation
   icon: unknown
 }
 
 const navLinks: NavLink[] = [
-  { label: 'All Games',   slug: 'all',        to: '/category/all',        icon: Zap },
-  { label: '優惠',         slug: 'promotions', to: '/promotions',          icon: Tv2 },
-  { label: 'Electronic',  slug: 'electronic', to: '/category/electronic', icon: Cpu },
-  { label: 'Sports',      slug: 'sports',     to: '/category/sports',     icon: Trophy },
-  { label: 'Fishing',     slug: 'fishing',    to: '/category/fishing',    icon: Fish },
-  { label: 'Cards',       slug: 'cards',      to: '/category/cards',      icon: Layers },
+  { label: 'All Games',        slug: 'all',        to: '/category/all',        icon: Zap },
+  { label: '優惠',              slug: 'promotions', to: '/promotions',          icon: Tv2 },
+  { label: 'カスタマーサポート', slug: 'support',    to: null,                   icon: MessageCircle },
+  { label: 'Sports',           slug: 'sports',     to: '/category/sports',     icon: Trophy },
+  { label: 'Fishing',          slug: 'fishing',    to: '/category/fishing',    icon: Fish },
+  { label: 'Cards',            slug: 'cards',      to: '/category/cards',      icon: Layers },
 ]
 
 const route = useRoute()
@@ -90,7 +91,26 @@ onUnmounted(() => {
       <!-- Desktop nav links -->
       <ul class="hidden md:flex items-center gap-1" role="list">
         <li v-for="link in navLinks" :key="link.slug">
+          <!-- Action-only item (no navigation) -->
+          <button
+            v-if="link.to === null"
+            type="button"
+            :class="cn(
+              'relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 group',
+              'text-muted-foreground hover:text-foreground hover:bg-surface-2 cursor-default',
+            )"
+          >
+            <component
+              :is="link.icon"
+              class="w-4 h-4 transition-all duration-300 text-muted-foreground group-hover:text-neon-purple"
+              aria-hidden="true"
+            />
+            <span class="font-body">{{ link.label }}</span>
+          </button>
+
+          <!-- Regular navigable link -->
           <RouterLink
+            v-else
             :to="link.to"
             :class="cn(
               'relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 group',
@@ -216,7 +236,19 @@ onUnmounted(() => {
         <!-- Nav links -->
         <ul class="px-4 pt-3 pb-2 flex flex-col gap-1" role="list">
           <li v-for="link in navLinks" :key="link.slug">
+            <!-- Action-only item (no navigation) -->
+            <button
+              v-if="link.to === null"
+              type="button"
+              class="flex w-full items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-body text-muted-foreground transition-all duration-200 touch-press cursor-default"
+            >
+              <component :is="link.icon" class="w-5 h-5 text-neon-purple shrink-0" aria-hidden="true" />
+              <span class="font-medium">{{ link.label }}</span>
+            </button>
+
+            <!-- Regular navigable link -->
             <RouterLink
+              v-else
               :to="link.to"
               :class="cn(
                 'flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-body transition-all duration-200 touch-press',
@@ -282,25 +314,38 @@ onUnmounted(() => {
     </RouterLink>
 
     <!-- First 3 category links -->
-    <RouterLink
-      v-for="link in navLinks.slice(0, 3)"
-      :key="link.slug"
-      :to="link.to"
-      :class="cn(
-        'flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-body transition-all duration-200 touch-press relative',
-        activeCategorySlug === link.slug ? 'text-neon-purple' : 'text-muted-foreground',
-      )"
-      :aria-label="link.label"
-      :aria-current="activeCategorySlug === link.slug ? 'page' : undefined"
-    >
-      <span
-        v-if="activeCategorySlug === link.slug"
-        class="absolute top-1 w-1 h-1 rounded-full bg-neon-purple animate-neon-pulse"
-        aria-hidden="true"
-      />
-      <component :is="link.icon" class="w-5 h-5 mb-0.5" aria-hidden="true" />
-      <span>{{ link.label }}</span>
-    </RouterLink>
+    <template v-for="link in navLinks.slice(0, 3)" :key="link.slug">
+      <!-- Action-only item (no navigation) -->
+      <button
+        v-if="link.to === null"
+        type="button"
+        :aria-label="link.label"
+        class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-body text-muted-foreground transition-all duration-200 touch-press cursor-default"
+      >
+        <component :is="link.icon" class="w-5 h-5 mb-0.5" aria-hidden="true" />
+        <span>{{ link.label }}</span>
+      </button>
+
+      <!-- Regular navigable link -->
+      <RouterLink
+        v-else
+        :to="link.to"
+        :class="cn(
+          'flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-body transition-all duration-200 touch-press relative',
+          activeCategorySlug === link.slug ? 'text-neon-purple' : 'text-muted-foreground',
+        )"
+        :aria-label="link.label"
+        :aria-current="activeCategorySlug === link.slug ? 'page' : undefined"
+      >
+        <span
+          v-if="activeCategorySlug === link.slug"
+          class="absolute top-1 w-1 h-1 rounded-full bg-neon-purple animate-neon-pulse"
+          aria-hidden="true"
+        />
+        <component :is="link.icon" class="w-5 h-5 mb-0.5" aria-hidden="true" />
+        <span>{{ link.label }}</span>
+      </RouterLink>
+    </template>
 
     <!-- Menu button -->
     <button

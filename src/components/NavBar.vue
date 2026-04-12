@@ -13,6 +13,7 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
+  { label: 'All Games',   slug: 'all',        to: '/category/all',        icon: Zap },
   { label: 'Live',        slug: 'live',       to: '/category/live',       icon: Tv2 },
   { label: 'Electronic',  slug: 'electronic', to: '/category/electronic', icon: Cpu },
   { label: 'Sports',      slug: 'sports',     to: '/category/sports',     icon: Trophy },
@@ -139,7 +140,7 @@ onUnmounted(() => {
 
         <!-- CTA — desktop only -->
         <RouterLink
-          to="/category/live"
+          to="/category/all"
           :class="cn(
             'hidden sm:flex items-center gap-2 px-5 py-2 rounded-xl font-display font-bold text-sm tracking-wider',
             'bg-neon-purple text-primary-foreground',
@@ -238,7 +239,7 @@ onUnmounted(() => {
         <!-- CTA inside sheet -->
         <div class="px-4 pb-4">
           <RouterLink
-            to="/category/live"
+            to="/category/all"
             :class="cn(
               'flex items-center justify-center gap-2 w-full px-5 py-4 rounded-2xl',
               'font-display font-bold text-base tracking-wider',

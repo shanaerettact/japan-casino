@@ -14,12 +14,12 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
-  { label: 'All Games',        slug: 'all',        to: '/category/all',        icon: Zap },
+  { label: '全ゲーム', slug: 'all',        to: '/category/all',        icon: Zap },
   { label: 'キャンペーン', slug: 'promotions', to: '/promotions',          icon: Tv2 },
   { label: 'サポート', slug: 'support',    to: null,                   icon: MessageCircle },
-  { label: 'Sports',           slug: 'sports',     to: '/category/sports',     icon: Trophy },
-  { label: 'Fishing',          slug: 'fishing',    to: '/category/fishing',    icon: Fish },
-  { label: 'Cards',            slug: 'cards',      to: '/category/cards',      icon: Layers },
+  { label: 'スポーツ', slug: 'sports',     to: '/category/sports',     icon: Trophy },
+  { label: '釣り', slug: 'fishing',    to: '/category/fishing',    icon: Fish },
+  { label: 'カード', slug: 'cards',      to: '/category/cards',      icon: Layers },
 ]
 
 const route = useRoute()
@@ -351,7 +351,7 @@ onUnmounted(() => {
       @click="open = !open"
     >
       <Menu class="w-5 h-5 mb-0.5" aria-hidden="true" />
-      <span>Menu</span>
+      <span>メニュー</span>
     </button>
   </nav>
 </template>

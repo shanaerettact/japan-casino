@@ -16,7 +16,7 @@ interface NavLink {
 const navLinks: NavLink[] = [
   { label: 'All Games',        slug: 'all',        to: '/category/all',        icon: Zap },
   { label: '優惠',              slug: 'promotions', to: '/promotions',          icon: Tv2 },
-  { label: 'カスタマーサポート', slug: 'support',    to: null,                   icon: MessageCircle },
+  { label: 'サポート', slug: 'support',    to: null,                   icon: MessageCircle },
   { label: 'Sports',           slug: 'sports',     to: '/category/sports',     icon: Trophy },
   { label: 'Fishing',          slug: 'fishing',    to: '/category/fishing',    icon: Fish },
   { label: 'Cards',            slug: 'cards',      to: '/category/cards',      icon: Layers },
@@ -25,17 +25,11 @@ const navLinks: NavLink[] = [
 const route = useRoute()
 
 const scrolled   = ref(false)
-const hidden     = ref(false)
 const open       = ref(false)
 const notifPulse = ref(true)
 
-let prevScrollY = 0
-
 function handleScroll() {
-  const y = window.scrollY
-  scrolled.value = y > 20
-  hidden.value   = y > prevScrollY && y > 80 && !open.value
-  prevScrollY    = y
+  scrolled.value = window.scrollY > 20
 }
 
 function closeMenu() { open.value = false }
@@ -66,7 +60,6 @@ onUnmounted(() => {
     :class="cn(
       'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
       scrolled ? 'bg-background/80 backdrop-blur-xl border-b border-border' : 'bg-transparent',
-      hidden  ? '-translate-y-full' : 'translate-y-0',
     )"
   >
     <!-- Neon top line -->

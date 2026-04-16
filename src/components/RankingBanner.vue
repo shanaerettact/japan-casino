@@ -54,10 +54,10 @@ function badgeClass(rank: number): string {
           'p-8 sm:p-10',
         )"
       >
-        <!-- Background glow orbs -->
+        
         <div class="absolute top-0 left-0 w-72 h-72 rounded-full bg-neon-purple/10 blur-3xl -translate-x-1/2 -translate-y-1/2" aria-hidden="true" />
         <div class="absolute bottom-0 right-0 w-72 h-72 rounded-full bg-neon-mint/8 blur-3xl translate-x-1/2 translate-y-1/2" aria-hidden="true" />
-        <!-- Grid pattern -->
+        
         <div
           class="absolute inset-0 opacity-[0.03]"
           style="
@@ -70,7 +70,7 @@ function badgeClass(rank: number): string {
         />
 
         <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center gap-10">
-          <!-- Left: heading -->
+          
           <div class="lg:w-64 shrink-0">
             <div class="flex items-center gap-2 mb-3">
               <Trophy class="w-5 h-5 text-amber-400" aria-hidden="true" />
@@ -91,7 +91,7 @@ function badgeClass(rank: number): string {
             </a>
           </div>
 
-          <!-- Right: player cards -->
+          
           <div class="flex-1 w-full flex flex-col sm:flex-row gap-4">
             <article
               v-for="player in topPlayers"
@@ -102,7 +102,7 @@ function badgeClass(rank: number): string {
               )"
               :aria-label="`Rank ${player.rank}: ${player.name}`"
             >
-              <!-- Rank + avatar -->
+              
               <div class="flex items-center gap-3 mb-3">
                 <div :class="avatarClass(player.rank)" aria-hidden="true">{{ player.avatar }}</div>
                 <div>
@@ -116,13 +116,13 @@ function badgeClass(rank: number): string {
                 />
               </div>
 
-              <!-- Score -->
+              
               <div class="pt-3 border-t border-border">
                 <div class="text-xs font-body text-muted-foreground mb-1">Score</div>
                 <div :class="scoreClass(player.rank)">{{ player.score }}</div>
               </div>
 
-              <!-- Rank badge + action -->
+              
               <div class="flex items-center justify-between mt-3">
                 <span :class="badgeClass(player.rank)">#{{ player.rank }}</span>
                 <button

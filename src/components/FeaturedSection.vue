@@ -78,7 +78,7 @@ const filtered = computed(() =>
   <section id="featured" class="py-16 sm:py-20 scroll-mt-20" aria-labelledby="featured-heading">
     <div class="max-w-7xl mx-auto">
 
-      <!-- Header -->
+      
       <div class="text-center mb-8 px-4 sm:px-6">
         <div class="flex items-center justify-center gap-2 mb-3">
           <div class="h-[2px] w-8 bg-neon-mint rounded-full" aria-hidden="true" />
@@ -93,7 +93,7 @@ const filtered = computed(() =>
         </p>
       </div>
 
-      <!-- Category tabs — horizontally scrollable on mobile with snap -->
+      
       <div class="relative mb-8">
         <div
           class="flex items-center gap-2 overflow-x-auto hide-scrollbar px-4 sm:px-6 pb-1 sm:flex-wrap sm:justify-center"
@@ -120,11 +120,11 @@ const filtered = computed(() =>
             <span class="text-[10px] text-muted-foreground hidden sm:inline">{{ cat.labelEn }}</span>
           </button>
         </div>
-        <!-- Right fade on mobile to hint more tabs -->
+        
         <div class="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-background to-transparent pointer-events-none sm:hidden" aria-hidden="true" />
       </div>
 
-      <!-- Games list -->
+      
       <div role="tabpanel" :aria-label="`${activeCategory} games`" class="flex flex-col gap-3 sm:gap-4 px-4 sm:px-6">
         <article
           v-for="(game, i) in filtered"
@@ -138,7 +138,7 @@ const filtered = computed(() =>
           :aria-label="`${game.title} ranked #${game.rank}`"
           :style="{ animationDelay: `${i * 0.05}s` }"
         >
-          <!-- Rank -->
+          
           <div class="flex items-center justify-center w-8 sm:w-10 shrink-0">
             <component
               v-if="rankIcons[game.rank - 1]"
@@ -151,7 +151,7 @@ const filtered = computed(() =>
             </span>
           </div>
 
-          <!-- Thumbnail -->
+          
           <div class="w-16 h-14 sm:w-24 sm:h-20 rounded-xl overflow-hidden shrink-0">
             <img
               :src="game.image"
@@ -160,7 +160,7 @@ const filtered = computed(() =>
             />
           </div>
 
-          <!-- Info -->
+          
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
               <h3 class="font-display font-black text-sm sm:text-base text-foreground tracking-wide">{{ game.title }}</h3>
@@ -170,11 +170,11 @@ const filtered = computed(() =>
             <p class="text-xs font-body text-muted-foreground mt-1 line-clamp-1 leading-relaxed hidden sm:block">
               {{ game.description }}
             </p>
-            <!-- Mobile: show genre inline -->
+            
             <span class="sm:hidden text-[10px] font-body text-muted-foreground bg-surface-3 px-2 py-0.5 rounded-md mt-1 inline-block">{{ game.genre }}</span>
           </div>
 
-          <!-- Rating + CTA -->
+          
           <div class="flex flex-col items-end justify-between shrink-0">
             <div class="flex items-center gap-1">
               <Star class="w-3.5 h-3.5 text-amber-400 fill-amber-400" aria-hidden="true" />
@@ -197,7 +197,7 @@ const filtered = computed(() =>
         </article>
       </div>
 
-      <!-- View all CTA -->
+      
       <div class="text-center mt-8 sm:mt-10 px-4">
         <a
           href="#"

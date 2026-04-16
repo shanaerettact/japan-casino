@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { Gift, Zap, Star, Clock, Trophy, Flame, Tag, ChevronRight, Sparkle } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 
-// --- Filter tabs ---
+
 const tabs = [
   { label: 'All', value: 'all' },
   { label: 'New Member', value: 'new' },
@@ -13,7 +13,7 @@ const tabs = [
 ]
 const activeTab = ref('all')
 
-// --- Promotions data ---
+
 interface Promo {
   id: number
   tag: string
@@ -121,7 +121,7 @@ const filtered = computed(() =>
     : promotions.filter(p => p.tag === activeTab.value),
 )
 
-// --- Stats bar ---
+
 const stats = [
   { label: 'Active Promotions', value: '12+' },
   { label: 'Total Bonus Pool', value: '$500K' },
@@ -133,28 +133,28 @@ const stats = [
 <template>
   <div class="min-h-screen bg-background">
 
-    <!-- Hero Banner -->
+    
     <section class="relative overflow-hidden pt-24 pb-16 px-4 sm:px-6">
-      <!-- Ambient glows -->
+      
       <div class="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-neon-purple/10 blur-3xl pointer-events-none" aria-hidden="true" />
       <div class="absolute bottom-0 right-1/4 w-72 h-72 rounded-full bg-neon-mint/8 blur-3xl pointer-events-none" aria-hidden="true" />
 
       <div class="relative max-w-7xl mx-auto text-center">
-        <!-- Badge -->
+        
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-neon-purple/40 bg-neon-purple/10 mb-6">
           <Sparkle class="w-3.5 h-3.5 text-neon-mint animate-neon-pulse" aria-hidden="true" />
           <span class="text-xs font-mono text-neon-mint tracking-widest uppercase">Exclusive Offers</span>
         </div>
 
         <h1 class="font-display text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-foreground text-balance mb-4">
-          活動<span class="text-neon-purple text-glow-purple">優惠</span>
+          キャンペーン<span class="text-neon-purple text-glow-purple">特典</span>
         </h1>
         <p class="text-muted-foreground font-body text-lg max-w-xl mx-auto text-balance leading-relaxed">
           Discover our latest promotions, reload bonuses, cashback rewards, and exclusive VIP deals — updated daily.
         </p>
       </div>
 
-      <!-- Stats row -->
+      
       <div class="relative max-w-4xl mx-auto mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div
           v-for="stat in stats"
@@ -167,7 +167,7 @@ const stats = [
       </div>
     </section>
 
-    <!-- Filter Tabs -->
+    
     <section class="sticky top-16 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 sm:px-6">
       <div class="max-w-7xl mx-auto">
         <ul
@@ -201,7 +201,7 @@ const stats = [
       </div>
     </section>
 
-    <!-- Promotions Grid -->
+    
     <section
       class="max-w-7xl mx-auto px-4 sm:px-6 py-10"
       aria-label="Available promotions"
@@ -223,18 +223,18 @@ const stats = [
                 'flex flex-col h-full',
               )"
             >
-              <!-- Card top gradient bar -->
+              
               <div :class="cn('h-1 w-full bg-linear-to-r', promo.accentFrom, promo.accentTo)" aria-hidden="true" />
 
               <div class="p-6 flex flex-col flex-1 gap-4">
-                <!-- Header row -->
+                
                 <div class="flex items-start justify-between gap-3">
-                  <!-- Icon -->
+                  
                   <div :class="cn('w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-neon-purple/15 border border-neon-purple/30', promo.glowClass)">
                     <component :is="promo.icon" class="w-6 h-6 text-neon-purple" aria-hidden="true" />
                   </div>
 
-                  <!-- Badges -->
+                  
                   <div class="flex flex-wrap gap-1.5 justify-end">
                     <span
                       v-if="promo.hot"
@@ -251,10 +251,10 @@ const stats = [
                   </div>
                 </div>
 
-                <!-- Type label -->
+                
                 <p class="text-[10px] font-mono text-neon-purple tracking-widest uppercase">{{ promo.type }}</p>
 
-                <!-- Title & description -->
+                
                 <div class="flex flex-col gap-1.5">
                   <h2 class="font-display font-bold text-lg text-foreground leading-snug group-hover:text-neon-mint transition-colors duration-300">
                     {{ promo.title }}
@@ -262,7 +262,7 @@ const stats = [
                   <p class="text-sm text-muted-foreground font-body leading-relaxed">{{ promo.desc }}</p>
                 </div>
 
-                <!-- Bonus highlight -->
+                
                 <div class="mt-auto pt-4 border-t border-border flex items-center justify-between gap-4">
                   <div>
                     <p class="text-[10px] text-muted-foreground font-mono uppercase tracking-wider mb-0.5">Bonus</p>
@@ -276,7 +276,7 @@ const stats = [
                   </div>
                 </div>
 
-                <!-- CTA -->
+                
                 <button
                   type="button"
                   :class="cn(
@@ -296,14 +296,14 @@ const stats = [
         </ul>
       </Transition>
 
-      <!-- Empty state -->
+      
       <div v-if="filtered.length === 0" class="py-24 text-center">
         <Gift class="w-12 h-12 text-muted-foreground mx-auto mb-4" aria-hidden="true" />
         <p class="text-muted-foreground font-body">No promotions in this category right now. Check back soon.</p>
       </div>
     </section>
 
-    <!-- Bottom CTA Banner -->
+    
     <section class="px-4 sm:px-6 pb-24 md:pb-12">
       <div class="max-w-7xl mx-auto">
         <div class="relative overflow-hidden glass-card rounded-2xl border border-neon-purple/30 p-8 md:p-12 text-center glow-purple">

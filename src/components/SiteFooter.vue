@@ -39,13 +39,13 @@ const socials: Social[] = [
 
 <template>
   <footer class="relative mt-8 border-t border-border" role="contentinfo">
-    <!-- Top neon line -->
+    
     <div class="h-[2px] w-full bg-linear-to-r from-neon-purple via-neon-mint to-neon-purple animate-neon-pulse" aria-hidden="true" />
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
 
-        <!-- Brand column -->
+        
         <div class="lg:col-span-2">
           <a href="#" class="flex items-center gap-2.5 mb-4" aria-label="NekoVerse home">
             <div class="relative w-9 h-9">
@@ -62,7 +62,7 @@ const socials: Social[] = [
             <span class="text-muted-foreground/60 text-xs">Japan's premier cyberpunk anime gaming destination.</span>
           </p>
 
-          <!-- Social links -->
+          
           <div class="flex items-center gap-3 mt-6" role="list" aria-label="Social media links">
             <a
               v-for="social in socials"
@@ -82,7 +82,7 @@ const socials: Social[] = [
           </div>
         </div>
 
-        <!-- Footer link columns -->
+        
         <div v-for="section in footerLinks" :key="section.heading">
           <h3 class="font-display font-bold text-sm text-foreground tracking-wider mb-4">
             {{ section.heading }}
@@ -101,7 +101,7 @@ const socials: Social[] = [
         </div>
       </div>
 
-      <!-- Bottom bar -->
+      
       <div class="mt-12 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
         <p class="text-xs font-body text-muted-foreground">
           © 2026 NekoVerse Inc. All rights reserved. — 全著作権所有

@@ -42,7 +42,7 @@ onUnmounted(() => {
     class="relative min-h-screen flex flex-col overflow-hidden scroll-mt-16"
     aria-label="Hero section"
   >
-    <!-- Background image + overlays -->
+    
     <div class="absolute inset-0 z-0" aria-hidden="true">
       <img
         src="/images/hero-bg.jpg"
@@ -51,7 +51,7 @@ onUnmounted(() => {
       />
       <div class="absolute inset-0 bg-linear-to-b from-background/80 via-background/40 to-background" />
       <div class="absolute inset-0 bg-linear-to-r from-background via-transparent to-background/80" />
-      <!-- Grid pattern -->
+      
       <div
         class="absolute inset-0 opacity-5"
         style="
@@ -63,23 +63,23 @@ onUnmounted(() => {
       />
     </div>
 
-    <!-- Floating orbs -->
+    
     <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
       <div class="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-neon-purple/10 blur-3xl animate-neon-pulse" />
       <div class="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-neon-mint/8 blur-3xl animate-neon-pulse delay-300" />
       <div class="absolute top-1/2 left-1/2 w-96 h-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neon-purple/5 blur-[100px]" />
     </div>
 
-    <!-- Scanline overlay -->
+    
     <div class="absolute inset-0 z-0 scanline pointer-events-none" aria-hidden="true" />
 
-    <!-- Main content -->
+    
     <div class="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-28 pb-16 flex flex-col lg:flex-row items-center gap-8 lg:gap-0">
 
-      <!-- Left: Text content -->
+      
       <div class="flex-1 flex flex-col justify-center lg:pr-8 text-center lg:text-left">
 
-        <!-- Badge -->
+        
         <div
           :class="cn(
             'inline-flex items-center gap-2 self-center lg:self-start mb-6 px-4 py-1.5 rounded-full',
@@ -91,7 +91,7 @@ onUnmounted(() => {
           NEW SEASON 12 — シーズン12 開幕
         </div>
 
-        <!-- Main headline -->
+        
         <h1
           :class="cn(
             'font-display font-black leading-tight text-balance',
@@ -104,7 +104,7 @@ onUnmounted(() => {
           <span class="block text-neon-mint text-glow-mint">ARENA</span>
         </h1>
 
-        <!-- Subtitle -->
+        
         <p
           :class="cn(
             'mt-4 max-w-md mx-auto lg:mx-0 text-base sm:text-lg leading-relaxed font-body text-muted-foreground',
@@ -116,7 +116,7 @@ onUnmounted(() => {
           究極のゲーム体験を解放せよ。
         </p>
 
-        <!-- Tags -->
+        
         <div
           :class="cn(
             'flex flex-wrap gap-2 mt-5 justify-center lg:justify-start',
@@ -132,7 +132,7 @@ onUnmounted(() => {
           </span>
         </div>
 
-        <!-- CTAs -->
+        
         <div
           :class="cn(
             'flex flex-col sm:flex-row gap-3 mt-8 justify-center lg:justify-start',
@@ -168,7 +168,7 @@ onUnmounted(() => {
           </a>
         </div>
 
-        <!-- Stats -->
+        
         <div
           :class="cn(
             'flex flex-wrap gap-6 mt-10 justify-center lg:justify-start',
@@ -187,7 +187,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Right: Mascot -->
+      
       <div
         :class="cn(
           'relative flex-shrink-0 flex justify-center items-end',
@@ -199,26 +199,26 @@ onUnmounted(() => {
         <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-56 h-20 rounded-full bg-neon-purple/30 blur-2xl" />
         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 w-32 h-8 rounded-full bg-neon-mint/20 blur-xl" />
 
-        <!-- Corner frame decorations -->
+        
         <div class="absolute top-0 left-4 w-8 h-8 border-t-2 border-l-2 border-neon-mint/60 rounded-tl-lg" />
         <div class="absolute top-0 right-4 w-8 h-8 border-t-2 border-r-2 border-neon-purple/60 rounded-tr-lg" />
         <div class="absolute bottom-0 left-4 w-8 h-8 border-b-2 border-l-2 border-neon-purple/60 rounded-bl-lg" />
         <div class="absolute bottom-0 right-4 w-8 h-8 border-b-2 border-r-2 border-neon-mint/60 rounded-br-lg" />
 
-        <!-- Mascot image -->
+        
         <img
           src="/images/mascot.jpg"
           alt="NekoVerse cyberpunk anime mascot character"
           class="relative z-10 w-full h-auto max-h-[540px] object-contain object-bottom animate-float drop-shadow-[0_0_40px_oklch(0.62_0.28_305_/_0.5)]"
         />
 
-        <!-- Floating S-RANK badge -->
+        
         <div class="absolute top-8 right-0 bg-surface-1 border border-neon-mint/30 rounded-2xl px-3 py-2 flex flex-col items-center glow-mint">
           <Star class="w-4 h-4 text-neon-mint mb-0.5" aria-hidden="true" />
           <span class="text-[10px] font-display font-black text-neon-mint">S-RANK</span>
         </div>
 
-        <!-- Level badge -->
+        
         <div class="absolute top-24 left-0 bg-surface-1 border border-neon-purple/30 rounded-2xl px-3 py-2 glow-purple">
           <div class="text-[10px] font-body text-muted-foreground">Level</div>
           <div class="text-sm font-display font-black text-neon-purple">MAX</div>
@@ -226,7 +226,7 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- Scroll indicator -->
+    
     <div class="relative z-10 flex justify-center pb-8" aria-hidden="true">
       <div class="flex flex-col items-center gap-2 animate-bounce">
         <span class="text-xs font-body text-muted-foreground tracking-widest">SCROLL</span>

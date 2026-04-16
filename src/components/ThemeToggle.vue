@@ -22,7 +22,7 @@ const isLight = computed(() => theme.value === 'light')
     )"
     @click="toggle"
   >
-    <!-- Sun icon (left) -->
+    
     <Sun
       :class="cn(
         'absolute left-1.5 w-3.5 h-3.5 transition-all duration-300',
@@ -31,7 +31,7 @@ const isLight = computed(() => theme.value === 'light')
       aria-hidden="true"
     />
 
-    <!-- Moon icon (right) -->
+    
     <Moon
       :class="cn(
         'absolute right-1.5 w-3.5 h-3.5 transition-all duration-300',
@@ -40,8 +40,8 @@ const isLight = computed(() => theme.value === 'light')
       aria-hidden="true"
     />
 
-    <!-- Sliding thumb -->
-    <!-- pill w-14 (56px), p-1 both sides, thumb w-5 (20px) → travel = 56 - 8 - 20 = 28... with border: 34px -->
+    
+    
     <span
       :class="cn(
         'relative z-10 w-5 h-5 rounded-full shadow-md transition-all duration-300',

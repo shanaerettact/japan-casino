@@ -12,7 +12,7 @@ const tickers: string[] = [
   "LIMITED EVENT 'NEON WARS' IS LIVE!",
 ]
 
-// Double items so the CSS loop is seamless
+
 const doubled = [...tickers, ...tickers]
 </script>
 

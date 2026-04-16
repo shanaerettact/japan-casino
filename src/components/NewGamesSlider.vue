@@ -84,7 +84,7 @@ function updateScrollState() {
   canScrollLeft.value  = el.scrollLeft > 10
   canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 10
 
-  // Calculate active dot from scroll position
+  
   const cardWidth = el.querySelector('article')?.offsetWidth ?? 304
   const gap       = 20
   activeIndex.value = Math.round(el.scrollLeft / (cardWidth + gap))
@@ -108,7 +108,7 @@ function scrollToIndex(i: number) {
   setTimeout(updateScrollState, 400)
 }
 
-// Track scroll activity for visual feedback
+
 let scrollTimer: ReturnType<typeof setTimeout>
 function onScroll() {
   isScrolling.value = true
@@ -127,7 +127,7 @@ onUnmounted(() => clearTimeout(scrollTimer))
     class="py-16 sm:py-20 scroll-mt-20"
     aria-labelledby="new-games-heading"
   >
-    <!-- Section header -->
+    
     <div class="flex items-end justify-between mb-8 px-4 sm:px-6 max-w-7xl mx-auto">
       <div>
         <div class="flex items-center gap-2 mb-3">
@@ -145,7 +145,7 @@ onUnmounted(() => clearTimeout(scrollTimer))
         </p>
       </div>
 
-      <!-- Desktop navigation arrows -->
+      
       <div class="hidden sm:flex items-center gap-2" role="group" aria-label="Slider navigation">
         <button
           type="button"
@@ -178,9 +178,9 @@ onUnmounted(() => clearTimeout(scrollTimer))
       </div>
     </div>
 
-    <!-- Slider track -->
+    
     <div class="relative">
-      <!-- Left fade -->
+      
       <div
         :class="cn(
           'absolute left-0 top-0 bottom-4 w-12 sm:w-16 z-10 pointer-events-none transition-opacity duration-300',
@@ -190,7 +190,7 @@ onUnmounted(() => clearTimeout(scrollTimer))
         aria-hidden="true"
       />
 
-      <!-- Cards container — snap-scroll on mobile, free-scroll on desktop -->
+      
       <div
         ref="scrollRef"
         class="flex gap-4 sm:gap-5 overflow-x-auto pb-4 px-4 sm:px-6 hide-scrollbar snap-x-mandatory sm:[scroll-snap-type:none]"
@@ -199,7 +199,7 @@ onUnmounted(() => clearTimeout(scrollTimer))
         aria-label="New games list"
         @scroll="onScroll"
       >
-        <!-- Leading spacer so first card isn't flush on mobile -->
+        
         <div class="w-0 sm:hidden shrink-0" aria-hidden="true" />
 
         <div
@@ -211,11 +211,11 @@ onUnmounted(() => clearTimeout(scrollTimer))
           <GameCard :game="game" :index="i" />
         </div>
 
-        <!-- Trailing spacer -->
+        
         <div class="w-4 sm:hidden shrink-0" aria-hidden="true" />
       </div>
 
-      <!-- Right fade -->
+      
       <div
         :class="cn(
           'absolute right-0 top-0 bottom-4 w-16 sm:w-24 z-10 pointer-events-none transition-opacity duration-300',
@@ -226,9 +226,9 @@ onUnmounted(() => clearTimeout(scrollTimer))
       />
     </div>
 
-    <!-- Mobile indicator dots + arrow buttons -->
+    
     <div class="flex sm:hidden items-center justify-center gap-3 mt-4 px-4" role="group" aria-label="Slider navigation">
-      <!-- Prev -->
+      
       <button
         type="button"
         :disabled="!canScrollLeft"
@@ -244,7 +244,7 @@ onUnmounted(() => clearTimeout(scrollTimer))
         <ChevronLeft class="w-4 h-4" aria-hidden="true" />
       </button>
 
-      <!-- Dots -->
+      
       <div class="flex items-center gap-1.5" role="tablist" aria-label="Go to slide">
         <button
           v-for="(_, i) in games"
@@ -263,7 +263,7 @@ onUnmounted(() => clearTimeout(scrollTimer))
         />
       </div>
 
-      <!-- Next -->
+      
       <button
         type="button"
         :disabled="!canScrollRight"
@@ -280,7 +280,7 @@ onUnmounted(() => clearTimeout(scrollTimer))
       </button>
     </div>
 
-    <!-- Mobile swipe hint — shown only first time -->
+    
     <p class="sm:hidden text-center text-xs font-body text-muted-foreground/50 mt-3 tracking-widest" aria-hidden="true">
       スワイプ → SWIPE
     </p>

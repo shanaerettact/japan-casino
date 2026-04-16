@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 const props = defineProps<{ slug: string }>()
 const router = useRouter()
 
-// ── Category definitions ───────────────────────────────────────────────────
+
 interface CategoryDef {
   slug: string
   label: string
@@ -117,7 +117,7 @@ const cat = computed(
   () => categories.find((c) => c.slug === props.slug) ?? categories[0],
 )
 
-// ── Game data per category ─────────────────────────────────────────────────
+
 interface GameItem {
   id: number
   title: string
@@ -171,7 +171,7 @@ const gameMap: Record<string, GameItem[]> = {
   ],
 }
 
-// ── "All Games" aggregated sections ───────────────────────────────────────
+
 const allSections = computed(() =>
   categories
     .filter((c) => c.slug !== 'all')
@@ -181,7 +181,7 @@ const allSections = computed(() =>
 const games = computed(() => gameMap[props.slug] ?? gameMap['live'])
 const isAll = computed(() => props.slug === 'all')
 
-// ── Highlights / stat cards ────────────────────────────────────────────────
+
 interface Highlight {
   icon: unknown
   label: string
@@ -199,7 +199,7 @@ const highlightMap: Record<string, Highlight[]> = {
 
 const highlights = computed(() => highlightMap[props.slug] ?? highlightMap['all'])
 
-// ── Tag color map ──────────────────────────────────────────────────────────
+
 const tagColors: Record<string, string> = {
   HOT:  'bg-neon-purple/20 text-neon-purple border-neon-purple/30',
   NEW:  'bg-neon-mint/20 text-neon-mint border-neon-mint/30',
@@ -207,7 +207,7 @@ const tagColors: Record<string, string> = {
   FREE: 'bg-sky-400/20 text-sky-400 border-sky-400/30',
 }
 
-// ── Category nav pills ─────────────────────────────────────────────────────
+
 const navCategories = [
   { slug: 'all',       label: 'All Games',  icon: Zap },
   { slug: 'live',      label: 'Live',       icon: Tv2 },
@@ -217,7 +217,7 @@ const navCategories = [
   { slug: 'cards',     label: 'Cards',      icon: Layers },
 ]
 
-// ── Hover state ────────────────────────────────────────────────────────────
+
 const hoveredGame = ref<string | null>(null)
 
 function goBack() {
@@ -232,12 +232,12 @@ function gameKey(sectionSlug: string, id: number) {
 <template>
   <div class="min-h-screen bg-background">
 
-    <!-- Hero Banner -->
+    
     <section
       class="relative overflow-hidden pt-24 pb-16 sm:pt-28 sm:pb-20"
       :aria-label="`${cat.label} hero`"
     >
-      <!-- Background grid -->
+      
       <div
         class="absolute inset-0 opacity-[0.04]"
         style="
@@ -248,18 +248,18 @@ function gameKey(sectionSlug: string, id: number) {
         "
         aria-hidden="true"
       />
-      <!-- Orb glow -->
+      
       <div
         class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-[120px] opacity-15 pointer-events-none"
         :class="cat.bgClass"
         aria-hidden="true"
       />
-      <!-- Scanlines -->
+      
       <div class="absolute inset-0 scanline pointer-events-none" aria-hidden="true" />
 
       <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
 
-        <!-- Back button -->
+        
         <button
           type="button"
           :class="cn(
@@ -274,7 +274,7 @@ function gameKey(sectionSlug: string, id: number) {
           Back to Home
         </button>
 
-        <!-- Category label + icon -->
+        
         <div class="flex items-center gap-3 mb-4">
           <div
             :class="cn(
@@ -297,7 +297,7 @@ function gameKey(sectionSlug: string, id: number) {
           </div>
         </div>
 
-        <!-- Heading -->
+        
         <h1
           :class="cn(
             'font-display font-black text-balance leading-tight',
@@ -310,12 +310,12 @@ function gameKey(sectionSlug: string, id: number) {
           </span>
         </h1>
 
-        <!-- Description -->
+        
         <p class="max-w-2xl text-sm sm:text-base font-body text-muted-foreground leading-relaxed">
           {{ cat.description }}
         </p>
 
-        <!-- Stat highlights -->
+        
         <div class="flex flex-wrap gap-4 mt-8">
           <div
             v-for="h in highlights"
@@ -337,7 +337,7 @@ function gameKey(sectionSlug: string, id: number) {
       </div>
     </section>
 
-    <!-- Category switcher strip -->
+    
     <nav
       aria-label="Game categories"
       class="sticky top-16 z-30 bg-background/90 backdrop-blur-xl border-b border-border"
@@ -367,7 +367,7 @@ function gameKey(sectionSlug: string, id: number) {
       </div>
     </nav>
 
-    <!-- ── ALL GAMES view: one section per sub-category ──────────────────── -->
+    
     <template v-if="isAll">
       <section
         v-for="section in allSections"
@@ -377,10 +377,10 @@ function gameKey(sectionSlug: string, id: number) {
       >
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
 
-          <!-- Section header -->
+          
           <div class="flex items-center justify-between mb-8">
             <div class="flex items-center gap-4">
-              <!-- Icon badge -->
+              
               <div
                 :class="cn(
                   'w-10 h-10 rounded-xl flex items-center justify-center border shrink-0',
@@ -422,7 +422,7 @@ function gameKey(sectionSlug: string, id: number) {
             </RouterLink>
           </div>
 
-          <!-- Games grid (3 cols, showing first 3 on mobile via CSS) -->
+          
           <div
             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
             role="list"
@@ -443,7 +443,7 @@ function gameKey(sectionSlug: string, id: number) {
               @mouseenter="hoveredGame = gameKey(section.cat.slug, game.id)"
               @mouseleave="hoveredGame = null"
             >
-              <!-- Thumbnail -->
+              
               <div class="relative h-40 overflow-hidden">
                 <img
                   :src="game.image"
@@ -451,7 +451,7 @@ function gameKey(sectionSlug: string, id: number) {
                   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div class="absolute inset-0 bg-linear-to-t from-surface-1 via-transparent to-transparent" />
-                <!-- Tag -->
+                
                 <span
                   :class="cn(
                     'absolute top-3 left-3 px-2.5 py-1 rounded-lg text-xs font-display font-bold tracking-widest border',
@@ -460,12 +460,12 @@ function gameKey(sectionSlug: string, id: number) {
                 >
                   {{ game.tag }}
                 </span>
-                <!-- Rating -->
+                
                 <div class="absolute top-3 right-3 flex items-center gap-1 bg-background/80 backdrop-blur-sm px-2 py-1 rounded-lg">
                   <Star class="w-3 h-3 text-amber-400 fill-amber-400" aria-hidden="true" />
                   <span class="text-xs font-display font-bold text-foreground">{{ game.rating }}</span>
                 </div>
-                <!-- Play overlay -->
+                
                 <div
                   :class="cn(
                     'absolute inset-0 flex items-center justify-center transition-opacity duration-300',
@@ -479,7 +479,7 @@ function gameKey(sectionSlug: string, id: number) {
                 </div>
               </div>
 
-              <!-- Card body -->
+              
               <div class="p-4">
                 <h3 class="font-display font-black text-sm text-foreground leading-tight tracking-wide truncate">
                   {{ game.title }}
@@ -508,7 +508,7 @@ function gameKey(sectionSlug: string, id: number) {
                 </div>
               </div>
 
-              <!-- Bottom accent bar -->
+              
               <div
                 :class="cn(
                   'absolute bottom-0 left-0 right-0 h-[2px] transition-opacity duration-300',
@@ -520,7 +520,7 @@ function gameKey(sectionSlug: string, id: number) {
             </article>
           </div>
 
-          <!-- Mobile view all link -->
+          
           <div class="mt-6 sm:hidden">
             <RouterLink
               :to="`/category/${section.cat.slug}`"
@@ -539,7 +539,7 @@ function gameKey(sectionSlug: string, id: number) {
       </section>
     </template>
 
-    <!-- ── SINGLE CATEGORY view ───────────────────────────────────────────── -->
+    
     <template v-else>
       <section
         class="py-12 sm:py-16"
@@ -547,7 +547,7 @@ function gameKey(sectionSlug: string, id: number) {
       >
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
 
-          <!-- Section header -->
+          
           <div class="flex items-center justify-between mb-8">
             <div>
               <div class="flex items-center gap-2 mb-2">
@@ -577,7 +577,7 @@ function gameKey(sectionSlug: string, id: number) {
             </button>
           </div>
 
-          <!-- Responsive grid -->
+          
           <div
             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
             role="list"
@@ -598,7 +598,7 @@ function gameKey(sectionSlug: string, id: number) {
               @mouseenter="hoveredGame = gameKey(cat.slug, game.id)"
               @mouseleave="hoveredGame = null"
             >
-              <!-- Thumbnail -->
+              
               <div class="relative h-44 overflow-hidden">
                 <img
                   :src="game.image"
@@ -607,7 +607,7 @@ function gameKey(sectionSlug: string, id: number) {
                 />
                 <div class="absolute inset-0 bg-linear-to-t from-surface-1 via-transparent to-transparent" />
 
-                <!-- Tag -->
+                
                 <span
                   :class="cn(
                     'absolute top-3 left-3 px-2.5 py-1 rounded-lg text-xs font-display font-bold tracking-widest border',
@@ -617,13 +617,13 @@ function gameKey(sectionSlug: string, id: number) {
                   {{ game.tag }}
                 </span>
 
-                <!-- Rating -->
+                
                 <div class="absolute top-3 right-3 flex items-center gap-1 bg-background/80 backdrop-blur-sm px-2 py-1 rounded-lg">
                   <Star class="w-3 h-3 text-amber-400 fill-amber-400" aria-hidden="true" />
                   <span class="text-xs font-display font-bold text-foreground">{{ game.rating }}</span>
                 </div>
 
-                <!-- Play overlay -->
+                
                 <div
                   :class="cn(
                     'absolute inset-0 flex items-center justify-center transition-opacity duration-300',
@@ -637,7 +637,7 @@ function gameKey(sectionSlug: string, id: number) {
                 </div>
               </div>
 
-              <!-- Card body -->
+              
               <div class="p-4">
                 <div class="flex items-start justify-between gap-2 mb-1">
                   <div class="min-w-0">
@@ -648,7 +648,7 @@ function gameKey(sectionSlug: string, id: number) {
                   </div>
                 </div>
 
-                <!-- Footer -->
+                
                 <div class="flex items-center gap-3 mt-3 pt-3 border-t border-border">
                   <div class="flex items-center gap-1 text-xs font-body text-muted-foreground">
                     <Users class="w-3.5 h-3.5 text-neon-mint" aria-hidden="true" />
@@ -671,7 +671,7 @@ function gameKey(sectionSlug: string, id: number) {
                 </div>
               </div>
 
-              <!-- Bottom accent bar -->
+              
               <div
                 :class="cn(
                   'absolute bottom-0 left-0 right-0 h-[2px] transition-opacity duration-300',
@@ -683,7 +683,7 @@ function gameKey(sectionSlug: string, id: number) {
             </article>
           </div>
 
-          <!-- Mobile view all -->
+          
           <div class="mt-8 sm:hidden">
             <button
               type="button"
@@ -702,7 +702,7 @@ function gameKey(sectionSlug: string, id: number) {
       </section>
     </template>
 
-    <!-- CTA Banner -->
+    
     <section
       class="py-12 sm:py-16"
       aria-label="Call to action"
@@ -714,7 +714,7 @@ function gameKey(sectionSlug: string, id: number) {
             'bg-surface-1', cat.borderClass,
           )"
         >
-          <!-- BG orb -->
+          
           <div
             class="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-[80px] opacity-20 pointer-events-none"
             :class="cat.bgClass"

@@ -2,7 +2,7 @@
 @import 'tw-animate-css';
 
 :root {
-  /* Cyberpunk Anime — dark-first palette */
+  
   --background: oklch(0.10 0.015 280);
   --foreground: oklch(0.97 0.008 200);
   --card: oklch(0.14 0.022 275);
@@ -10,11 +10,11 @@
   --popover: oklch(0.12 0.018 278);
   --popover-foreground: oklch(0.97 0.008 200);
 
-  /* Electric Purple — primary brand */
+  
   --primary: oklch(0.62 0.28 305);
   --primary-foreground: oklch(0.97 0.005 200);
 
-  /* Neon Mint — accent */
+  
   --accent: oklch(0.82 0.19 168);
   --accent-foreground: oklch(0.10 0.015 280);
 
@@ -33,7 +33,7 @@
 
   --radius: 0.875rem;
 
-  /* Custom cyberpunk tokens */
+  
   --neon-purple: oklch(0.62 0.28 305);
   --neon-mint: oklch(0.82 0.19 168);
   --neon-purple-dim: oklch(0.42 0.18 305);
@@ -45,7 +45,7 @@
   --glow-mint: 0 0 20px oklch(0.82 0.19 168 / 0.6), 0 0 60px oklch(0.82 0.19 168 / 0.2);
 }
 
-/* ── Light mode overrides ─────────────────────────────────────────── */
+
 .light {
   --background: oklch(0.98 0.006 280);
   --foreground: oklch(0.16 0.025 280);
@@ -126,7 +126,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    /* Remove blue tap flash on mobile */
+    
     -webkit-tap-highlight-color: transparent;
   }
   html {
@@ -136,19 +136,19 @@
     @apply bg-background text-foreground;
     font-family: var(--font-body), sans-serif;
     overflow-x: hidden;
-    /* Respect device safe areas (notch, home indicator) */
+    
     padding-bottom: env(safe-area-inset-bottom);
   }
-  /* Native momentum scrolling on iOS */
+  
   .scroll-momentum {
     -webkit-overflow-scrolling: touch;
     overflow-y: auto;
   }
 }
 
-/* ── Mobile-specific utilities ─────────────────────────────────────── */
+
 @layer utilities {
-  /* Touch press scale — replaces hover on mobile */
+  
   .touch-press {
     transition: transform 0.12s ease, opacity 0.12s ease;
   }
@@ -156,7 +156,7 @@
     transform: scale(0.95);
     opacity: 0.85;
   }
-  /* Larger touch target without changing visual size */
+  
   .touch-target {
     position: relative;
   }
@@ -165,7 +165,7 @@
     position: absolute;
     inset: -8px;
   }
-  /* Scroll-snap helpers */
+  
   .snap-x-mandatory {
     scroll-snap-type: x mandatory;
   }
@@ -175,7 +175,7 @@
   .snap-center {
     scroll-snap-align: center;
   }
-  /* Hide scrollbar cross-browser */
+  
   .hide-scrollbar {
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -183,15 +183,15 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
-  /* Safe bottom padding for bottom nav */
+  
   .pb-safe {
     padding-bottom: calc(4rem + env(safe-area-inset-bottom));
   }
-  /* Bottom nav safe area */
+  
   .bottom-safe {
     bottom: env(safe-area-inset-bottom, 0px);
   }
-  /* Frosted glass card for mobile sheets */
+  
   .glass-card {
     background: oklch(0.14 0.022 275 / 0.85);
     backdrop-filter: blur(20px) saturate(1.4);
@@ -202,7 +202,7 @@
   }
 }
 
-/* Glow utilities */
+
 @layer utilities {
   .glow-purple {
     box-shadow: var(--glow-purple);
@@ -249,7 +249,7 @@
   }
 }
 
-/* Keyframes */
+
 @keyframes neon-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
@@ -281,17 +281,17 @@
   to   { transform: translateX(-50%); }
 }
 
-/* Mobile slide-up sheet animation */
+
 @keyframes slide-up {
   from { transform: translateY(100%); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
-/* Fade-in for overlay */
+
 @keyframes fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-/* Scroll-to-top button pop */
+
 @keyframes pop-in {
   0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
   70%  { transform: scale(1.15) rotate(5deg); }

@@ -19,7 +19,7 @@ export interface Game {
 
 const props = defineProps<{ game: Game; index: number }>()
 
-// Desktop hover + mobile touch-active state unified
+
 const active  = ref(false)
 const pressed = ref(false)
 
@@ -54,7 +54,7 @@ const tagStyles: Record<Game['tagColor'], string> = {
     @pointercancel="onRelease"
     @pointerleave="onRelease"
   >
-    <!-- Thumbnail -->
+    
     <div class="relative h-44 overflow-hidden">
       <img
         :src="props.game.image"
@@ -64,10 +64,10 @@ const tagStyles: Record<Game['tagColor'], string> = {
           active || pressed ? 'scale-110' : 'scale-100',
         )"
       />
-      <!-- Gradient overlay -->
+      
       <div class="absolute inset-0 bg-linear-to-t from-surface-1 via-transparent to-transparent" />
 
-      <!-- Tag -->
+      
       <span
         :class="cn(
           'absolute top-3 left-3 px-2.5 py-1 rounded-lg text-xs font-display font-bold tracking-widest border',
@@ -78,13 +78,13 @@ const tagStyles: Record<Game['tagColor'], string> = {
         {{ props.game.tag }}
       </span>
 
-      <!-- Rating -->
+      
       <div class="absolute top-3 right-3 flex items-center gap-1 bg-background/80 backdrop-blur-sm px-2 py-1 rounded-lg">
         <Star class="w-3 h-3 text-amber-400 fill-amber-400" aria-hidden="true" />
         <span class="text-xs font-display font-bold text-foreground">{{ props.game.rating }}</span>
       </div>
 
-      <!-- Play overlay — visible on hover/press -->
+      
       <div
         :class="cn(
           'absolute inset-0 flex items-center justify-center transition-opacity duration-300',
@@ -102,7 +102,7 @@ const tagStyles: Record<Game['tagColor'], string> = {
       </div>
     </div>
 
-    <!-- Card body -->
+    
     <div class="p-4">
       <div class="flex items-start justify-between gap-2 mb-1">
         <div>
@@ -139,7 +139,7 @@ const tagStyles: Record<Game['tagColor'], string> = {
       </div>
     </div>
 
-    <!-- Bottom neon accent bar -->
+    
     <div
       :class="cn(
         'absolute bottom-0 left-0 right-0 h-[2px] transition-opacity duration-300',

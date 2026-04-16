@@ -3,17 +3,14 @@ import { ref, onMounted, onUnmounted, type Ref } from 'vue'
 export type SwipeDirection = 'left' | 'right' | 'up' | 'down' | null
 
 export interface UseSwipeOptions {
-  threshold?: number        // min px distance to count as swipe (default 50)
+  threshold?: number
   onSwipeLeft?: () => void
   onSwipeRight?: () => void
   onSwipeUp?: () => void
   onSwipeDown?: () => void
 }
 
-/**
- * Attach pointer-based swipe detection to a template ref element.
- * Works with both touch and mouse drag. Passive listeners for scroll perf.
- */
+
 export function useSwipe(
   targetRef: Ref<HTMLElement | null>,
   options: UseSwipeOptions = {},
@@ -45,7 +42,6 @@ export function useSwipe(
     const absDx = Math.abs(dx)
     const absDy = Math.abs(dy)
 
-    // Ignore slow deliberate drags that aren't swipes (> 600ms)
     if (elapsed > 600) return
 
     if (absDx > absDy && absDx >= threshold) {

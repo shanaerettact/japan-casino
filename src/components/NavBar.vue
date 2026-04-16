@@ -9,13 +9,13 @@ import ThemeToggle from '@/components/ThemeToggle.vue'
 interface NavLink {
   label: string
   slug: string
-  to: string | null   // null = action only, no navigation
+  to: string | null
   icon: unknown
 }
 
 const navLinks: NavLink[] = [
   { label: 'All Games',        slug: 'all',        to: '/category/all',        icon: Zap },
-  { label: '優惠',              slug: 'promotions', to: '/promotions',          icon: Tv2 },
+  { label: 'キャンペーン', slug: 'promotions', to: '/promotions',          icon: Tv2 },
   { label: 'サポート', slug: 'support',    to: null,                   icon: MessageCircle },
   { label: 'Sports',           slug: 'sports',     to: '/category/sports',     icon: Trophy },
   { label: 'Fishing',          slug: 'fishing',    to: '/category/fishing',    icon: Fish },
@@ -34,7 +34,6 @@ function handleScroll() {
 
 function closeMenu() { open.value = false }
 
-// Is any category currently active?
 const isOnHome = computed(() => route.path === '/')
 const activeCategorySlug = computed(() => {
   if (route.name === 'promotions') return 'promotions'
@@ -54,7 +53,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <!-- Top navigation bar -->
+  
   <header
     role="banner"
     :class="cn(
@@ -62,14 +61,14 @@ onUnmounted(() => {
       scrolled ? 'bg-background/80 backdrop-blur-xl border-b border-border' : 'bg-transparent',
     )"
   >
-    <!-- Neon top line -->
+    
     <div class="h-[2px] w-full bg-linear-to-r from-neon-purple via-neon-mint to-neon-purple animate-neon-pulse" aria-hidden="true" />
 
     <nav
       aria-label="Primary navigation"
       class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4"
     >
-      <!-- Logo -->
+      
       <RouterLink to="/" aria-label="NekoVerse home" class="flex items-center gap-2.5 group shrink-0 touch-press">
         <div class="relative w-8 h-8">
           <div class="absolute inset-0 rounded-lg bg-neon-purple/30 group-hover:bg-neon-purple/50 transition-colors duration-300 glow-purple" />
@@ -81,10 +80,10 @@ onUnmounted(() => {
         <span class="hidden sm:inline text-[10px] font-mono text-muted-foreground tracking-widest border border-border rounded px-1 py-0.5 ml-1">JP</span>
       </RouterLink>
 
-      <!-- Desktop nav links -->
+      
       <ul class="hidden md:flex items-center gap-1" role="list">
         <li v-for="link in navLinks" :key="link.slug">
-          <!-- Action-only item (no navigation) -->
+          
           <button
             v-if="link.to === null"
             type="button"
@@ -101,7 +100,7 @@ onUnmounted(() => {
             <span class="font-body">{{ link.label }}</span>
           </button>
 
-          <!-- Regular navigable link -->
+          
           <RouterLink
             v-else
             :to="link.to"
@@ -121,7 +120,7 @@ onUnmounted(() => {
               aria-hidden="true"
             />
             <span class="font-body">{{ link.label }}</span>
-            <!-- Active underline -->
+            
             <span
               :class="cn(
                 'absolute bottom-1 left-4 right-4 h-[1.5px] rounded-full bg-neon-mint transition-all duration-300 origin-left',
@@ -133,9 +132,9 @@ onUnmounted(() => {
         </li>
       </ul>
 
-      <!-- Right-side actions -->
+      
       <div class="flex items-center gap-2 shrink-0">
-        <!-- Notification bell -->
+        
         <button
           type="button"
           aria-label="Notifications — 3 unread"
@@ -149,10 +148,10 @@ onUnmounted(() => {
           />
         </button>
 
-        <!-- Theme toggle -->
+        
         <ThemeToggle />
 
-        <!-- CTA — desktop only -->
+        
         <RouterLink
           to="/category/all"
           :class="cn(
@@ -167,7 +166,7 @@ onUnmounted(() => {
           Play Now
         </RouterLink>
 
-        <!-- Mobile hamburger -->
+        
         <button
           type="button"
           :aria-label="open ? 'Close menu' : 'Open menu'"
@@ -183,9 +182,9 @@ onUnmounted(() => {
     </nav>
   </header>
 
-  <!-- Mobile full-screen sheet overlay -->
+  
   <Teleport to="body">
-    <!-- Backdrop -->
+    
     <Transition name="fade-overlay">
       <div
         v-if="open"
@@ -195,7 +194,7 @@ onUnmounted(() => {
       />
     </Transition>
 
-    <!-- Bottom sheet -->
+    
     <Transition name="slide-sheet">
       <nav
         v-if="open"
@@ -208,12 +207,12 @@ onUnmounted(() => {
           'pb-safe animate-slide-up',
         )"
       >
-        <!-- Sheet handle -->
+        
         <div class="flex justify-center pt-3 pb-1" aria-hidden="true">
           <div class="w-10 h-1 rounded-full bg-border" />
         </div>
 
-        <!-- Sheet header -->
+        
         <div class="flex items-center justify-between px-5 py-3 border-b border-border">
           <span class="font-display font-bold text-sm text-foreground tracking-wider">MENU</span>
           <button
@@ -226,10 +225,10 @@ onUnmounted(() => {
           </button>
         </div>
 
-        <!-- Nav links -->
+        
         <ul class="px-4 pt-3 pb-2 flex flex-col gap-1" role="list">
           <li v-for="link in navLinks" :key="link.slug">
-            <!-- Action-only item (no navigation) -->
+            
             <button
               v-if="link.to === null"
               type="button"
@@ -239,7 +238,7 @@ onUnmounted(() => {
               <span class="font-medium">{{ link.label }}</span>
             </button>
 
-            <!-- Regular navigable link -->
+            
             <RouterLink
               v-else
               :to="link.to"
@@ -262,7 +261,7 @@ onUnmounted(() => {
           </li>
         </ul>
 
-        <!-- CTA inside sheet -->
+        
         <div class="px-4 pb-4">
           <RouterLink
             to="/category/all"
@@ -281,7 +280,7 @@ onUnmounted(() => {
     </Transition>
   </Teleport>
 
-  <!-- Mobile bottom navigation bar -->
+  
   <nav
     aria-label="Mobile bottom navigation"
     :class="cn(
@@ -293,7 +292,7 @@ onUnmounted(() => {
     )"
     style="padding-bottom: env(safe-area-inset-bottom, 0px);"
   >
-    <!-- Home -->
+    
     <RouterLink
       to="/"
       :class="cn(
@@ -306,9 +305,9 @@ onUnmounted(() => {
       <span>Home</span>
     </RouterLink>
 
-    <!-- First 3 category links -->
+    
     <template v-for="link in navLinks.slice(0, 3)" :key="link.slug">
-      <!-- Action-only item (no navigation) -->
+      
       <button
         v-if="link.to === null"
         type="button"
@@ -319,7 +318,7 @@ onUnmounted(() => {
         <span>{{ link.label }}</span>
       </button>
 
-      <!-- Regular navigable link -->
+      
       <RouterLink
         v-else
         :to="link.to"
@@ -340,7 +339,7 @@ onUnmounted(() => {
       </RouterLink>
     </template>
 
-    <!-- Menu button -->
+    
     <button
       type="button"
       aria-label="Open menu"

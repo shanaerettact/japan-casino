@@ -9,7 +9,6 @@ import SiteFooter from '@/components/SiteFooter.vue'
 
 provideTheme()
 
-// Scroll-to-top FAB visibility
 const showFab = ref(false)
 
 function handleScroll() {
@@ -38,7 +37,6 @@ onUnmounted(() => {
 
     <SiteFooter />
 
-    <!-- Scroll-to-top FAB — mobile & desktop -->
     <Teleport to="body">
       <Transition name="fab">
         <button
@@ -49,7 +47,6 @@ onUnmounted(() => {
             'fixed right-4 z-40 w-11 h-11 rounded-2xl flex items-center justify-center',
             'bg-neon-purple text-primary-foreground glow-purple',
             'transition-all duration-300 hover:scale-110 active:scale-95 touch-press animate-pop-in',
-            // sit above bottom nav on mobile, regular position on desktop
             'bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:bottom-6',
           )"
           @click="scrollToTop"
@@ -62,7 +59,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* FAB transition */
 .fab-enter-active,
 .fab-leave-active {
   transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);

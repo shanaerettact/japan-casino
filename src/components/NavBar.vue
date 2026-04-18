@@ -83,101 +83,135 @@ onUnmounted(() => {
 
     <nav
       aria-label="Primary navigation"
-      class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3"
+      class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4"
     >
 
-      <!-- Logo — smaller, tighter -->
-      <RouterLink to="/" aria-label="NekoVerse home" class="flex items-center gap-2 group shrink-0 touch-press">
-        <div class="relative w-6 h-6">
-          <div class="absolute inset-0 rounded-md bg-neon-purple/30 group-hover:bg-neon-purple/50 transition-colors duration-300 glow-purple" />
-          <Zap class="absolute inset-0 m-auto w-3.5 h-3.5 text-neon-mint group-hover:text-foreground transition-colors duration-300" aria-hidden="true" />
+      <!-- ── Logo ─────────────────────────────────────────────── -->
+      <RouterLink
+        to="/"
+        aria-label="NekoVerse home"
+        class="flex items-center gap-2 shrink-0 group touch-press"
+      >
+        <!-- Icon badge -->
+        <div class="relative w-7 h-7 shrink-0">
+          <div
+            class="absolute inset-0 rounded-lg bg-neon-purple/20 border border-neon-purple/40 group-hover:bg-neon-purple/35 group-hover:border-neon-purple/70 transition-all duration-300"
+            aria-hidden="true"
+          />
+          <Zap
+            class="absolute inset-0 m-auto w-4 h-4 text-neon-mint group-hover:scale-110 transition-transform duration-300"
+            aria-hidden="true"
+          />
         </div>
-        <span class="font-display text-sm font-black tracking-widest text-foreground group-hover:text-neon-mint transition-colors duration-300 text-glow-mint">
-          NEKO<span class="text-neon-purple text-glow-purple">VERSE</span>
+        <!-- Wordmark -->
+        <span class="font-display text-[13px] font-black tracking-[0.18em] text-foreground group-hover:text-neon-mint transition-colors duration-300 leading-none">
+          NEKO<span class="text-neon-purple">VERSE</span>
         </span>
-        <span class="hidden sm:inline text-[9px] font-mono text-muted-foreground tracking-widest border border-border rounded px-1 py-0.5">JP</span>
+        <!-- Region badge -->
+        <span class="hidden sm:inline-flex items-center font-mono text-[8px] tracking-widest text-muted-foreground border border-border/70 rounded px-1 py-px leading-none">
+          JP
+        </span>
       </RouterLink>
 
-      <!-- Desktop nav links -->
-      <ul class="hidden md:flex items-center gap-1" role="list">
+      <!-- ── Desktop nav links ───────────────────────────────── -->
+      <ul class="hidden md:flex items-center gap-0.5" role="list">
         <li v-for="link in navLinks" :key="link.slug">
 
+          <!-- Non-routable item -->
           <button
             v-if="link.to === null"
             type="button"
             :class="cn(
-              'relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all duration-300 group',
-              'text-muted-foreground hover:text-foreground hover:bg-surface-2 cursor-default',
+              'relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-body font-medium',
+              'text-muted-foreground hover:text-foreground hover:bg-surface-2/80 cursor-default',
+              'transition-all duration-200 group',
             )"
           >
             <component
               :is="link.icon"
-              class="w-3.5 h-3.5 transition-all duration-300 text-muted-foreground group-hover:text-neon-purple"
+              class="w-3.5 h-3.5 text-muted-foreground group-hover:text-neon-purple transition-colors duration-200 shrink-0"
               aria-hidden="true"
             />
-            <span class="font-body text-xs">{{ link.label }}</span>
+            {{ link.label }}
           </button>
 
+          <!-- Routable item -->
           <RouterLink
             v-else
             :to="link.to"
             :class="cn(
-              'relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all duration-300 group',
+              'relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-body font-medium',
+              'transition-all duration-200 group',
               activeCategorySlug === link.slug
-                ? 'text-neon-mint bg-neon-mint/10'
-                : 'text-muted-foreground hover:text-foreground hover:bg-surface-2',
+                ? 'text-neon-mint bg-neon-mint/10 border border-neon-mint/20'
+                : 'text-muted-foreground hover:text-foreground hover:bg-surface-2/80 border border-transparent',
             )"
           >
             <component
               :is="link.icon"
               :class="cn(
-                'w-3.5 h-3.5 transition-all duration-300',
-                activeCategorySlug === link.slug ? 'text-neon-mint scale-110' : 'text-muted-foreground group-hover:text-neon-purple',
+                'w-3.5 h-3.5 shrink-0 transition-all duration-200',
+                activeCategorySlug === link.slug
+                  ? 'text-neon-mint'
+                  : 'text-muted-foreground group-hover:text-neon-purple',
               )"
               aria-hidden="true"
             />
-            <span class="font-body text-xs">{{ link.label }}</span>
+            {{ link.label }}
+            <!-- Active underline -->
             <span
-              :class="cn(
-                'absolute bottom-0.5 left-3.5 right-3.5 h-[1.5px] rounded-full bg-neon-mint transition-all duration-300 origin-left',
-                activeCategorySlug === link.slug ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0',
-              )"
+              v-if="activeCategorySlug === link.slug"
+              class="absolute bottom-0 left-3 right-3 h-px rounded-full bg-neon-mint/60"
               aria-hidden="true"
             />
           </RouterLink>
         </li>
       </ul>
 
-      <!-- Right side: wallet + user -->
+      <!-- ── Right cluster ──────────────────────────────────── -->
       <div class="flex items-center gap-2 shrink-0">
 
-        <!-- Wallet cluster (desktop) -->
-        <div class="hidden sm:flex items-center gap-1.5 rounded-xl border border-border bg-surface-1/80 backdrop-blur-sm px-2.5 py-1.5">
-
-          <!-- Wallet balance -->
-          <div class="flex items-center gap-1.5 pr-2 border-r border-border">
-            <div class="w-5 h-5 rounded-md bg-neon-purple/20 flex items-center justify-center">
-              <Wallet class="w-3 h-3 text-neon-purple" aria-hidden="true" />
+        <!-- Wallet chip — desktop only -->
+        <div
+          class="hidden sm:flex items-center h-8 rounded-lg border border-border/80 bg-surface-1/70 backdrop-blur-md overflow-hidden"
+          role="group"
+          aria-label="ウォレット情報"
+        >
+          <!-- Balance segment -->
+          <div class="flex items-center gap-1.5 px-2.5 h-full border-r border-border/60">
+            <div
+              class="w-4 h-4 rounded flex items-center justify-center bg-neon-purple/20 shrink-0"
+              aria-hidden="true"
+            >
+              <Wallet class="w-2.5 h-2.5 text-neon-purple" aria-hidden="true" />
             </div>
-            <span class="font-mono text-xs text-foreground font-semibold tracking-wider">{{ user.walletBalance }}</span>
+            <span class="font-mono text-[11px] font-semibold text-foreground tracking-wide leading-none">
+              {{ user.walletBalance }}
+            </span>
           </div>
 
-          <!-- Points with spinning refresh -->
-          <div class="flex items-center gap-1.5">
-            <div class="w-5 h-5 rounded-md bg-neon-mint/20 flex items-center justify-center">
-              <Coins class="w-3 h-3 text-neon-mint" aria-hidden="true" />
+          <!-- Points segment -->
+          <div class="flex items-center gap-1.5 pl-2.5 pr-1.5 h-full">
+            <div
+              class="w-4 h-4 rounded flex items-center justify-center bg-neon-mint/15 shrink-0"
+              aria-hidden="true"
+            >
+              <Coins class="w-2.5 h-2.5 text-neon-mint" aria-hidden="true" />
             </div>
-            <span class="font-mono text-xs text-neon-mint font-semibold tracking-wider">{{ user.walletPoints }}<span class="text-muted-foreground font-normal">pt</span></span>
+            <span class="font-mono text-[11px] font-semibold text-neon-mint tracking-wide leading-none">
+              {{ user.walletPoints }}<span class="text-muted-foreground font-normal text-[10px] ml-0.5">pt</span>
+            </span>
+            <!-- Refresh button -->
             <button
               type="button"
               aria-label="ポイントを更新"
-              class="w-4 h-4 flex items-center justify-center text-muted-foreground hover:text-neon-mint transition-colors duration-200 touch-press"
+              class="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10 transition-all duration-200 touch-press ml-0.5"
               @click="refreshPoints"
             >
               <RefreshCw
                 :class="cn(
-                  'w-3 h-3 transition-transform duration-300',
-                  pointsLoading ? 'animate-spin text-neon-mint' : '',
+                  'w-2.5 h-2.5 transition-colors duration-200',
+                  pointsLoading ? 'animate-spin text-neon-mint' : 'text-muted-foreground',
                 )"
                 aria-hidden="true"
               />
@@ -189,31 +223,46 @@ onUnmounted(() => {
         <RouterLink
           to="/category/all"
           :class="cn(
-            'hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-xl font-display font-bold text-xs tracking-wider',
-            'bg-neon-purple text-primary-foreground',
-            'hover:bg-neon-purple/80 transition-all duration-300',
-            'glow-purple hover:scale-105 active:scale-95',
+            'hidden md:flex items-center gap-1.5 h-8 px-4 font-display font-bold text-[11px] tracking-widest',
+            'bg-neon-purple text-primary-foreground rounded-lg',
+            'hover:bg-neon-purple/85 active:scale-95 transition-all duration-200',
             'clip-corner-sm touch-press',
           )"
         >
-          <Zap class="w-3.5 h-3.5" aria-hidden="true" />
-          Play Now
+          <Zap class="w-3 h-3 shrink-0" aria-hidden="true" />
+          PLAY
         </RouterLink>
 
-        <!-- User avatar + nickname -->
+        <!-- User pill -->
         <button
           type="button"
-          aria-label="ユーザーメニュー"
-          class="flex items-center gap-2 rounded-xl border border-border bg-surface-1/80 backdrop-blur-sm px-2.5 py-1.5 hover:border-neon-purple/50 hover:bg-surface-2 transition-all duration-300 group touch-press"
+          aria-label="ユーザーメニューを開く"
+          class="flex items-center gap-2 h-8 pl-1 pr-2.5 rounded-lg border border-border/80 bg-surface-1/70 backdrop-blur-md hover:border-neon-purple/45 hover:bg-surface-2/80 transition-all duration-250 group touch-press"
         >
           <!-- Avatar -->
-          <div class="relative w-6 h-6 rounded-lg bg-gradient-to-br from-neon-purple/70 to-neon-mint/50 flex items-center justify-center shrink-0 group-hover:glow-purple transition-all duration-300">
-            <span class="font-display text-[10px] font-black text-primary-foreground leading-none select-none">{{ user.avatarInitial }}</span>
-            <!-- Online dot -->
-            <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-neon-mint border border-background animate-neon-pulse" aria-hidden="true" />
+          <div class="relative w-6 h-6 rounded-md shrink-0 overflow-visible">
+            <div
+              class="w-6 h-6 rounded-md bg-gradient-to-br from-neon-purple to-neon-mint/70 flex items-center justify-center group-hover:shadow-[0_0_10px_oklch(0.62_0.28_305/0.55)] transition-shadow duration-300"
+              aria-hidden="true"
+            >
+              <span class="font-display text-[9px] font-black text-white leading-none select-none">
+                {{ user.avatarInitial }}
+              </span>
+            </div>
+            <!-- Online indicator -->
+            <span
+              class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-neon-mint border-[1.5px] border-background animate-neon-pulse shrink-0"
+              aria-label="オンライン"
+            />
           </div>
-          <!-- Nickname (desktop only) -->
-          <span class="hidden lg:block font-body text-xs font-medium text-foreground group-hover:text-neon-mint transition-colors duration-300 max-w-[80px] truncate">{{ user.nickname }}</span>
+
+          <!-- Nickname -->
+          <div class="hidden lg:flex flex-col items-start leading-none gap-px">
+            <span class="font-body text-[11px] font-semibold text-foreground group-hover:text-neon-mint transition-colors duration-200 max-w-[72px] truncate leading-none">
+              {{ user.nickname }}
+            </span>
+            <span class="font-mono text-[9px] text-neon-mint/70 tracking-wider leading-none">ONLINE</span>
+          </div>
         </button>
 
       </div>

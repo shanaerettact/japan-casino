@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { Menu, X, Zap, Tv2, MessageCircle, Trophy, Fish, Layers, Bell, Home, RefreshCw } from 'lucide-vue-next'
+import { Menu, X, Zap, Tv2, MessageCircle, Trophy, Fish, Layers, Bell, Home, RefreshCw, Sun, Moon } from 'lucide-vue-next'
 
 import { cn } from '@/lib/utils'
-import ThemeToggle from '@/components/ThemeToggle.vue'
+import { useTheme } from '@/composables/useTheme'
 
 interface NavLink {
   label: string
@@ -27,6 +27,10 @@ const route = useRoute()
 const scrolled   = ref(false)
 const open       = ref(false)
 const notifPulse = ref(true)
+
+// Theme
+const { theme, toggle: toggleTheme } = useTheme()
+const isLight = computed(() => theme.value === 'light')
 
 // User profile
 const member = ref({
@@ -170,9 +174,6 @@ onUnmounted(() => {
         </button>
 
         
-        <ThemeToggle />
-
-        
         <div
           class="flex items-center gap-2.5 pl-2 pr-1 py-1 rounded-2xl bg-surface-2/60 border border-border hover:border-neon-purple/40 transition-all duration-300"
           role="region"
@@ -196,6 +197,44 @@ onUnmounted(() => {
               {{ formatPoints(member.walletPoints) }} pts
             </span>
           </div>
+
+          
+          <button
+            type="button"
+            :aria-label="isLight ? 'Switch to dark mode' : 'Switch to light mode'"
+            :title="isLight ? 'ダークモードへ' : 'ライトモードへ'"
+            :class="cn(
+              'relative flex items-center w-12 h-6 rounded-full p-0.5 shrink-0 transition-all duration-300',
+              'border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+              isLight
+                ? 'bg-amber-100 border-amber-300 hover:border-amber-400'
+                : 'bg-neon-purple/20 border-neon-purple/40 hover:border-neon-purple/70',
+            )"
+            @click="toggleTheme"
+          >
+            <Sun
+              :class="cn(
+                'absolute left-1 w-3 h-3 transition-all duration-300',
+                isLight ? 'text-amber-500 opacity-100 scale-100' : 'text-muted-foreground opacity-40 scale-75',
+              )"
+              aria-hidden="true"
+            />
+            <Moon
+              :class="cn(
+                'absolute right-1 w-3 h-3 transition-all duration-300',
+                !isLight ? 'text-neon-mint opacity-100 scale-100' : 'text-muted-foreground opacity-40 scale-75',
+              )"
+              aria-hidden="true"
+            />
+            <span
+              :class="cn(
+                'relative z-10 w-4 h-4 rounded-full shadow-md transition-all duration-300',
+                'ease-[cubic-bezier(0.34,1.56,0.64,1)]',
+                isLight ? 'translate-x-0 bg-amber-400' : 'translate-x-[28px] bg-neon-purple glow-purple',
+              )"
+              aria-hidden="true"
+            />
+          </button>
 
           
           <button

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { Menu, X, Zap, Tv2, MessageCircle, Trophy, Fish, Layers, Bell, Home } from 'lucide-vue-next'
+import { Menu, X, Zap, Tv2, MessageCircle, Trophy, Fish, Layers, Bell, Home, RefreshCw } from 'lucide-vue-next'
 
 import { cn } from '@/lib/utils'
 import ThemeToggle from '@/components/ThemeToggle.vue'
@@ -27,6 +27,27 @@ const route = useRoute()
 const scrolled   = ref(false)
 const open       = ref(false)
 const notifPulse = ref(true)
+
+// User profile
+const member = ref({
+  name: 'NekoPlayer',
+  avatarUrl: 'https://api.dicebear.com/9.x/bottts/svg?seed=NekoPlayer',
+  walletPoints: 12_480,
+})
+const walletUpdating = ref(false)
+
+async function updateWallet() {
+  if (walletUpdating.value) return
+  walletUpdating.value = true
+  // Simulate an async wallet refresh
+  await new Promise(resolve => setTimeout(resolve, 900))
+  member.value.walletPoints += Math.floor(Math.random() * 500 + 50)
+  walletUpdating.value = false
+}
+
+function formatPoints(n: number) {
+  return n.toLocaleString('ja-JP')
+}
 
 function handleScroll() {
   scrolled.value = window.scrollY > 20
@@ -152,32 +173,50 @@ onUnmounted(() => {
         <ThemeToggle />
 
         
-        <RouterLink
-          to="/category/all"
-          :class="cn(
-            'hidden sm:flex items-center gap-2 px-5 py-2 rounded-xl font-display font-bold text-sm tracking-wider',
-            'bg-neon-purple text-primary-foreground',
-            'hover:bg-neon-purple/80 transition-all duration-300',
-            'glow-purple hover:scale-105 active:scale-95',
-            'clip-corner-sm touch-press',
-          )"
+        <div
+          class="flex items-center gap-2.5 pl-2 pr-1 py-1 rounded-2xl bg-surface-2/60 border border-border hover:border-neon-purple/40 transition-all duration-300"
+          role="region"
+          aria-label="User profile"
         >
-          <Zap class="w-4 h-4" aria-hidden="true" />
-          Play Now
-        </RouterLink>
+          
+          <img
+            :src="member.avatarUrl"
+            :alt="`${member.name} avatar`"
+            class="w-8 h-8 rounded-xl object-cover bg-neon-purple/20 shrink-0"
+            width="32"
+            height="32"
+          />
 
-        
-        <button
-          type="button"
-          :aria-label="open ? 'Close menu' : 'Open menu'"
-          :aria-expanded="open"
-          aria-controls="mobile-sheet"
-          class="md:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface-2 transition-colors duration-200 touch-press touch-target"
-          @click="open = !open"
-        >
-          <X v-if="open" class="w-5 h-5" aria-hidden="true" />
-          <Menu v-else  class="w-5 h-5" aria-hidden="true" />
-        </button>
+          
+          <div class="hidden sm:flex flex-col leading-none gap-0.5">
+            <span class="text-[11px] font-display font-bold text-foreground tracking-wide truncate max-w-[80px]">
+              {{ member.name }}
+            </span>
+            <span class="text-[10px] font-mono text-neon-mint font-semibold" aria-label="Wallet points">
+              {{ formatPoints(member.walletPoints) }} pts
+            </span>
+          </div>
+
+          
+          <button
+            type="button"
+            :aria-label="walletUpdating ? 'Updating wallet…' : 'Refresh wallet points'"
+            :disabled="walletUpdating"
+            :class="cn(
+              'p-1.5 rounded-xl transition-all duration-300 touch-press touch-target',
+              walletUpdating
+                ? 'text-neon-mint/50 bg-neon-mint/5 cursor-wait'
+                : 'text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10',
+            )"
+            @click="updateWallet"
+          >
+            <RefreshCw
+              class="w-4 h-4 transition-transform duration-700"
+              :class="{ 'animate-spin': walletUpdating }"
+              aria-hidden="true"
+            />
+          </button>
+        </div>
       </div>
     </nav>
   </header>

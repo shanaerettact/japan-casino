@@ -134,24 +134,6 @@ onUnmounted(() => {
 
       
       <div class="flex items-center gap-2 shrink-0">
-        
-        <button
-          type="button"
-          aria-label="Notifications — 3 unread"
-          class="relative p-2 rounded-xl text-muted-foreground hover:text-neon-purple hover:bg-neon-purple/10 transition-all duration-300 touch-press touch-target"
-        >
-          <Bell class="w-5 h-5" aria-hidden="true" />
-          <span
-            v-if="notifPulse"
-            class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-neon-mint animate-neon-pulse"
-            aria-hidden="true"
-          />
-        </button>
-
-        
-        <ThemeToggle />
-
-        
         <RouterLink
           to="/category/all"
           :class="cn(
@@ -166,18 +148,6 @@ onUnmounted(() => {
           Play Now
         </RouterLink>
 
-        
-        <button
-          type="button"
-          :aria-label="open ? 'Close menu' : 'Open menu'"
-          :aria-expanded="open"
-          aria-controls="mobile-sheet"
-          class="md:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface-2 transition-colors duration-200 touch-press touch-target"
-          @click="open = !open"
-        >
-          <X v-if="open" class="w-5 h-5" aria-hidden="true" />
-          <Menu v-else  class="w-5 h-5" aria-hidden="true" />
-        </button>
       </div>
     </nav>
   </header>
@@ -213,12 +183,27 @@ onUnmounted(() => {
         </div>
 
         
-        <div class="flex items-center justify-between px-5 py-3 border-b border-border">
-          <span class="font-display font-bold text-sm text-foreground tracking-wider">MENU</span>
+        <div
+          class="flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-3 border-b border-neon-purple/15 bg-linear-to-r from-neon-purple/[0.06] via-transparent to-neon-mint/[0.06]"
+        >
+          <span
+            class="font-display font-bold text-sm text-foreground tracking-[0.2em] shrink-0 bg-clip-text text-transparent bg-linear-to-r from-foreground to-foreground/80"
+          >
+            MENU
+          </span>
+          <div class="flex-1 min-w-2" aria-hidden="true" />
+          <div
+            class="flex items-center gap-0.5 rounded-2xl border border-border/90 bg-background/75 backdrop-blur-md p-1 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_4px_24px_-8px_rgba(139,92,246,0.35)]"
+          >
+            <span class="w-px h-7 self-center rounded-full bg-border/70 shrink-0" aria-hidden="true" />
+            <div class="flex items-center justify-center px-1 shrink-0">
+              <ThemeToggle />
+            </div>
+          </div>
           <button
             type="button"
             aria-label="Close menu"
-            class="p-1.5 rounded-xl text-muted-foreground hover:text-foreground touch-press"
+            class="p-2 rounded-xl text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10 border border-transparent hover:border-neon-mint/25 transition-all duration-300 touch-press shrink-0"
             @click="closeMenu"
           >
             <X class="w-4 h-4" aria-hidden="true" />

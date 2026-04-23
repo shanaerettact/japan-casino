@@ -22,6 +22,9 @@ import {
 
 import { cn } from '@/lib/utils'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+import RegisterModal from '@/components/RegisterModal.vue'
+
+const registerOpen = ref(false)
 
 // Mock user — replace with store / auth
 const user = ref({
@@ -235,6 +238,7 @@ onUnmounted(() => {
           type="button"
           class="flex items-center gap-1.5 sm:gap-2 h-8 sm:h-9 pl-0.5 sm:pl-1 pr-2 sm:pr-3 rounded-lg sm:rounded-xl border border-border/80 bg-surface-2/65 backdrop-blur-md ring-1 ring-neon-purple/10 hover:border-neon-purple/45 hover:ring-neon-purple/25 hover:bg-surface-2/85 transition-all duration-300 group touch-press min-w-0 max-w-[7.5rem] sm:max-w-[140px] lg:max-w-[200px]"
           :aria-label="user.nickname + ' のプロフィール'"
+          @click="registerOpen = true"
         >
           <div class="relative size-6 sm:size-7 shrink-0 rounded-md sm:rounded-lg overflow-hidden ring-1 ring-neon-mint/30 group-hover:ring-neon-mint/55 transition-all duration-300">
             <div

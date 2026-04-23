@@ -20,6 +20,13 @@ const routes = [
     name: 'promotions',
     component: PromotionsPage,
   },
+  { path: '/account/charge', name: 'nav-deposit', component: HomePage },
+  { path: '/account/withdraw', name: 'nav-withdraw', component: HomePage },
+  { path: '/vip', name: 'nav-vip', component: HomePage },
+  { path: '/account/bank', name: 'nav-bank', component: HomePage },
+  { path: '/account/billing', name: 'nav-billing', component: HomePage },
+  { path: '/account/game-history', name: 'nav-game-history', component: HomePage },
+  { path: '/account', name: 'nav-profile', component: HomePage },
 ]
 
 export const router = createRouter({

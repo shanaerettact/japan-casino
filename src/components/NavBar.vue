@@ -1,10 +1,49 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { Menu, X, Zap, Tv2, MessageCircle, Trophy, Fish, Layers, Bell, Home } from 'lucide-vue-next'
+import {
+  Menu,
+  X,
+  Zap,
+  Home,
+  Wallet,
+  Coins,
+  RefreshCw,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  Crown,
+  Landmark,
+  Receipt,
+  History,
+  User,
+  Tv2,
+  MessageCircle,
+} from 'lucide-vue-next'
 
 import { cn } from '@/lib/utils'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+
+// Mock user — replace with store / auth
+const user = ref({
+  nickname: 'ネコ侍',
+  avatarInitial: 'ネ',
+  points: 48_250,
+})
+
+const pointsRefreshing = ref(false)
+
+function formatPoints(n: number) {
+  return n.toLocaleString('ja-JP')
+}
+
+function refreshPoints() {
+  if (pointsRefreshing.value) return
+  pointsRefreshing.value = true
+  setTimeout(() => {
+    user.value.points = Math.floor(Math.random() * 80_000) + 10_000
+    pointsRefreshing.value = false
+  }, 900)
+}
 
 interface NavLink {
   label: string
@@ -14,12 +53,20 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
-  { label: '全ゲーム', slug: 'all',        to: '/category/all',        icon: Zap },
-  { label: 'キャンペーン', slug: 'promotions', to: '/promotions',          icon: Tv2 },
-  { label: 'サポート', slug: 'support',    to: null,                   icon: MessageCircle },
-  { label: 'スポーツ', slug: 'sports',     to: '/category/sports',     icon: Trophy },
-  { label: '釣り', slug: 'fishing',    to: '/category/fishing',    icon: Fish },
-  { label: 'カード', slug: 'cards',      to: '/category/cards',      icon: Layers },
+  { label: 'チャージ', slug: 'deposit', to: '/account/charge', icon: ArrowDownToLine },
+  { label: '出金', slug: 'withdraw', to: '/account/withdraw', icon: ArrowUpFromLine },
+  { label: 'VIPクラブ', slug: 'vip', to: '/vip', icon: Crown },
+  { label: '銀行口座', slug: 'bank', to: '/account/bank', icon: Landmark },
+  { label: '取引明細', slug: 'billing', to: '/account/billing', icon: Receipt },
+  { label: 'ゲーム履歴', slug: 'game-history', to: '/account/game-history', icon: History },
+  { label: 'マイページ', slug: 'profile', to: '/account', icon: User },
+]
+
+/** 底部 Tab：維持原先「全ゲーム・キャンペーン・サポート」三鍵（與 sheet / 頂欄 navLinks 分離） */
+const bottomTabLinks: NavLink[] = [
+  { label: '全ゲーム', slug: 'all', to: '/category/all', icon: Zap },
+  { label: 'キャンペーン', slug: 'promotions', to: '/promotions', icon: Tv2 },
+  { label: 'サポート', slug: 'support', to: null, icon: MessageCircle },
 ]
 
 const route = useRoute()
@@ -36,6 +83,8 @@ function closeMenu() { open.value = false }
 
 const isOnHome = computed(() => route.path === '/')
 const activeCategorySlug = computed(() => {
+  const acc = navLinks.find(l => l.to !== null && route.path === l.to)?.slug
+  if (acc) return acc
   if (route.name === 'promotions') return 'promotions'
   return route.params.slug as string | undefined
 })
@@ -66,18 +115,26 @@ onUnmounted(() => {
 
     <nav
       aria-label="Primary navigation"
-      class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4"
+      class="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2 sm:gap-4 min-w-0"
     >
-      
-      <RouterLink to="/" aria-label="NekoVerse home" class="flex items-center gap-2.5 group shrink-0 touch-press">
-        <div class="relative w-8 h-8">
-          <div class="absolute inset-0 rounded-lg bg-neon-purple/30 group-hover:bg-neon-purple/50 transition-colors duration-300 glow-purple" />
-          <Zap class="absolute inset-0 m-auto w-5 h-5 text-neon-mint group-hover:text-foreground transition-colors duration-300" aria-hidden="true" />
+      <RouterLink
+        to="/"
+        aria-label="NekoVerse home"
+        class="flex items-center gap-1 sm:gap-1.5 group shrink-0 touch-press min-w-0"
+      >
+        <div class="relative size-6 shrink-0 rounded-md">
+          <div class="absolute inset-0 rounded-md bg-neon-purple/30 group-hover:bg-neon-purple/50 transition-colors duration-300 glow-purple" />
+          <Zap class="absolute inset-0 m-auto size-3.5 text-neon-mint group-hover:text-foreground transition-colors duration-300" aria-hidden="true" />
         </div>
-        <span class="font-display text-lg font-black tracking-widest text-foreground group-hover:text-neon-mint transition-colors duration-300 text-glow-mint">
-          NEKO<span class="text-neon-purple text-glow-purple">VERSE</span>
+        <span class="font-display flex flex-col items-start justify-center gap-px leading-none text-[11px] sm:text-xs md:text-sm font-black">
+          <span class="tracking-[0.06em] sm:tracking-[0.1em] md:tracking-[0.18em] text-foreground group-hover:text-neon-mint transition-colors duration-300 text-glow-mint">
+            NEKO
+          </span>
+          <span class="tracking-[0.06em] sm:tracking-[0.1em] md:tracking-[0.18em] text-neon-purple text-glow-purple">
+            VERSE
+          </span>
         </span>
-        <span class="hidden sm:inline text-[10px] font-mono text-muted-foreground tracking-widest border border-border rounded px-1 py-0.5 ml-1">JP</span>
+        <span class="hidden lg:inline-flex items-center text-[8px] font-mono text-muted-foreground tracking-widest border border-border/80 rounded px-1 py-px leading-none ml-0.5 shrink-0">JP</span>
       </RouterLink>
 
       
@@ -132,21 +189,66 @@ onUnmounted(() => {
         </li>
       </ul>
 
-      
-      <div class="flex items-center gap-2 shrink-0">
-        <RouterLink
-          to="/category/all"
-          :class="cn(
-            'hidden sm:flex items-center gap-2 px-5 py-2 rounded-xl font-display font-bold text-sm tracking-wider',
-            'bg-neon-purple text-primary-foreground',
-            'hover:bg-neon-purple/80 transition-all duration-300',
-            'glow-purple hover:scale-105 active:scale-95',
-            'clip-corner-sm touch-press',
-          )"
+      <div class="flex items-center justify-end gap-1.5 sm:gap-2.5 shrink-0 min-w-0">
+        <!-- Wallet + points（全寬度顯示；極窄螢幕精簡） -->
+        <div
+          class="flex items-center h-8 sm:h-9 rounded-lg sm:rounded-xl border border-border/80 bg-surface-2/65 backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(139,92,246,0.06)] overflow-hidden ring-1 ring-neon-purple/10 max-w-[min(100%,11rem)] sm:max-w-none"
+          role="group"
+          aria-label="ウォレット・ポイント"
         >
-          <Zap class="w-4 h-4" aria-hidden="true" />
-          Play Now
-        </RouterLink>
+          <div class="flex items-center gap-1 sm:gap-2 pl-1.5 pr-1 sm:pl-2.5 sm:pr-2 h-full min-w-0 border-r border-border/60 bg-linear-to-r from-neon-purple/[0.07] to-transparent">
+            <div
+              class="hidden min-[360px]:flex size-6 sm:size-7 shrink-0 items-center justify-center rounded-md sm:rounded-lg bg-neon-purple/20 ring-1 ring-neon-purple/25"
+              aria-hidden="true"
+            >
+              <Wallet class="size-3 sm:size-3.5 text-neon-purple" aria-hidden="true" />
+            </div>
+            <div class="flex items-center gap-1 sm:gap-1.5 min-w-0">
+              <Coins class="size-3 sm:size-3.5 shrink-0 text-yellow-400/95 drop-shadow-[0_0_6px_rgba(250,204,21,0.35)]" aria-hidden="true" />
+              <span class="font-display text-[11px] sm:text-xs font-bold tabular-nums tracking-wide text-foreground truncate">
+                {{ formatPoints(user.points) }}
+              </span>
+              <span class="text-[9px] sm:text-[10px] font-mono text-muted-foreground/90 font-medium shrink-0 max-[340px]:hidden">pt</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            aria-label="ポイントを更新"
+            :class="cn(
+              'h-full px-2 sm:px-2.5 flex items-center justify-center text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10 transition-all duration-300 touch-press border-l border-transparent hover:border-neon-mint/15 shrink-0',
+              pointsRefreshing ? 'pointer-events-none text-neon-mint' : '',
+            )"
+            @click="refreshPoints"
+          >
+            <RefreshCw
+              :class="cn(
+                'size-3 sm:size-3.5 transition-transform duration-500',
+                pointsRefreshing ? 'animate-spin' : 'hover:rotate-180',
+              )"
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+
+        <!-- User nickname -->
+        <button
+          type="button"
+          class="flex items-center gap-1.5 sm:gap-2 h-8 sm:h-9 pl-0.5 sm:pl-1 pr-2 sm:pr-3 rounded-lg sm:rounded-xl border border-border/80 bg-surface-2/65 backdrop-blur-md ring-1 ring-neon-purple/10 hover:border-neon-purple/45 hover:ring-neon-purple/25 hover:bg-surface-2/85 transition-all duration-300 group touch-press min-w-0 max-w-[7.5rem] sm:max-w-[140px] lg:max-w-[200px]"
+          :aria-label="user.nickname + ' のプロフィール'"
+        >
+          <div class="relative size-6 sm:size-7 shrink-0 rounded-md sm:rounded-lg overflow-hidden ring-1 ring-neon-mint/30 group-hover:ring-neon-mint/55 transition-all duration-300">
+            <div
+              class="absolute inset-0 bg-linear-to-br from-neon-purple via-neon-purple/80 to-neon-mint/75 opacity-95 group-hover:opacity-100 transition-opacity duration-300"
+              aria-hidden="true"
+            />
+            <span class="relative flex size-full items-center justify-center font-display text-[9px] sm:text-[10px] font-black text-white leading-none tracking-tight select-none">
+              {{ user.avatarInitial }}
+            </span>
+          </div>
+          <span class="font-body text-[11px] sm:text-xs font-semibold text-foreground truncate group-hover:text-neon-mint transition-colors duration-300 tracking-wide min-w-0">
+            {{ user.nickname }}
+          </span>
+        </button>
 
       </div>
     </nav>
@@ -172,7 +274,7 @@ onUnmounted(() => {
         role="navigation"
         aria-label="Mobile navigation"
         :class="cn(
-          'fixed bottom-0 left-0 right-0 z-50 md:hidden',
+          'fixed -bottom-10 left-0 right-0 z-50 md:hidden',
           'glass-card rounded-t-3xl border-t border-neon-purple/30',
           'pb-safe animate-slide-up',
         )"
@@ -246,21 +348,6 @@ onUnmounted(() => {
           </li>
         </ul>
 
-        
-        <div class="px-4 pb-4">
-          <RouterLink
-            to="/category/all"
-            :class="cn(
-              'flex items-center justify-center gap-2 w-full px-5 py-4 rounded-2xl',
-              'font-display font-bold text-base tracking-wider',
-              'bg-neon-purple text-primary-foreground glow-purple touch-press',
-            )"
-            @click="closeMenu"
-          >
-            <Zap class="w-5 h-5" aria-hidden="true" />
-            Play Now
-          </RouterLink>
-        </div>
       </nav>
     </Transition>
   </Teleport>
@@ -291,7 +378,7 @@ onUnmounted(() => {
     </RouterLink>
 
     
-    <template v-for="link in navLinks.slice(0, 3)" :key="link.slug">
+    <template v-for="link in bottomTabLinks" :key="link.slug">
       
       <button
         v-if="link.to === null"

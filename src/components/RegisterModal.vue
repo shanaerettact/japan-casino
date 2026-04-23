@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   X,
   Zap,
@@ -14,6 +15,8 @@ import {
   AlertCircle,
 } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
+
+const router = useRouter()
 
 // ── props / emits ──────────────────────────────────────────────────────────
 const props = defineProps<{ open: boolean }>()
@@ -479,6 +482,19 @@ watch(() => props.open, (v) => {
                   >
                     {{ submitting ? '登録処理中です。しばらくお待ちください。' : '' }}
                   </p>
+
+                  <!-- full registration link -->
+                  <div class="flex items-center justify-center">
+                    <button
+                      type="button"
+                      class="flex items-center gap-1.5 font-body text-xs text-muted-foreground hover:text-neon-mint transition-colors duration-200 group"
+                      aria-label="詳細な登録フォームページへ移動"
+                      @click="close(); router.push('/register')"
+                    >
+                      詳細登録フォームはこちら
+                      <ChevronRight class="w-3.5 h-3.5 text-neon-purple group-hover:text-neon-mint transition-colors duration-200 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+                    </button>
+                  </div>
 
                   <!-- footer note -->
                   <p class="text-center text-[10px] font-body text-muted-foreground leading-relaxed">

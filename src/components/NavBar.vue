@@ -356,7 +356,8 @@ onUnmounted(() => {
     </Transition>
   </Teleport>
 
-  
+  <RegisterModal :open="registerOpen" @close="registerOpen = false" />
+
   <nav
     aria-label="Mobile bottom navigation"
     :class="cn(

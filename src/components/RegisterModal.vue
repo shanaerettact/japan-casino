@@ -409,36 +409,76 @@ watch(() => props.open, (v) => {
                     <div class="flex-1 h-[1px] bg-border/60" />
                   </div>
 
-                  <!-- submit -->
-                  <button
-                    type="submit"
-                    :disabled="!canSubmit"
+                  <!-- submit / registration CTA -->
+                  <div
                     :class="cn(
-                      'relative w-full h-12 rounded-2xl overflow-hidden',
-                      'font-display font-black text-sm tracking-[0.18em]',
-                      'transition-all duration-300 touch-press',
+                      'relative rounded-2xl p-[1.5px] transition-all duration-300',
                       canSubmit
-                        ? 'bg-neon-purple text-primary-foreground glow-purple hover:bg-neon-purple/85 hover:scale-[1.02] active:scale-[0.98]'
-                        : 'bg-surface-3 text-muted-foreground cursor-not-allowed',
+                        ? 'bg-linear-to-r from-neon-purple via-neon-mint/70 to-neon-purple bg-[length:200%_100%] animate-border-slide'
+                        : 'bg-surface-3',
                     )"
-                    aria-label="アカウントを作成する"
+                    aria-hidden="true"
                   >
-                    <span v-if="!submitting" class="flex items-center justify-center gap-2">
-                      アカウントを作成
-                      <ChevronRight class="w-4 h-4" aria-hidden="true" />
-                    </span>
-                    <span v-else class="flex items-center justify-center gap-2">
-                      <RefreshCw class="w-4 h-4 animate-spin" aria-hidden="true" />
-                      処理中...
-                    </span>
+                    <button
+                      type="submit"
+                      :disabled="!canSubmit"
+                      :aria-disabled="!canSubmit"
+                      aria-label="アカウントを作成する"
+                      :aria-busy="submitting"
+                      :class="cn(
+                        'group relative w-full h-12 rounded-[14px] overflow-hidden',
+                        'font-display font-black text-sm tracking-[0.18em]',
+                        'transition-all duration-300',
+                        canSubmit
+                          ? 'bg-neon-purple text-primary-foreground hover:bg-neon-purple/80 hover:scale-[1.015] active:scale-[0.985] cursor-pointer'
+                          : 'bg-surface-3 text-muted-foreground cursor-not-allowed',
+                      )"
+                    >
+                      <!-- idle state -->
+                      <span
+                        v-if="!submitting"
+                        class="relative z-10 flex items-center justify-center gap-2"
+                      >
+                        <Zap class="w-4 h-4 shrink-0" aria-hidden="true" />
+                        アカウントを作成
+                        <ChevronRight class="w-4 h-4 shrink-0" aria-hidden="true" />
+                      </span>
 
-                    <!-- shimmer on hover -->
-                    <span
-                      v-if="canSubmit"
-                      class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/10 to-transparent group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
-                      aria-hidden="true"
-                    />
-                  </button>
+                      <!-- loading state -->
+                      <span
+                        v-else
+                        class="relative z-10 flex items-center justify-center gap-2"
+                        aria-live="polite"
+                        aria-label="登録処理中"
+                      >
+                        <RefreshCw class="w-4 h-4 animate-spin shrink-0" aria-hidden="true" />
+                        処理中...
+                      </span>
+
+                      <!-- shimmer sweep (fires on group-hover) -->
+                      <span
+                        v-if="canSubmit"
+                        class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/[0.12] to-transparent group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none"
+                        aria-hidden="true"
+                      />
+
+                      <!-- inner mint glow edge -->
+                      <span
+                        v-if="canSubmit"
+                        class="absolute inset-0 rounded-[14px] ring-1 ring-neon-mint/20 pointer-events-none"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </div>
+
+                  <!-- status live region for screen readers -->
+                  <p
+                    aria-live="polite"
+                    aria-atomic="true"
+                    class="sr-only"
+                  >
+                    {{ submitting ? '登録処理中です。しばらくお待ちください。' : '' }}
+                  </p>
 
                   <!-- footer note -->
                   <p class="text-center text-[10px] font-body text-muted-foreground leading-relaxed">

@@ -3,6 +3,8 @@ import { ref, computed, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ArrowLeft,
+  ArrowDownToLine,
+  ArrowUpFromLine,
   Wallet,
   CreditCard,
   Building2,
@@ -203,7 +205,7 @@ const methodIconColor: Record<string, string> = {
     <div class="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
 
       <!-- ── page header ─────────────────────────────────────────────────── -->
-      <div class="flex items-center gap-3 sm:gap-4 mb-8 sm:mb-10 animate-slide-left">
+      <div class="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8 animate-slide-left">
         <button
           type="button"
           aria-label="前のページに戻る"
@@ -232,6 +234,42 @@ const methodIconColor: Record<string, string> = {
             </p>
           </div>
         </div>
+      </div>
+
+      <!-- ── deposit / withdraw tab switcher ──────────────────────────────── -->
+      <div
+        class="relative flex rounded-2xl border border-border/60 bg-surface-2/40 backdrop-blur-md p-1 mb-8 sm:mb-10 animate-fade-up"
+        role="tablist"
+        aria-label="入出金切り替え"
+      >
+        <!-- sliding indicator -->
+        <span
+          class="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-xl bg-neon-purple/20 border border-neon-purple/35 ring-1 ring-neon-purple/20 transition-transform duration-300 ease-[cubic-bezier(0.34,1.2,0.64,1)] pointer-events-none"
+          :style="{ transform: 'translateX(0%)' }"
+          aria-hidden="true"
+        />
+        <!-- deposit tab (active) -->
+        <button
+          type="button"
+          role="tab"
+          aria-selected="true"
+          aria-controls="deposit-panel"
+          class="relative z-10 flex-1 flex items-center justify-center gap-2 h-10 rounded-xl font-display text-sm font-black tracking-[0.1em] text-neon-purple transition-colors duration-200"
+        >
+          <ArrowDownToLine class="w-4 h-4 shrink-0" aria-hidden="true" />
+          入金
+        </button>
+        <!-- withdraw tab -->
+        <button
+          type="button"
+          role="tab"
+          aria-selected="false"
+          class="relative z-10 flex-1 flex items-center justify-center gap-2 h-10 rounded-xl font-display text-sm font-black tracking-[0.1em] text-muted-foreground hover:text-foreground transition-colors duration-200 touch-press"
+          @click="router.push('/withdraw')"
+        >
+          <ArrowUpFromLine class="w-4 h-4 shrink-0" aria-hidden="true" />
+          出金
+        </button>
       </div>
 
       <!-- ── success state ───────────────────────────────────────────────── -->

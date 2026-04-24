@@ -200,12 +200,13 @@ onUnmounted(() => {
           aria-label="ウォレット・ポイント"
         >
           <div class="flex items-center gap-1 sm:gap-2 pl-1.5 pr-1 sm:pl-2.5 sm:pr-2 h-full min-w-0 border-r border-border/60 bg-linear-to-r from-neon-purple/[0.07] to-transparent">
-            <div
-              class="hidden min-[360px]:flex size-6 sm:size-7 shrink-0 items-center justify-center rounded-md sm:rounded-lg bg-neon-purple/20 ring-1 ring-neon-purple/25"
-              aria-hidden="true"
-            >
-              <Wallet class="size-3 sm:size-3.5 text-neon-purple" aria-hidden="true" />
-            </div>
+          <RouterLink
+            to="/deposit"
+            class="hidden min-[360px]:flex size-6 sm:size-7 shrink-0 items-center justify-center rounded-md sm:rounded-lg bg-neon-purple/20 ring-1 ring-neon-purple/25 hover:bg-neon-purple/35 hover:ring-neon-purple/50 hover:glow-purple transition-all duration-300 touch-press"
+            aria-label="入金ページへ"
+          >
+            <Wallet class="size-3 sm:size-3.5 text-neon-purple" aria-hidden="true" />
+          </RouterLink>
             <div class="flex items-center gap-1 sm:gap-1.5 min-w-0">
               <Coins class="size-3 sm:size-3.5 shrink-0 text-yellow-400/95 drop-shadow-[0_0_6px_rgba(250,204,21,0.35)]" aria-hidden="true" />
               <span class="font-display text-[11px] sm:text-xs font-bold tabular-nums tracking-wide text-foreground truncate">

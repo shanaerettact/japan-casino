@@ -3,6 +3,7 @@ import HomePage from '@/pages/HomePage.vue'
 import CategoryPage from '@/pages/CategoryPage.vue'
 import PromotionsPage from '@/pages/PromotionsPage.vue'
 import RegisterPage from '@/pages/RegisterPage.vue'
+import DepositPage from '@/pages/DepositPage.vue'
 
 const routes = [
   {
@@ -26,7 +27,8 @@ const routes = [
     name: 'promotions',
     component: PromotionsPage,
   },
-  { path: '/account/charge', name: 'nav-deposit', component: HomePage },
+  { path: '/account/charge', name: 'nav-deposit', component: DepositPage },
+  { path: '/deposit', name: 'deposit', component: DepositPage },
   { path: '/account/withdraw', name: 'nav-withdraw', component: HomePage },
   { path: '/vip', name: 'nav-vip', component: HomePage },
   { path: '/account/bank', name: 'nav-bank', component: HomePage },

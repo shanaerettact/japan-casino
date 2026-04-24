@@ -207,7 +207,7 @@ onUnmounted(() => {
 
         
         <img
-          src="/images/mascot.png"
+          src="/images/mascot.jpg"
           alt="NekoVerse cyberpunk anime mascot character"
           class="relative z-10 w-full h-auto max-h-[540px] object-contain object-bottom animate-float drop-shadow-[0_0_40px_oklch(0.62_0.28_305_/_0.5)]"
         />

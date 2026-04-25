@@ -19,8 +19,10 @@ import {
   Zap,
 } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
+import RegisterModal from '@/components/RegisterModal.vue'
 
 const router = useRouter()
+const loginModalOpen = ref(false)
 
 // ── form state ─────────────────────────────────────────────────────
 const username     = ref('')
@@ -691,7 +693,7 @@ const currentStep = computed(() => {
                   <button
                     type="button"
                     class="text-neon-purple hover:text-neon-mint transition-colors duration-200 font-semibold underline-offset-2 hover:underline"
-                    @click="router.push('/')"
+                    @click="loginModalOpen = true"
                   >
                     ログインはこちら
                   </button>
@@ -704,6 +706,8 @@ const currentStep = computed(() => {
       </div>
     </div>
   </main>
+
+  <RegisterModal :open="loginModalOpen" @close="loginModalOpen = false" />
 </template>
 
 <style scoped>

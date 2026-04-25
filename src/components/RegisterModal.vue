@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   X,
@@ -107,6 +107,27 @@ function close() {
   }, 300)
 }
 
+// 背景（首頁等）捲動鎖定
+function setDocumentScrollLocked(locked: boolean) {
+  const html = document.documentElement
+  const body = document.body
+  if (locked) {
+    html.style.overflow = 'hidden'
+    body.style.overflow = 'hidden'
+  } else {
+    html.style.overflow = ''
+    body.style.overflow = ''
+  }
+}
+
+watch(() => props.open, (open) => {
+  setDocumentScrollLocked(open)
+})
+
+onUnmounted(() => {
+  setDocumentScrollLocked(false)
+})
+
 // close on ESC
 watch(() => props.open, (v) => {
   if (!v) return
@@ -152,7 +173,7 @@ watch(() => props.open, (v) => {
 
           <!-- corner chrome -->
           <div class="absolute top-4 left-4 w-5 h-5 border-t border-l border-neon-mint/40 rounded-tl-lg pointer-events-none" aria-hidden="true" />
-          <div class="absolute top-4 right-12 w-5 h-5 border-t border-r border-neon-purple/40 rounded-tr-lg pointer-events-none" aria-hidden="true" />
+          <div class="absolute top-4 right-4 w-5 h-5 border-t border-r border-neon-purple/40 rounded-tr-lg pointer-events-none" aria-hidden="true" />
           <div class="absolute bottom-4 left-4 w-5 h-5 border-b border-l border-neon-purple/40 rounded-bl-lg pointer-events-none" aria-hidden="true" />
           <div class="absolute bottom-4 right-4 w-5 h-5 border-b border-r border-neon-mint/40 rounded-br-lg pointer-events-none" aria-hidden="true" />
 
@@ -160,7 +181,7 @@ watch(() => props.open, (v) => {
           <button
             type="button"
             aria-label="閉じる"
-            class="absolute top-4 right-4 p-2 rounded-xl text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10 border border-transparent hover:border-neon-mint/25 transition-all duration-200 touch-press"
+            class="absolute top-5 right-6 p-2 rounded-xl text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10 border border-transparent hover:border-neon-mint/25 transition-all duration-200 touch-press"
             @click="close"
           >
             <X class="w-4 h-4" aria-hidden="true" />
@@ -443,7 +464,7 @@ watch(() => props.open, (v) => {
                         class="relative z-10 flex items-center justify-center gap-2"
                       >
                         <Zap class="w-4 h-4 shrink-0" aria-hidden="true" />
-                        アカウントを作成
+                        ログイン
                         <ChevronRight class="w-4 h-4 shrink-0" aria-hidden="true" />
                       </span>
 
@@ -491,7 +512,7 @@ watch(() => props.open, (v) => {
                       aria-label="詳細な登録フォームページへ移動"
                       @click="close(); router.push('/register')"
                     >
-                      詳細登録フォームはこちら
+                      新規会員登録はこちら
                       <ChevronRight class="w-3.5 h-3.5 text-neon-purple group-hover:text-neon-mint transition-colors duration-200 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
                     </button>
                   </div>

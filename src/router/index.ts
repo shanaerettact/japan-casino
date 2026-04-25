@@ -5,6 +5,7 @@ import PromotionsPage from '@/pages/PromotionsPage.vue'
 import RegisterPage from '@/pages/RegisterPage.vue'
 import DepositPage from '@/pages/DepositPage.vue'
 import WithdrawPage from '@/pages/WithdrawPage.vue'
+import ProfilePage from '@/pages/ProfilePage.vue'
 
 const routes = [
   {
@@ -36,7 +37,7 @@ const routes = [
   { path: '/account/bank', name: 'nav-bank', component: HomePage },
   { path: '/account/billing', name: 'nav-billing', component: HomePage },
   { path: '/account/game-history', name: 'nav-game-history', component: HomePage },
-  { path: '/account', name: 'nav-profile', component: HomePage },
+  { path: '/account', name: 'nav-profile', component: ProfilePage },
 ]
 
 export const router = createRouter({

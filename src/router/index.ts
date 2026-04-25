@@ -6,6 +6,7 @@ import RegisterPage from '@/pages/RegisterPage.vue'
 import DepositPage from '@/pages/DepositPage.vue'
 import WithdrawPage from '@/pages/WithdrawPage.vue'
 import ProfilePage from '@/pages/ProfilePage.vue'
+import GameRecordsPage from '@/pages/GameRecordsPage.vue'
 
 const routes = [
   {
@@ -36,7 +37,7 @@ const routes = [
   { path: '/vip', name: 'nav-vip', component: HomePage },
   { path: '/account/bank', name: 'nav-bank', component: HomePage },
   { path: '/account/billing', name: 'nav-billing', component: HomePage },
-  { path: '/account/game-history', name: 'nav-game-history', component: HomePage },
+  { path: '/account/game-history', name: 'nav-game-history', component: GameRecordsPage },
   { path: '/account', name: 'nav-profile', component: ProfilePage },
 ]
 

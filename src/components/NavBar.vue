@@ -173,6 +173,39 @@ function handleScroll() {
 
 function closeMenu() { open.value = false }
 
+const lockBodyScroll = computed(
+  () => open.value || languageModalOpen.value || registerOpen.value,
+)
+
+let bodyScrollLockY = 0
+
+watch(
+  lockBodyScroll,
+  (locked) => {
+    if (typeof document === 'undefined') return
+    if (locked) {
+      bodyScrollLockY = window.scrollY
+      document.documentElement.style.overflow = 'hidden'
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${bodyScrollLockY}px`
+      document.body.style.left = '0'
+      document.body.style.right = '0'
+      document.body.style.width = '100%'
+    } else {
+      document.documentElement.style.overflow = ''
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      document.body.style.width = ''
+      window.scrollTo(0, bodyScrollLockY)
+    }
+  },
+  { flush: 'sync' },
+)
+
 const isOnHome = computed(() => route.path === '/')
 const activeCategorySlug = computed(() => {
   if (route.path.startsWith('/help')) return 'help'
@@ -203,6 +236,14 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('mousedown', onDocumentPointerDown)
   clearTimeout(notifTimer)
+  if (typeof document === 'undefined') return
+  document.documentElement.style.overflow = ''
+  document.body.style.overflow = ''
+  document.body.style.position = ''
+  document.body.style.top = ''
+  document.body.style.left = ''
+  document.body.style.right = ''
+  document.body.style.width = ''
 })
 </script>
 

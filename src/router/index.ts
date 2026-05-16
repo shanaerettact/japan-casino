@@ -37,7 +37,7 @@ const routes = [
   { path: '/withdraw', name: 'withdraw', component: WithdrawPage },
   { path: '/account/billing', name: 'nav-billing', component: HomePage },
   { path: '/account/game-history', name: 'nav-game-history', component: GameRecordsPage },
-  { path: '/settings/language', name: 'nav-language', component: CyberNeoPage },
+  { path: '/settings/language', redirect: '/about/cyber-neo' },
   { path: '/about/privacy', name: 'about-privacy', component: CyberNeoPage },
   { path: '/about/terms', name: 'about-terms', component: CyberNeoPage },
   { path: '/about/responsible-gambling', name: 'about-responsible', component: CyberNeoPage },

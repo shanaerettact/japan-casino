@@ -1,27 +1,21 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Globe, Sparkles, Check, Shield, FileText, HeartHandshake } from 'lucide-vue-next'
-import { cn } from '@/lib/utils'
-
-const LANG_STORAGE = 'nekoverse-ui-lang'
+import { ArrowLeft, Sparkles, Shield, FileText, HeartHandshake } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
 
-type NeoSection = 'language' | 'about' | 'privacy' | 'terms' | 'responsible'
+type NeoSection = 'about' | 'privacy' | 'terms' | 'responsible'
 
 const section = computed((): NeoSection => {
   const p = route.path
-  if (p === '/settings/language') return 'language'
   if (p === '/about/cyber-neo') return 'about'
   if (p === '/about/privacy') return 'privacy'
   if (p === '/about/terms') return 'terms'
   if (p === '/about/responsible-gambling') return 'responsible'
   return 'about'
 })
-
-const showLangAboutTabs = computed(() => section.value === 'language' || section.value === 'about')
 
 const pageTitle = computed(() => {
   switch (section.value) {
@@ -38,8 +32,6 @@ const pageTitle = computed(() => {
 
 const pageSubtitle = computed(() => {
   switch (section.value) {
-    case 'language':
-      return '語言設定 · NekoVerse 界面語'
     case 'about':
       return '關於 Cyber Neo 設計系統'
     case 'privacy':
@@ -55,8 +47,6 @@ const pageSubtitle = computed(() => {
 
 const headerIcon = computed(() => {
   switch (section.value) {
-    case 'language':
-      return Globe
     case 'privacy':
       return Shield
     case 'terms':
@@ -67,26 +57,6 @@ const headerIcon = computed(() => {
       return Sparkles
   }
 })
-
-type LangCode = 'ja' | 'zh-TW' | 'en'
-
-const languages: { code: LangCode; label: string; note: string }[] = [
-  { code: 'ja', label: '日本語', note: 'UI 表示の標準' },
-  { code: 'zh-TW', label: '繁體中文', note: 'Traditional Chinese' },
-  { code: 'en', label: 'English', note: 'Interface language' },
-]
-
-const selectedLang = ref<LangCode>('ja')
-
-if (typeof localStorage !== 'undefined') {
-  const saved = localStorage.getItem(LANG_STORAGE) as LangCode | null
-  if (saved && languages.some((l) => l.code === saved)) selectedLang.value = saved
-}
-
-function pickLang(code: LangCode) {
-  selectedLang.value = code
-  localStorage.setItem(LANG_STORAGE, code)
-}
 </script>
 
 <template>
@@ -126,81 +96,6 @@ function pickLang(code: LangCode) {
           </div>
         </div>
       </div>
-
-      <div
-        v-if="showLangAboutTabs"
-        class="flex rounded-2xl border border-border/60 bg-surface-2/40 backdrop-blur-md p-1 gap-1"
-        role="tablist"
-        aria-label="セクション"
-      >
-        <button
-          type="button"
-          role="tab"
-          :aria-selected="section === 'language'"
-          :class="cn(
-            'flex-1 flex items-center justify-center gap-2 h-10 rounded-xl font-display text-xs font-black tracking-wider transition-all duration-200 touch-press',
-            section === 'language'
-              ? 'bg-neon-mint/15 border border-neon-mint/35 text-neon-mint glow-mint'
-              : 'text-muted-foreground hover:text-foreground border border-transparent',
-          )"
-          @click="router.push('/settings/language')"
-        >
-          <Globe class="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-          言語設定
-        </button>
-        <button
-          type="button"
-          role="tab"
-          :aria-selected="section === 'about'"
-          :class="cn(
-            'flex-1 flex items-center justify-center gap-2 h-10 rounded-xl font-display text-xs font-black tracking-wider transition-all duration-200 touch-press',
-            section === 'about'
-              ? 'bg-neon-purple/12 border border-neon-purple/35 text-neon-purple glow-purple'
-              : 'text-muted-foreground hover:text-foreground border border-transparent',
-          )"
-          @click="router.push('/about/cyber-neo')"
-        >
-          <Sparkles class="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-          關於 Cyber Neo
-        </button>
-      </div>
-
-      <section
-        v-show="section === 'language'"
-        aria-labelledby="cyberneo-lang-heading"
-        class="rounded-2xl border border-neon-mint/25 bg-surface-1/70 backdrop-blur-md p-4 sm:p-5 ring-1 ring-neon-mint/10 animate-fade-up"
-      >
-        <h2 id="cyberneo-lang-heading" class="font-display text-[10px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-3">
-          表示言語
-        </h2>
-        <ul class="space-y-2" role="list">
-          <li v-for="l in languages" :key="l.code">
-            <button
-              type="button"
-              :class="cn(
-                'w-full flex items-center justify-between gap-3 rounded-xl border px-3.5 py-3 text-left transition-all duration-200 touch-press',
-                selectedLang === l.code
-                  ? 'border-neon-mint/45 bg-neon-mint/10 text-foreground ring-1 ring-neon-mint/20'
-                  : 'border-border/50 bg-surface-2/45 hover:border-neon-mint/25',
-              )"
-              @click="pickLang(l.code)"
-            >
-              <div>
-                <p class="font-body text-sm font-semibold">{{ l.label }}</p>
-                <p class="font-body text-[11px] text-muted-foreground/90 mt-0.5">{{ l.note }}</p>
-              </div>
-              <Check
-                v-if="selectedLang === l.code"
-                class="w-4 h-4 text-neon-mint shrink-0"
-                aria-hidden="true"
-              />
-            </button>
-          </li>
-        </ul>
-        <p class="font-body text-[10px] text-muted-foreground/80 mt-4 leading-relaxed">
-          選択は端末に保存されます。全文言切替は今後のアップデートで接続予定です。
-        </p>
-      </section>
 
       <section
         v-show="section === 'about'"

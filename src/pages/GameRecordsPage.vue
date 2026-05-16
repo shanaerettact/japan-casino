@@ -33,6 +33,7 @@ type RangePickerExpose = {
 }
 
 const rangePickerRef = ref<RangePickerExpose | null>(null)
+const reportRangePickerRef = ref<RangePickerExpose | null>(null)
 const rangeFocusStart = ref(true)
 const rangeMenuOpen = ref(false)
 const rangeDraft = ref<Date[] | null>(null)
@@ -72,16 +73,25 @@ function onRangePickerRangeStart() {
 
 function openRangeFromStart() {
   rangeFocusStart.value = true
-  nextTick(() => rangePickerRef.value?.openMenu())
+  nextTick(() => {
+    const p = recordsTab.value === 'report' ? reportRangePickerRef.value : rangePickerRef.value
+    p?.openMenu()
+  })
 }
 
 function openRangeFromEnd() {
   rangeFocusStart.value = false
-  nextTick(() => rangePickerRef.value?.openMenu())
+  nextTick(() => {
+    const p = recordsTab.value === 'report' ? reportRangePickerRef.value : rangePickerRef.value
+    p?.openMenu()
+  })
 }
 
 function onCustomRangeModelUpdate(_val: Date[] | null) {
-  nextTick(() => rangePickerRef.value?.closeMenu())
+  nextTick(() => {
+    rangePickerRef.value?.closeMenu()
+    reportRangePickerRef.value?.closeMenu()
+  })
 }
 
 function clearRangeTrigger(e: Event) {
@@ -90,6 +100,7 @@ function clearRangeTrigger(e: Event) {
   customRangeModel.value = null
   rangeDraft.value = null
   rangePickerRef.value?.clearValue()
+  reportRangePickerRef.value?.clearValue()
 }
 
 const rangeDisplay = computed(() => {
@@ -433,25 +444,79 @@ const tableRecords = computed(() =>
   }),
 )
 
-const reportByGame = computed(() => {
-  const acc: Record<string, { gameId: string; label: string; bet: number; payout: number; count: number }> = {}
+/** 報表用：反水為演示係數（有效投注 × 比例） */
+const HALL_REPORT_REBATE_RATE = 0.002
+
+const HALL_PALETTE = [
+  {
+    border: 'border-neon-purple/50', bg: 'bg-neon-purple/8',
+    nameText: 'text-neon-purple', bar: 'bg-neon-purple', rebate: 'text-neon-purple',
+    glow: '0 0 0 1px color-mix(in oklch,var(--neon-purple) 25%,transparent), 0 6px 24px -4px color-mix(in oklch,var(--neon-purple) 30%,transparent)',
+    nameGlow: '0 0 8px oklch(0.62 0.28 305 / 0.75)',
+  },
+  {
+    border: 'border-neon-mint/50', bg: 'bg-neon-mint/8',
+    nameText: 'text-neon-mint', bar: 'bg-neon-mint', rebate: 'text-neon-mint',
+    glow: '0 0 0 1px color-mix(in oklch,var(--neon-mint) 25%,transparent), 0 6px 24px -4px color-mix(in oklch,var(--neon-mint) 30%,transparent)',
+    nameGlow: '0 0 8px oklch(0.82 0.19 168 / 0.75)',
+  },
+  {
+    border: 'border-yellow-400/50', bg: 'bg-yellow-400/8',
+    nameText: 'text-yellow-400', bar: 'bg-yellow-400', rebate: 'text-yellow-400',
+    glow: '0 0 0 1px color-mix(in oklch,oklch(0.85 0.18 85) 25%,transparent), 0 6px 24px -4px color-mix(in oklch,oklch(0.85 0.18 85) 30%,transparent)',
+    nameGlow: '0 0 8px oklch(0.85 0.18 85 / 0.70)',
+  },
+  {
+    border: 'border-sky-400/50', bg: 'bg-sky-400/8',
+    nameText: 'text-sky-400', bar: 'bg-sky-400', rebate: 'text-sky-400',
+    glow: '0 0 0 1px color-mix(in oklch,oklch(0.75 0.18 220) 25%,transparent), 0 6px 24px -4px color-mix(in oklch,oklch(0.75 0.18 220) 30%,transparent)',
+    nameGlow: '0 0 8px oklch(0.75 0.18 220 / 0.70)',
+  },
+  {
+    border: 'border-rose-400/50', bg: 'bg-rose-400/8',
+    nameText: 'text-rose-400', bar: 'bg-rose-400', rebate: 'text-rose-400',
+    glow: '0 0 0 1px color-mix(in oklch,oklch(0.68 0.22 10) 25%,transparent), 0 6px 24px -4px color-mix(in oklch,oklch(0.68 0.22 10) 30%,transparent)',
+    nameGlow: '0 0 8px oklch(0.68 0.22 10 / 0.70)',
+  },
+  {
+    border: 'border-amber-400/50', bg: 'bg-amber-400/8',
+    nameText: 'text-amber-400', bar: 'bg-amber-400', rebate: 'text-amber-400',
+    glow: '0 0 0 1px color-mix(in oklch,oklch(0.83 0.18 80) 25%,transparent), 0 6px 24px -4px color-mix(in oklch,oklch(0.83 0.18 80) 30%,transparent)',
+    nameGlow: '0 0 8px oklch(0.83 0.18 80 / 0.70)',
+  },
+]
+
+const reportByHall = computed(() => {
+  const acc: Record<
+    string,
+    { hall: string; turnover: number; bet: number; payout: number; count: number }
+  > = {}
   for (const r of filteredRecords.value) {
-    if (!acc[r.gameId]) {
-      acc[r.gameId] = { gameId: r.gameId, label: r.game, bet: 0, payout: 0, count: 0 }
+    const key = r.hall
+    if (!acc[key]) {
+      acc[key] = { hall: r.hall, turnover: 0, bet: 0, payout: 0, count: 0 }
     }
-    const row = acc[r.gameId]
+    const row = acc[key]
+    row.turnover += r.effectiveBet
     row.bet += r.bet
     row.payout += r.payout
     row.count += 1
   }
-  return Object.values(acc).sort((a, b) => b.bet - a.bet)
+  return Object.values(acc)
+    .map((row) => {
+      const net = row.payout - row.bet
+      const rebate = Math.round(row.turnover * HALL_REPORT_REBATE_RATE)
+      return { ...row, net, rebate }
+    })
+    .sort((a, b) => b.turnover - a.turnover)
+    .map((row, i) => ({ ...row, colorIdx: i % HALL_PALETTE.length }))
 })
 
 </script>
 
 <template>
   <main
-    class="min-h-screen bg-background pt-20 pb-28 md:pb-16 relative overflow-x-hidden"
+    class="min-h-screen bg-background pt-20 relative overflow-x-hidden"
     aria-label="ゲーム記録"
   >
     
@@ -963,63 +1028,235 @@ const reportByGame = computed(() => {
         aria-labelledby="tab-bet-report"
         class="space-y-4 animate-fade-up delay-100"
       >
-        <div class="rounded-2xl border border-border/50 bg-surface-1/70 backdrop-blur-md p-4 sm:p-5">
+        <section
+          class="rounded-2xl border border-border/50 bg-surface-1/70 backdrop-blur-md overflow-visible"
+          aria-label="報告用フィルター"
+        >
+          <div class="p-4 sm:p-5 space-y-4">
+            <div>
+              <p class="font-display text-[9px] font-black tracking-[0.25em] text-muted-foreground mb-2.5 uppercase flex items-center gap-1.5">
+                <CalendarRange class="w-3 h-3 text-neon-purple shrink-0" aria-hidden="true" />
+                日期區間
+              </p>
+              <div
+                class="rounded-2xl border border-border/60 bg-surface-2/50 backdrop-blur-sm p-2 sm:p-3 ring-1 ring-neon-purple/5 game-records-dp"
+              >
+                <VueDatePicker
+                  ref="reportRangePickerRef"
+                  v-model="customRangeModel"
+                  @update:model-value="onCustomRangeModelUpdate"
+                  range
+                  teleport="body"
+                  week-start="1"
+                  :dark="isDatePickerDark"
+                  :locale="ja"
+                  :time-picker="false"
+                  :auto-apply="false"
+                  :focus-start-date="rangeFocusStart"
+                  :max-date="pickerMaxDate"
+                  :formats="{ input: 'yyyy-MM-dd' }"
+                  :action-row="datePickerActionRow"
+                  @open="onRangeMenuOpen"
+                  @closed="onRangeMenuClosed"
+                  @internal-model-change="onRangeInternalChange"
+                  @range-start="onRangePickerRangeStart"
+                >
+                  <template #trigger>
+                    <div class="flex w-full gap-2" @click.stop>
+                      <button
+                        type="button"
+                        class="flex-1 min-w-0 rounded-xl border px-3 py-2.5 text-left transition-all duration-200 touch-press relative group"
+                        :class="cn(
+                          startBoxActive
+                            ? 'border-neon-mint/55 bg-neon-mint/10 ring-2 ring-neon-purple/25 shadow-[0_0_0_1px_color-mix(in_oklch,var(--neon-mint)_35%,transparent)]'
+                            : 'border-border/60 bg-surface-2/45 hover:border-neon-mint/30 hover:bg-surface-2/65',
+                        )"
+                        @click.stop="openRangeFromStart"
+                      >
+                        <span class="block font-body text-[10px] font-semibold text-muted-foreground tracking-wide">
+                          開始
+                        </span>
+                        <span
+                          class="block font-display text-sm font-bold text-foreground tabular-nums mt-0.5 truncate pr-6"
+                        >
+                          {{ rangeStartLabel || '—' }}
+                        </span>
+                        <span
+                          v-if="rangeStartLabel"
+                          role="button"
+                          tabindex="0"
+                          class="absolute right-2 top-1/2 -translate-y-1/2 flex size-6 items-center justify-center rounded-full text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/15 transition-colors touch-press"
+                          aria-label="日付をクリア"
+                          @click.stop="clearRangeTrigger"
+                        >
+                          <X class="size-3.5" aria-hidden="true" />
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        class="flex-1 min-w-0 rounded-xl border px-3 py-2.5 text-left transition-all duration-200 touch-press relative group"
+                        :class="cn(
+                          endBoxActive
+                            ? 'border-neon-mint/55 bg-neon-mint/10 ring-2 ring-neon-purple/25 shadow-[0_0_0_1px_color-mix(in_oklch,var(--neon-mint)_35%,transparent)]'
+                            : 'border-border/60 bg-surface-2/45 hover:border-neon-mint/30 hover:bg-surface-2/65',
+                        )"
+                        @click.stop="openRangeFromEnd"
+                      >
+                        <span class="block font-body text-[10px] font-semibold text-muted-foreground tracking-wide">
+                          終了
+                        </span>
+                        <span class="block font-display text-sm font-bold text-foreground tabular-nums mt-0.5 truncate pr-6">
+                          {{ rangeEndLabel || '—' }}
+                        </span>
+                        <span
+                          v-if="rangeEndLabel"
+                          role="button"
+                          tabindex="0"
+                          class="absolute right-2 top-1/2 -translate-y-1/2 flex size-6 items-center justify-center rounded-full text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/15 transition-colors touch-press"
+                          aria-label="日付をクリア"
+                          @click.stop="clearRangeTrigger"
+                        >
+                          <X class="size-3.5" aria-hidden="true" />
+                        </span>
+                      </button>
+                    </div>
+                  </template>
+                  <template #action-preview="{ formatValue }">
+                    <div class="flex min-w-0 flex-1 flex-col gap-0.5 text-left pr-2">
+                      <span class="font-body text-[10px] leading-snug text-muted-foreground">
+                        期間選択後に「套用」で記録を絞り込み
+                      </span>
+                      <span
+                        v-if="formatValue"
+                        class="font-mono text-[11px] font-medium tabular-nums text-foreground truncate"
+                      >
+                        {{ formatValue }}
+                      </span>
+                    </div>
+                  </template>
+                </VueDatePicker>
+                <p
+                  v-if="customRangeActive"
+                  class="mt-2.5 font-body text-[10px] text-neon-mint/90 tracking-wide px-0.5"
+                >
+                  已套用自訂區間
+                </p>
+                <button
+                  v-if="customRangeModel"
+                  type="button"
+                  class="mt-2 w-full h-9 rounded-xl border border-border/60 bg-surface-2/60 font-body text-xs font-semibold text-muted-foreground hover:text-neon-mint hover:border-neon-mint/35 hover:bg-neon-mint/10 transition-all duration-200 touch-press"
+                  @click="clearCustomRange"
+                >
+                  クリア
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <p class="font-display text-[9px] font-black tracking-[0.25em] text-muted-foreground mb-2.5 uppercase">
+                期間
+              </p>
+              <div
+                class="flex gap-1 sm:gap-1.5 w-full"
+                role="group"
+                aria-label="期間フィルター"
+              >
+                <button
+                  v-for="tf in timeFrames"
+                  :key="tf.key"
+                  type="button"
+                  :class="cn(
+                    'relative z-0 flex-1 min-w-0 h-8 max-sm:px-1 px-2 sm:px-2.5 rounded-xl font-display text-[10px] sm:text-xs font-black tracking-tight sm:tracking-wide text-center transition-all duration-200 touch-press border',
+                    rangeMode === 'preset' && selectedTime === tf.key
+                      ? 'bg-neon-mint/15 border-neon-mint/40 text-neon-mint glow-mint'
+                      : 'bg-surface-2/60 border-border/50 text-muted-foreground hover:border-neon-mint/30 hover:text-foreground hover:bg-surface-2',
+                  )"
+                  :aria-pressed="rangeMode === 'preset' && selectedTime === tf.key"
+                  @click="onPresetTime(tf.key)"
+                >
+                  {{ tf.label }}
+
+                  <span
+                    v-if="rangeMode === 'preset' && selectedTime === tf.key"
+                    class="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-neon-mint animate-neon-pulse"
+                    aria-hidden="true"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="rounded-2xl border border-border/50 bg-surface-1/70 backdrop-blur-md p-3 sm:p-4">
           <h2 class="font-display text-[10px] font-black tracking-[0.25em] text-muted-foreground uppercase mb-1">
-            ゲーム別集計
+            遊戲館別集計
           </h2>
-          <p class="font-body text-[11px] text-muted-foreground/80 mb-4">
-            フィルター条件（期間・ゲーム）に一致するデータの合計です。変更は「ベット記録」タブで行えます。
+          <p class="font-body text-[11px] text-muted-foreground/80 mb-3">
+            此處可調整日期區間與期間預設；遊戲篩選請至「ベット記録」タブ。匯總各館碼量（有效投注合計）、輸贏、反水。
           </p>
 
           <div
-            v-if="reportByGame.length === 0"
+            v-if="reportByHall.length === 0"
             class="flex flex-col items-center justify-center gap-3 py-12 text-center rounded-xl border border-border/40 bg-surface-2/40"
           >
             <BarChart3 class="w-8 h-8 text-muted-foreground/40" aria-hidden="true" />
             <p class="font-body text-sm text-muted-foreground">表示できる集計がありません</p>
           </div>
 
-          <ul v-else class="space-y-3" role="list">
+          <ul
+            v-else
+            class="grid grid-cols-3 gap-1.5 list-none p-0 m-0"
+            role="list"
+            aria-label="遊戲館別集計"
+          >
             <li
-              v-for="row in reportByGame"
-              :key="row.gameId"
-              class="rounded-xl border border-border/50 bg-surface-2/40 backdrop-blur-sm p-3.5 sm:p-4"
+              v-for="row in reportByHall"
+              :key="row.hall"
+              class="relative overflow-hidden rounded-xl border backdrop-blur-sm my-1"
+              :class="[HALL_PALETTE[row.colorIdx].border, HALL_PALETTE[row.colorIdx].bg]"
+              :style="{ boxShadow: HALL_PALETTE[row.colorIdx].glow }"
             >
-              <div class="flex items-start justify-between gap-3 mb-3">
-                <div class="flex items-center gap-2 min-w-0">
-                  <div class="flex items-center justify-center size-9 rounded-lg bg-neon-purple/12 border border-neon-purple/25 shrink-0">
-                    <component :is="gameIconMap[row.gameId]" class="w-4 h-4 text-neon-purple" aria-hidden="true" />
-                  </div>
-                  <div class="min-w-0">
-                    <p class="font-body text-sm font-semibold text-foreground truncate">{{ row.label }}</p>
-                    <p class="font-mono text-[10px] text-muted-foreground/70">{{ row.count }} 回</p>
-                  </div>
-                </div>
-                <span
-                  :class="cn(
-                    'font-display text-xs font-black tabular-nums shrink-0',
-                    row.payout - row.bet >= 0 ? 'text-neon-mint' : 'text-destructive',
-                  )"
+              <div
+                class="absolute inset-x-0 top-0 h-[2px]"
+                :class="HALL_PALETTE[row.colorIdx].bar"
+                aria-hidden="true"
+              />
+
+              <div class="px-1.5 pt-3.5 pb-1.5 text-center border-b border-border/30">
+                <p
+                  class="font-display text-[9px] sm:text-[10px] font-black tracking-[0.08em] uppercase leading-snug line-clamp-2"
+                  :class="HALL_PALETTE[row.colorIdx].nameText"
+                  :style="{ textShadow: HALL_PALETTE[row.colorIdx].nameGlow }"
                 >
-                  {{ (row.payout - row.bet >= 0 ? '+' : '') + fmt(row.payout - row.bet) }}
-                  <span class="text-[10px] font-body text-muted-foreground font-medium">pt</span>
-                </span>
+                  {{ row.hall }}
+                </p>
               </div>
-              <dl class="grid grid-cols-2 gap-2 text-[11px]">
-                <div class="rounded-lg bg-background/40 border border-border/30 px-2.5 py-2">
-                  <dt class="font-body text-muted-foreground/80">ベット合計</dt>
-                  <dd class="font-display font-bold tabular-nums text-foreground mt-0.5">{{ fmt(row.bet) }} pt</dd>
+
+              <div class="px-1.5 py-2 space-y-1.5">
+                <div class="flex items-baseline justify-between gap-0.5">
+                  <span class="font-body text-[9px] sm:text-[10px] font-semibold tracking-[0.05em] uppercase text-foreground/80 shrink-0">碼量</span>
+                  <span class="font-display text-[11px] sm:text-xs font-black tabular-nums text-foreground leading-none min-w-0 truncate text-right">{{ fmt(row.turnover) }}</span>
                 </div>
-                <div class="rounded-lg bg-background/40 border border-border/30 px-2.5 py-2">
-                  <dt class="font-body text-muted-foreground/80">払戻合計</dt>
-                  <dd class="font-display font-bold tabular-nums text-foreground mt-0.5">{{ fmt(row.payout) }} pt</dd>
+
+                <div class="h-px bg-border/25" aria-hidden="true" />
+
+                <div class="flex items-baseline justify-between gap-0.5">
+                  <span class="font-body text-[9px] sm:text-[10px] font-semibold tracking-[0.05em] uppercase text-foreground/80 shrink-0">輸贏</span>
+                  <span
+                    class="font-display text-[11px] sm:text-xs font-black tabular-nums leading-none min-w-0 truncate text-right"
+                    :class="row.net > 0 ? 'text-neon-mint' : row.net < 0 ? 'text-destructive' : 'text-muted-foreground'"
+                  >{{ (row.net > 0 ? '+' : '') + fmt(row.net) }}</span>
                 </div>
-              </dl>
-              <div class="mt-2.5 h-1.5 rounded-full bg-surface-3 overflow-hidden" aria-hidden="true">
-                <div
-                  class="h-full rounded-full bg-linear-to-r from-neon-purple to-neon-mint transition-all duration-500"
-                  :style="{ width: stats.totalBet > 0 ? `${Math.min(100, Math.round((row.bet / stats.totalBet) * 100))}%` : '0%' }"
-                />
+
+                <div class="h-px bg-border/25" aria-hidden="true" />
+
+                <div class="flex items-baseline justify-between gap-0.5">
+                  <span class="font-body text-[9px] sm:text-[10px] font-semibold tracking-[0.05em] uppercase text-foreground/80 shrink-0">反水</span>
+                  <span
+                    class="font-display text-[11px] sm:text-xs font-black tabular-nums leading-none min-w-0 truncate text-right"
+                    :class="HALL_PALETTE[row.colorIdx].rebate"
+                  >{{ fmt(row.rebate) }}</span>
+                </div>
               </div>
             </li>
           </ul>

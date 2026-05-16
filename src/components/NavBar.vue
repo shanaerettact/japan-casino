@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import {
   Menu,
@@ -12,8 +12,19 @@ import {
   Receipt,
   History,
   User,
+  Languages,
+  Sparkles,
+  BookOpen,
   Tv2,
   MessageCircle,
+  Globe,
+  Check,
+  ChevronDown,
+  Headphones,
+  CircleHelp,
+  Shield,
+  FileText,
+  HeartHandshake,
 } from 'lucide-vue-next'
 
 import { cn } from '@/lib/utils'
@@ -21,6 +32,28 @@ import ThemeToggle from '@/components/ThemeToggle.vue'
 import LoginModal from '@/components/LoginModal.vue'
 
 const registerOpen = ref(false)
+const languageModalOpen = ref(false)
+const selectedLang = ref<LangCode>('ja')
+
+function readStoredLang() {
+  if (typeof localStorage === 'undefined') return
+  const saved = localStorage.getItem(LANG_STORAGE) as LangCode | null
+  if (saved && languages.some(l => l.code === saved)) selectedLang.value = saved
+}
+
+function openLanguageModal() {
+  readStoredLang()
+  languageModalOpen.value = true
+}
+
+function closeLanguageModal() {
+  languageModalOpen.value = false
+}
+
+function pickNavLang(code: LangCode) {
+  selectedLang.value = code
+  localStorage.setItem(LANG_STORAGE, code)
+}
 
 const user = ref({
   nickname: 'ネコ侍',
@@ -48,12 +81,48 @@ interface NavLink {
   slug: string
   to: string | null
   icon: unknown
+  /** 为 true 时点击打开语言选择弹窗（不跳转） */
+  openLanguageModal?: boolean
+  /** 次選單；有 children 時父層可不設 to，僅用於展開次選單 */
+  children?: { label: string; to: string; icon: unknown }[]
 }
+
+const LANG_STORAGE = 'nekoverse-ui-lang'
+type LangCode = 'ja' | 'zh-TW' | 'en'
+
+const languages: { code: LangCode; label: string; note: string }[] = [
+  { code: 'ja', label: '日本語', note: 'UI 表示の標準' },
+  { code: 'zh-TW', label: '繁體中文', note: 'Traditional Chinese' },
+  { code: 'en', label: 'English', note: 'Interface language' },
+]
 
 const navLinks: NavLink[] = [
   { label: '出金', slug: 'withdraw', to: '/account/withdraw', icon: ArrowUpFromLine },
   { label: '取引明細', slug: 'billing', to: '/account/billing', icon: Receipt },
   { label: 'ゲーム履歴', slug: 'game-history', to: '/account/game-history', icon: History },
+  {
+    label: '教學・幫助',
+    slug: 'help',
+    to: null,
+    icon: BookOpen,
+    children: [
+      { label: '線上客服', to: '/help/chat', icon: Headphones },
+      { label: '常見問題', to: '/help/faq', icon: CircleHelp },
+    ],
+  },
+  { label: '言語設定', slug: 'language', to: null, icon: Languages, openLanguageModal: true },
+  {
+    label: 'Cyber Neo について',
+    slug: 'about-cyber-neo',
+    to: null,
+    icon: Sparkles,
+    children: [
+      { label: '關於 Cyber Neo', to: '/about/cyber-neo', icon: Sparkles },
+      { label: '隱私權', to: '/about/privacy', icon: Shield },
+      { label: '服務條款', to: '/about/terms', icon: FileText },
+      { label: '負責任博彩', to: '/about/responsible-gambling', icon: HeartHandshake },
+    ],
+  },
   { label: 'マイページ', slug: 'profile', to: '/account', icon: User },
 ]
 
@@ -69,6 +138,34 @@ const route = useRoute()
 const scrolled   = ref(false)
 const open       = ref(false)
 const notifPulse = ref(true)
+const openNavSubmenuSlug = ref<string | null>(null)
+const mobileOpenSubmenuSlug = ref<string | null>(null)
+const submenuWrapEls = new Map<string, HTMLElement>()
+
+function setSubmenuWrapRef(slug: string, el: Element | null) {
+  if (!el) submenuWrapEls.delete(slug)
+  else submenuWrapEls.set(slug, el as HTMLElement)
+}
+
+function toggleNavSubmenu(slug: string) {
+  openNavSubmenuSlug.value = openNavSubmenuSlug.value === slug ? null : slug
+}
+
+function closeNavSubmenu() {
+  openNavSubmenuSlug.value = null
+}
+
+function toggleMobileSubmenu(slug: string) {
+  mobileOpenSubmenuSlug.value = mobileOpenSubmenuSlug.value === slug ? null : slug
+}
+
+function onDocumentPointerDown(e: MouseEvent) {
+  const slug = openNavSubmenuSlug.value
+  if (!slug) return
+  const el = submenuWrapEls.get(slug)
+  if (!el) return
+  if (e.target instanceof Node && !el.contains(e.target)) closeNavSubmenu()
+}
 
 function handleScroll() {
   scrolled.value = window.scrollY > 20
@@ -78,20 +175,33 @@ function closeMenu() { open.value = false }
 
 const isOnHome = computed(() => route.path === '/')
 const activeCategorySlug = computed(() => {
+  if (route.path.startsWith('/help')) return 'help'
+  if (route.path.startsWith('/about/')) return 'about-cyber-neo'
   const acc = navLinks.find(l => l.to !== null && route.path === l.to)?.slug
   if (acc) return acc
   if (route.name === 'promotions') return 'promotions'
   return route.params.slug as string | undefined
 })
 
+watch(
+  () => route.path,
+  () => {
+    closeNavSubmenu()
+    mobileOpenSubmenuSlug.value = null
+  },
+)
+
 let notifTimer: ReturnType<typeof setTimeout>
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('mousedown', onDocumentPointerDown)
   notifTimer = setTimeout(() => { notifPulse.value = false }, 4000)
+  readStoredLang()
 })
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('mousedown', onDocumentPointerDown)
   clearTimeout(notifTimer)
 })
 </script>
@@ -135,9 +245,91 @@ onUnmounted(() => {
       
       <ul class="hidden md:flex items-center gap-1" role="list">
         <li v-for="link in navLinks" :key="link.slug">
-          
           <button
-            v-if="link.to === null"
+            v-if="link.openLanguageModal"
+            type="button"
+            :class="cn(
+              'relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 group',
+              'text-muted-foreground hover:text-foreground hover:bg-surface-2',
+            )"
+            aria-haspopup="dialog"
+            :aria-expanded="languageModalOpen"
+            @click="openLanguageModal"
+          >
+            <component
+              :is="link.icon"
+              class="w-4 h-4 transition-all duration-300 text-muted-foreground group-hover:text-neon-purple"
+              aria-hidden="true"
+            />
+            <span class="font-body">{{ link.label }}</span>
+          </button>
+
+          <div
+            v-else-if="link.children?.length"
+            :ref="(el) => setSubmenuWrapRef(link.slug, el as Element | null)"
+            class="relative"
+          >
+            <button
+              type="button"
+              :class="cn(
+                'relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 group w-full min-w-0 border',
+                activeCategorySlug === link.slug
+                  ? 'text-neon-mint bg-neon-mint/10 border-neon-mint/25'
+                  : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-surface-2',
+              )"
+              :aria-expanded="openNavSubmenuSlug === link.slug"
+              aria-haspopup="true"
+              :aria-label="link.label"
+              @click="toggleNavSubmenu(link.slug)"
+            >
+              <component
+                :is="link.icon"
+                :class="cn(
+                  'w-4 h-4 shrink-0 transition-all duration-300',
+                  activeCategorySlug === link.slug ? 'text-neon-mint scale-110' : 'text-muted-foreground group-hover:text-neon-purple',
+                )"
+                aria-hidden="true"
+              />
+              <span class="font-body truncate flex-1 min-w-0 text-left">{{ link.label }}</span>
+              <ChevronDown
+                :class="cn(
+                  'w-4 h-4 shrink-0 transition-transform duration-200',
+                  openNavSubmenuSlug === link.slug ? 'rotate-180 text-neon-mint' : '',
+                )"
+                aria-hidden="true"
+              />
+              <span
+                :class="cn(
+                  'absolute bottom-1 left-4 right-10 h-[1.5px] rounded-full bg-neon-mint transition-all duration-300 origin-left pointer-events-none',
+                  activeCategorySlug === link.slug ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0',
+                )"
+                aria-hidden="true"
+              />
+            </button>
+            <Transition name="nav-submenu-pop">
+              <ul
+                v-if="openNavSubmenuSlug === link.slug"
+                class="absolute left-0 top-[calc(100%+6px)] min-w-[13.5rem] origin-top py-1 rounded-xl border border-border/70 bg-surface-1/95 backdrop-blur-xl shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)] z-[55] ring-1 ring-neon-purple/10"
+                role="menu"
+                :aria-label="link.label"
+              >
+                <li v-for="child in link.children" :key="child.to" role="none">
+                  <RouterLink
+                    :to="child.to"
+                    role="menuitem"
+                    class="flex items-center gap-2.5 px-3 py-2.5 text-sm font-body text-foreground hover:bg-neon-mint/10 hover:text-neon-mint transition-colors touch-press"
+                    @click="closeNavSubmenu"
+                  >
+                    <component :is="child.icon" class="w-4 h-4 text-neon-purple shrink-0" aria-hidden="true" />
+                    {{ child.label }}
+                  </RouterLink>
+                </li>
+              </ul>
+            </Transition>
+          </div>
+
+          <button
+            v-else-if="link.to === null"
             type="button"
             :class="cn(
               'relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 group',
@@ -152,7 +344,6 @@ onUnmounted(() => {
             <span class="font-body">{{ link.label }}</span>
           </button>
 
-          
           <RouterLink
             v-else
             :to="link.to"
@@ -172,7 +363,7 @@ onUnmounted(() => {
               aria-hidden="true"
             />
             <span class="font-body">{{ link.label }}</span>
-            
+
             <span
               :class="cn(
                 'absolute bottom-1 left-4 right-4 h-[1.5px] rounded-full bg-neon-mint transition-all duration-300 origin-left',
@@ -305,9 +496,66 @@ onUnmounted(() => {
         
         <ul class="px-4 pt-3 pb-2 flex flex-col gap-1" role="list">
           <li v-for="link in navLinks" :key="link.slug">
-            
             <button
-              v-if="link.to === null"
+              v-if="link.openLanguageModal"
+              type="button"
+              class="flex w-full items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-body text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10 transition-all duration-200 touch-press"
+              aria-haspopup="dialog"
+              :aria-expanded="languageModalOpen"
+              @click="openLanguageModal(); closeMenu()"
+            >
+              <component :is="link.icon" class="w-5 h-5 text-neon-purple shrink-0" aria-hidden="true" />
+              <span class="font-medium">{{ link.label }}</span>
+            </button>
+
+            <div
+              v-else-if="link.children?.length"
+              class="rounded-2xl border border-border/45 overflow-hidden bg-surface-2/20"
+            >
+              <button
+                type="button"
+                :class="cn(
+                  'flex w-full items-center gap-3 px-4 py-3.5 text-sm font-body transition-all duration-200 touch-press min-h-[3.25rem] min-w-0 text-left',
+                  activeCategorySlug === link.slug
+                    ? 'text-neon-mint bg-neon-mint/10'
+                    : 'text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10',
+                )"
+                :aria-expanded="mobileOpenSubmenuSlug === link.slug"
+                :aria-label="link.label"
+                @click="toggleMobileSubmenu(link.slug)"
+              >
+                <component :is="link.icon" class="w-5 h-5 text-neon-purple shrink-0" aria-hidden="true" />
+                <span class="font-medium truncate flex-1 min-w-0">{{ link.label }}</span>
+                <ChevronDown
+                  :class="cn(
+                    'w-4 h-4 shrink-0 transition-transform duration-200',
+                    mobileOpenSubmenuSlug === link.slug && 'rotate-180',
+                  )"
+                  aria-hidden="true"
+                />
+              </button>
+              <Transition name="nav-submenu-expand">
+                <ul
+                  v-if="mobileOpenSubmenuSlug === link.slug"
+                  class="border-t border-border/40 py-1 bg-background/30 overflow-hidden"
+                  role="list"
+                >
+                  <li v-for="child in link.children" :key="child.to">
+                    <RouterLink
+                      :to="child.to"
+                      class="flex items-center gap-3 px-4 py-3 pl-7 text-sm font-body text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10 transition-colors touch-press"
+                      @click="closeMenu"
+                    >
+                      <component :is="child.icon" class="w-4 h-4 text-neon-purple shrink-0 opacity-90" aria-hidden="true" />
+                      <span>{{ child.label }}</span>
+                    </RouterLink>
+                  </li>
+                </ul>
+              </Transition>
+            </div>
+
+            <button
+              v-else-if="link.to === null"
               type="button"
               class="flex w-full items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-body text-muted-foreground transition-all duration-200 touch-press cursor-default"
             >
@@ -315,7 +563,6 @@ onUnmounted(() => {
               <span class="font-medium">{{ link.label }}</span>
             </button>
 
-            
             <RouterLink
               v-else
               :to="link.to"
@@ -343,6 +590,85 @@ onUnmounted(() => {
   </Teleport>
 
   <LoginModal :open="registerOpen" @close="registerOpen = false" />
+
+  <Teleport to="body">
+    <Transition name="fade-overlay">
+      <div
+        v-if="languageModalOpen"
+        class="fixed inset-0 z-[60] bg-background/75 backdrop-blur-sm"
+        aria-hidden="true"
+        @click="closeLanguageModal"
+      />
+    </Transition>
+    <Transition name="scale-fade">
+      <div
+        v-if="languageModalOpen"
+        class="fixed inset-0 z-[61] flex items-end sm:items-center justify-center p-4 sm:p-6 pointer-events-none"
+        role="presentation"
+      >
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="lang-modal-title"
+          class="pointer-events-auto w-full max-w-md rounded-2xl border border-neon-mint/35 bg-surface-1/95 backdrop-blur-xl shadow-[0_8px_40px_-12px_rgba(0,0,0,0.65)] ring-1 ring-neon-purple/15 overflow-hidden"
+          @click.stop
+        >
+          <div class="flex items-center justify-between gap-3 px-4 py-3.5 border-b border-border/40 bg-linear-to-r from-neon-mint/[0.08] via-transparent to-neon-purple/[0.06]">
+            <div class="flex items-center gap-2 min-w-0">
+              <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-neon-mint/15 ring-1 ring-neon-mint/25">
+                <Globe class="size-4 text-neon-mint" aria-hidden="true" />
+              </div>
+              <h2 id="lang-modal-title" class="font-display text-sm font-black tracking-wide text-foreground truncate">
+                言語設定
+              </h2>
+            </div>
+            <button
+              type="button"
+              class="flex size-8 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface-2 transition-colors touch-press"
+              aria-label="閉じる"
+              @click="closeLanguageModal"
+            >
+              <X class="size-4" aria-hidden="true" />
+            </button>
+          </div>
+          <div class="p-4 max-h-[min(70vh,24rem)] overflow-y-auto">
+            <p class="font-body text-[11px] text-muted-foreground mb-3">
+              表示する言語を選択してください
+            </p>
+            <ul class="space-y-2" role="listbox" aria-label="言語一覧">
+              <li v-for="l in languages" :key="l.code">
+                <button
+                  type="button"
+                  role="option"
+                  :aria-selected="selectedLang === l.code"
+                  :class="cn(
+                    'w-full flex items-center justify-between gap-3 rounded-xl border px-3.5 py-3 text-left transition-all duration-200 touch-press',
+                    selectedLang === l.code
+                      ? 'border-neon-mint/45 bg-neon-mint/10 text-foreground ring-1 ring-neon-mint/20'
+                      : 'border-border/50 bg-surface-2/45 hover:border-neon-mint/25',
+                  )"
+                  @click="pickNavLang(l.code)"
+                >
+                  <div>
+                    <p class="font-body text-sm font-semibold">{{ l.label }}</p>
+                    <p class="font-body text-[11px] text-muted-foreground/90 mt-0.5">{{ l.note }}</p>
+                  </div>
+                  <Check
+                    v-if="selectedLang === l.code"
+                    class="w-4 h-4 text-neon-mint shrink-0"
+                    aria-hidden="true"
+                  />
+                </button>
+              </li>
+            </ul>
+            <p class="font-body text-[10px] text-muted-foreground/75 mt-4 leading-relaxed">
+              設定はこの端末に保存されます。全文言の切り替えは今後のアップデートで接続予定です。
+            </p>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 
   <nav
     aria-label="Mobile bottom navigation"
@@ -418,3 +744,64 @@ onUnmounted(() => {
     </button>
   </nav>
 </template>
+
+<style scoped>
+.fade-overlay-enter-active,
+.fade-overlay-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-overlay-enter-from,
+.fade-overlay-leave-to {
+  opacity: 0;
+}
+.scale-fade-enter-active {
+  transition: opacity 0.25s ease;
+}
+.scale-fade-leave-active {
+  transition: opacity 0.18s ease;
+}
+.scale-fade-enter-from,
+.scale-fade-leave-to {
+  opacity: 0;
+}
+
+.nav-submenu-pop-enter-active {
+  transition:
+    opacity 0.22s cubic-bezier(0.34, 1.4, 0.64, 1),
+    transform 0.24s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.nav-submenu-pop-leave-active {
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
+}
+.nav-submenu-pop-enter-from {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.97);
+}
+.nav-submenu-pop-leave-to {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+}
+
+.nav-submenu-expand-enter-active {
+  transition:
+    opacity 0.22s ease,
+    max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-submenu-expand-leave-active {
+  transition:
+    opacity 0.16s ease,
+    max-height 0.24s cubic-bezier(0.4, 0, 1, 1);
+}
+.nav-submenu-expand-enter-from,
+.nav-submenu-expand-leave-to {
+  opacity: 0;
+  max-height: 0;
+}
+.nav-submenu-expand-enter-to,
+.nav-submenu-expand-leave-from {
+  opacity: 1;
+  max-height: 18rem;
+}
+</style>

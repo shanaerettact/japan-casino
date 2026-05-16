@@ -3,7 +3,6 @@ import { ref, computed, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ArrowLeft,
-  ArrowDownToLine,
   ArrowUpFromLine,
   Wallet,
   Building2,
@@ -236,41 +235,6 @@ function onSelectBlur(e: FocusEvent) {
         </div>
       </div>
 
-      
-      <div
-        class="relative flex rounded-2xl border border-border/60 bg-surface-2/40 backdrop-blur-md p-1 mb-8 sm:mb-10 animate-fade-up"
-        role="tablist"
-        aria-label="入出金切り替え"
-      >
-        
-        <span
-          class="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-xl bg-neon-mint/15 border border-neon-mint/35 ring-1 ring-neon-mint/20 transition-transform duration-300 ease-[cubic-bezier(0.34,1.2,0.64,1)] pointer-events-none"
-          :style="{ transform: 'translateX(calc(100% + 8px))' }"
-          aria-hidden="true"
-        />
-        
-        <button
-          type="button"
-          role="tab"
-          aria-selected="false"
-          class="relative z-10 flex-1 flex items-center justify-center gap-2 h-10 rounded-xl font-display text-sm font-black tracking-[0.1em] text-muted-foreground hover:text-foreground transition-colors duration-200 touch-press"
-          @click="router.push('/deposit')"
-        >
-          <ArrowDownToLine class="w-4 h-4 shrink-0" aria-hidden="true" />
-          入金
-        </button>
-        
-        <button
-          type="button"
-          role="tab"
-          aria-selected="true"
-          aria-controls="withdraw-panel"
-          class="relative z-10 flex-1 flex items-center justify-center gap-2 h-10 rounded-xl font-display text-sm font-black tracking-[0.1em] text-neon-mint transition-colors duration-200"
-        >
-          <ArrowUpFromLine class="w-4 h-4 shrink-0" aria-hidden="true" />
-          出金
-        </button>
-      </div>
 
       
       <Transition name="scale-fade" mode="out-in">

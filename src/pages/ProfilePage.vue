@@ -3,15 +3,11 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ArrowLeft,
-  Wallet,
-  Crown,
-  Landmark,
   Receipt,
   History,
   Settings,
   LogOut,
   ChevronRight,
-  ArrowDownToLine,
   ArrowUpFromLine,
   Star,
   Shield,
@@ -65,14 +61,6 @@ interface MenuItem {
 }
 
 const accountItems: MenuItem[] = [
-
-  {
-    label: 'チャージ',
-    sublabel: '入金・追加チャージ',
-    icon: ArrowDownToLine,
-    to: '/deposit',
-    accent: 'purple',
-  },
   {
     label: '出金',
     sublabel: '残高を引き出す',

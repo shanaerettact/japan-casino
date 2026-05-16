@@ -3,7 +3,6 @@ import HomePage from '@/pages/HomePage.vue'
 import CategoryPage from '@/pages/CategoryPage.vue'
 import PromotionsPage from '@/pages/PromotionsPage.vue'
 import RegisterPage from '@/pages/RegisterPage.vue'
-import DepositPage from '@/pages/DepositPage.vue'
 import WithdrawPage from '@/pages/WithdrawPage.vue'
 import ProfilePage from '@/pages/ProfilePage.vue'
 import GameRecordsPage from '@/pages/GameRecordsPage.vue'
@@ -30,12 +29,8 @@ const routes = [
     name: 'promotions',
     component: PromotionsPage,
   },
-  { path: '/account/charge', name: 'nav-deposit', component: DepositPage },
-  { path: '/deposit', name: 'deposit', component: DepositPage },
   { path: '/account/withdraw', name: 'nav-withdraw', component: WithdrawPage },
   { path: '/withdraw', name: 'withdraw', component: WithdrawPage },
-  { path: '/vip', name: 'nav-vip', component: HomePage },
-  { path: '/account/bank', name: 'nav-bank', component: HomePage },
   { path: '/account/billing', name: 'nav-billing', component: HomePage },
   { path: '/account/game-history', name: 'nav-game-history', component: GameRecordsPage },
   { path: '/account', name: 'nav-profile', component: ProfilePage },

@@ -19,12 +19,11 @@ import {
   Zap,
 } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
-import RegisterModal from '@/components/RegisterModal.vue'
+import LoginModal from '@/components/LoginModal.vue'
 
 const router = useRouter()
 const loginModalOpen = ref(false)
 
-// ── form state ─────────────────────────────────────────────────────
 const username     = ref('')
 const password     = ref('')
 const confirmPass  = ref('')
@@ -39,7 +38,6 @@ const submitting   = ref(false)
 const submitted    = ref(false)
 const agreedTerms  = ref(false)
 
-// ── captcha ─────────────────────────────────────────────────────────
 const captchaChars = ['N','K','7','Z','A','3','Q','V','X','5','B','P','R','W','4','M']
 function genCaptcha() {
   return Array.from({ length: 5 }, () =>
@@ -49,7 +47,6 @@ function genCaptcha() {
 const captchaValue = ref(genCaptcha())
 function refreshCaptcha() { captchaValue.value = genCaptcha() }
 
-// ── validation ──────────────────────────────────────────────────────
 const usernameError = computed(() => {
   if (!username.value) return ''
   if (username.value.length < 3) return 'ユーザー名は3文字以上必要です'
@@ -103,7 +100,6 @@ const canSubmit = computed(() =>
   !submitting.value
 )
 
-// ── submit ──────────────────────────────────────────────────────────
 async function handleSubmit() {
   if (!canSubmit.value) return
   submitting.value = true
@@ -112,7 +108,6 @@ async function handleSubmit() {
   submitted.value  = true
 }
 
-// step progress — cosmetic indicator
 const steps = ['基本情報', 'セキュリティ', '確認'] as const
 const currentStep = computed(() => {
   if (password.value && confirmPass.value === password.value) return 2
@@ -126,14 +121,14 @@ const currentStep = computed(() => {
     class="min-h-screen bg-background flex flex-col"
     aria-label="新規アカウント登録ページ"
   >
-    <!-- ── ambient background glows ─────────────────────────── -->
+    
     <div class="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
       <div class="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-neon-purple/[0.06] blur-[120px]" />
       <div class="absolute top-1/3 -right-32 w-[400px] h-[400px] rounded-full bg-neon-mint/[0.05] blur-[100px]" />
       <div class="absolute -bottom-32 left-1/4 w-[480px] h-[480px] rounded-full bg-neon-purple/[0.04] blur-[140px]" />
     </div>
 
-    <!-- ── top bar ──────────────────────────────────────────── -->
+    
     <header class="relative z-10 flex items-center justify-between px-4 sm:px-8 h-14 border-b border-border/40 bg-surface-1/60 backdrop-blur-md">
       <button
         type="button"
@@ -145,7 +140,7 @@ const currentStep = computed(() => {
         ホームに戻る
       </button>
 
-      <!-- logo -->
+      
       <div class="flex items-center gap-2 select-none" aria-label="NEKOVERSE">
         <div class="w-7 h-7 rounded-lg bg-neon-purple/25 border border-neon-purple/40 flex items-center justify-center">
           <Zap class="w-4 h-4 text-neon-mint" aria-hidden="true" />
@@ -155,7 +150,7 @@ const currentStep = computed(() => {
         </span>
       </div>
 
-      <!-- step indicator (desktop) -->
+      
       <nav class="hidden sm:flex items-center gap-1" aria-label="登録ステップ">
         <template v-for="(step, i) in steps" :key="step">
           <div class="flex items-center gap-1">
@@ -185,11 +180,11 @@ const currentStep = computed(() => {
       </nav>
     </header>
 
-    <!-- ── page body ─────────────────────────────────────────── -->
+    
     <div class="relative z-10 flex flex-1 items-start justify-center px-4 py-8 sm:py-12 pb-safe">
       <div class="w-full max-w-xl">
 
-        <!-- ── success state ─────────────────────────────────── -->
+        
         <Transition name="success-fade" mode="out-in">
 
           <div v-if="submitted" key="success" class="flex flex-col items-center gap-6 py-16 text-center">
@@ -225,10 +220,10 @@ const currentStep = computed(() => {
             </button>
           </div>
 
-          <!-- ── form ──────────────────────────────────────────── -->
+          
           <div v-else key="form" class="animate-fade-up">
 
-            <!-- header -->
+            
             <div class="flex flex-col items-center gap-4 mb-8 text-center">
               <div class="relative">
                 <div class="w-16 h-16 rounded-2xl bg-neon-purple/20 border border-neon-purple/40 flex items-center justify-center glow-purple">
@@ -246,7 +241,7 @@ const currentStep = computed(() => {
               </div>
             </div>
 
-            <!-- step progress (mobile) -->
+            
             <nav class="flex sm:hidden items-center justify-center gap-1 mb-6" aria-label="登録ステップ">
               <template v-for="(step, i) in steps" :key="step">
                 <div class="flex items-center gap-1">
@@ -265,14 +260,14 @@ const currentStep = computed(() => {
               </template>
             </nav>
 
-            <!-- ── card ─────────────────────────────────────── -->
+            
             <div
               class="rounded-3xl border border-neon-purple/25 bg-surface-1/90 backdrop-blur-2xl shadow-[0_0_0_1px_oklch(0.62_0.28_305/0.08),0_24px_60px_-8px_oklch(0_0_0/0.6),0_0_60px_oklch(0.62_0.28_305/0.08)]"
             >
-              <!-- top neon bar -->
+              
               <div class="h-[2px] w-full rounded-t-3xl bg-linear-to-r from-neon-purple via-neon-mint to-neon-purple animate-neon-pulse" aria-hidden="true" />
 
-              <!-- corner chrome -->
+              
               <div class="absolute top-[calc(3.5rem+2px)] left-3 w-5 h-5 border-t border-l border-neon-mint/30 rounded-tl-lg pointer-events-none" aria-hidden="true" />
               <div class="absolute top-[calc(3.5rem+2px)] right-3 w-5 h-5 border-t border-r border-neon-purple/30 rounded-tr-lg pointer-events-none" aria-hidden="true" />
 
@@ -283,7 +278,7 @@ const currentStep = computed(() => {
                 aria-label="新規登録フォーム"
               >
 
-                <!-- ── section: 基本情報 ── -->
+                
                 <fieldset class="flex flex-col gap-4">
                   <legend class="flex items-center gap-2 font-display text-[10px] font-black tracking-[0.22em] text-neon-mint mb-1">
                     <span class="w-4 h-[1px] bg-neon-mint/50" aria-hidden="true" />
@@ -291,10 +286,10 @@ const currentStep = computed(() => {
                     <span class="flex-1 h-[1px] bg-border/40" aria-hidden="true" />
                   </legend>
 
-                  <!-- grid: username + fullname -->
+                  
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-                    <!-- username -->
+                    
                     <div class="flex flex-col gap-1.5">
                       <label for="reg-username" class="flex items-center gap-1.5 font-body text-xs font-semibold text-muted-foreground tracking-wider">
                         <User class="w-3.5 h-3.5 text-neon-purple shrink-0" aria-hidden="true" />
@@ -333,7 +328,7 @@ const currentStep = computed(() => {
                       </p>
                     </div>
 
-                    <!-- full name -->
+                    
                     <div class="flex flex-col gap-1.5">
                       <label for="reg-fullname" class="flex items-center gap-1.5 font-body text-xs font-semibold text-muted-foreground tracking-wider">
                         <UserCircle class="w-3.5 h-3.5 text-neon-purple shrink-0" aria-hidden="true" />
@@ -364,7 +359,7 @@ const currentStep = computed(() => {
                     </div>
                   </div>
 
-                  <!-- phone -->
+                  
                   <div class="flex flex-col gap-1.5">
                     <label for="reg-phone" class="flex items-center gap-1.5 font-body text-xs font-semibold text-muted-foreground tracking-wider">
                       <Phone class="w-3.5 h-3.5 text-neon-purple shrink-0" aria-hidden="true" />
@@ -399,10 +394,10 @@ const currentStep = computed(() => {
                     </p>
                   </div>
 
-                  <!-- grid: line + referral -->
+                  
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-                    <!-- LINE ID -->
+                    
                     <div class="flex flex-col gap-1.5">
                       <label for="reg-line" class="flex items-center gap-1.5 font-body text-xs font-semibold text-muted-foreground tracking-wider">
                         <MessageCircle class="w-3.5 h-3.5 text-neon-purple shrink-0" aria-hidden="true" />
@@ -419,7 +414,7 @@ const currentStep = computed(() => {
                       />
                     </div>
 
-                    <!-- referral code -->
+                    
                     <div class="flex flex-col gap-1.5">
                       <label for="reg-referral" class="flex items-center gap-1.5 font-body text-xs font-semibold text-muted-foreground tracking-wider">
                         <Gift class="w-3.5 h-3.5 text-neon-purple shrink-0" aria-hidden="true" />
@@ -438,7 +433,7 @@ const currentStep = computed(() => {
                   </div>
                 </fieldset>
 
-                <!-- ── section: セキュリティ ── -->
+                
                 <fieldset class="flex flex-col gap-4">
                   <legend class="flex items-center gap-2 font-display text-[10px] font-black tracking-[0.22em] text-neon-mint mb-1">
                     <span class="w-4 h-[1px] bg-neon-mint/50" aria-hidden="true" />
@@ -446,7 +441,7 @@ const currentStep = computed(() => {
                     <span class="flex-1 h-[1px] bg-border/40" aria-hidden="true" />
                   </legend>
 
-                  <!-- password -->
+                  
                   <div class="flex flex-col gap-1.5">
                     <label for="reg-password" class="flex items-center gap-1.5 font-body text-xs font-semibold text-muted-foreground tracking-wider">
                       <Lock class="w-3.5 h-3.5 text-neon-purple shrink-0" aria-hidden="true" />
@@ -495,7 +490,7 @@ const currentStep = computed(() => {
                     </div>
                   </div>
 
-                  <!-- confirm password -->
+                  
                   <div class="flex flex-col gap-1.5">
                     <label for="reg-confirm" class="flex items-center gap-1.5 font-body text-xs font-semibold text-muted-foreground tracking-wider">
                       <Lock class="w-3.5 h-3.5 text-neon-purple shrink-0" aria-hidden="true" />
@@ -535,7 +530,7 @@ const currentStep = computed(() => {
                   </div>
                 </fieldset>
 
-                <!-- ── section: 確認 ── -->
+                
                 <fieldset class="flex flex-col gap-4">
                   <legend class="flex items-center gap-2 font-display text-[10px] font-black tracking-[0.22em] text-neon-mint mb-1">
                     <span class="w-4 h-[1px] bg-neon-mint/50" aria-hidden="true" />
@@ -543,7 +538,7 @@ const currentStep = computed(() => {
                     <span class="flex-1 h-[1px] bg-border/40" aria-hidden="true" />
                   </legend>
 
-                  <!-- verification code -->
+                  
                   <div class="flex flex-col gap-1.5">
                     <label for="reg-verify" class="flex items-center gap-1.5 font-body text-xs font-semibold text-muted-foreground tracking-wider">
                       <ShieldCheck class="w-3.5 h-3.5 text-neon-purple shrink-0" aria-hidden="true" />
@@ -569,7 +564,7 @@ const currentStep = computed(() => {
                           )"
                         />
                       </div>
-                      <!-- captcha display -->
+                      
                       <div
                         class="relative flex items-center justify-center w-32 h-11 rounded-xl border border-neon-purple/35 bg-surface-2 overflow-hidden select-none shrink-0"
                         aria-label="認証コード画像"
@@ -600,7 +595,7 @@ const currentStep = computed(() => {
                     </p>
                   </div>
 
-                  <!-- terms checkbox -->
+                  
                   <label
                     for="reg-terms"
                     class="flex items-start gap-3 cursor-pointer group"
@@ -635,7 +630,7 @@ const currentStep = computed(() => {
                   </label>
                 </fieldset>
 
-                <!-- ── submit button ── -->
+                
                 <div
                   :class="cn(
                     'relative rounded-2xl p-[1.5px] transition-all duration-300',
@@ -682,12 +677,12 @@ const currentStep = computed(() => {
                   </button>
                 </div>
 
-                <!-- screen reader status -->
+                
                 <p aria-live="polite" aria-atomic="true" class="sr-only">
                   {{ submitting ? '登録処理中です。しばらくお待ちください。' : '' }}
                 </p>
 
-                <!-- footer -->
+                
                 <p class="text-center text-[11px] font-body text-muted-foreground leading-relaxed">
                   すでにアカウントをお持ちですか？
                   <button
@@ -707,7 +702,7 @@ const currentStep = computed(() => {
     </div>
   </main>
 
-  <RegisterModal :open="loginModalOpen" @close="loginModalOpen = false" />
+  <LoginModal :open="loginModalOpen" @close="loginModalOpen = false" />
 </template>
 
 <style scoped>

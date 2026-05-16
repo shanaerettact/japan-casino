@@ -22,7 +22,6 @@ import { cn } from '@/lib/utils'
 
 const router = useRouter()
 
-// ── withdraw methods ───────────────────────────────────────────────────────
 interface WithdrawMethod {
   id: string
   label: string
@@ -99,7 +98,6 @@ const methodIconColor: Record<string, string> = {
   convenience: 'text-neon-purple',
 }
 
-// ── state ──────────────────────────────────────────────────────────────────
 const selectedMethodId = ref<string>('bank')
 const rawAmount = ref('')
 const selectOpen = ref(false)
@@ -191,14 +189,14 @@ function onSelectBlur(e: FocusEvent) {
     class="relative min-h-screen bg-background pt-16 pb-28 overflow-x-hidden"
     aria-label="出金ページ"
   >
-    <!-- ambient glows -->
+    
     <div class="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
       <div class="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-neon-mint/[0.06] blur-[120px]" />
       <div class="absolute top-1/2 -left-40 w-[420px] h-[420px] rounded-full bg-neon-purple/[0.05] blur-[100px]" />
       <div class="absolute bottom-0 right-1/3 w-[360px] h-[360px] rounded-full bg-neon-mint/[0.04] blur-[90px]" />
     </div>
 
-    <!-- top neon bar -->
+    
     <div
       class="fixed top-16 left-0 right-0 z-10 h-[1px] bg-linear-to-r from-transparent via-neon-mint/40 to-transparent"
       aria-hidden="true"
@@ -206,7 +204,7 @@ function onSelectBlur(e: FocusEvent) {
 
     <div class="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
 
-      <!-- ── page header ─────────────────────────────────────────────────── -->
+      
       <div class="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8 animate-slide-left">
         <button
           type="button"
@@ -238,19 +236,19 @@ function onSelectBlur(e: FocusEvent) {
         </div>
       </div>
 
-      <!-- ── deposit / withdraw tab switcher ──────────────────────────────── -->
+      
       <div
         class="relative flex rounded-2xl border border-border/60 bg-surface-2/40 backdrop-blur-md p-1 mb-8 sm:mb-10 animate-fade-up"
         role="tablist"
         aria-label="入出金切り替え"
       >
-        <!-- sliding indicator (offset to withdraw side) -->
+        
         <span
           class="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-xl bg-neon-mint/15 border border-neon-mint/35 ring-1 ring-neon-mint/20 transition-transform duration-300 ease-[cubic-bezier(0.34,1.2,0.64,1)] pointer-events-none"
           :style="{ transform: 'translateX(calc(100% + 8px))' }"
           aria-hidden="true"
         />
-        <!-- deposit tab -->
+        
         <button
           type="button"
           role="tab"
@@ -261,7 +259,7 @@ function onSelectBlur(e: FocusEvent) {
           <ArrowDownToLine class="w-4 h-4 shrink-0" aria-hidden="true" />
           入金
         </button>
-        <!-- withdraw tab (active) -->
+        
         <button
           type="button"
           role="tab"
@@ -274,7 +272,7 @@ function onSelectBlur(e: FocusEvent) {
         </button>
       </div>
 
-      <!-- ── success state ───────────────────────────────────────────────── -->
+      
       <Transition name="scale-fade" mode="out-in">
         <div
           v-if="submitted"
@@ -318,7 +316,7 @@ function onSelectBlur(e: FocusEvent) {
           </button>
         </div>
 
-        <!-- ── main form ───────────────────────────────────────────────── -->
+        
         <form
           v-else
           id="withdraw-panel"
@@ -328,7 +326,7 @@ function onSelectBlur(e: FocusEvent) {
           @submit.prevent="handleSubmit"
         >
 
-          <!-- method selector label -->
+          
           <section aria-labelledby="withdraw-method-label">
             <div class="flex items-center gap-2 mb-3">
               <span
@@ -343,7 +341,7 @@ function onSelectBlur(e: FocusEvent) {
               </label>
             </div>
 
-            <!-- method cards (desktop) -->
+            
             <div
               class="hidden sm:grid grid-cols-2 gap-3"
               role="radiogroup"
@@ -424,7 +422,7 @@ function onSelectBlur(e: FocusEvent) {
               </button>
             </div>
 
-            <!-- method select dropdown (mobile) -->
+            
             <div class="sm:hidden relative" @blur.capture="onSelectBlur">
               <button
                 type="button"
@@ -501,14 +499,14 @@ function onSelectBlur(e: FocusEvent) {
             </div>
           </section>
 
-          <!-- ── method info card ──────────────────────────────────────── -->
+          
           <Transition name="slide-section">
             <div
               class="glass-card rounded-2xl border border-border/50 overflow-hidden animate-fade-up"
               aria-label="出金方式の詳細"
               role="region"
             >
-              <!-- card header -->
+              
               <div class="flex items-center gap-2.5 px-4 pt-4 pb-3 border-b border-border/40">
                 <div
                   :class="cn(
@@ -522,7 +520,7 @@ function onSelectBlur(e: FocusEvent) {
                 <span class="font-display text-sm font-black text-foreground tracking-wide">{{ selectedMethod.label }}</span>
               </div>
 
-              <!-- stats grid -->
+              
               <dl class="divide-y divide-border/30">
                 <div class="flex justify-between items-center px-4 py-2.5">
                   <dt class="font-body text-xs text-muted-foreground">出金比值</dt>
@@ -563,7 +561,7 @@ function onSelectBlur(e: FocusEvent) {
             </div>
           </Transition>
 
-          <!-- ── amount input ────────────────────────────────────────────── -->
+          
           <section aria-labelledby="withdraw-amount-label" class="flex flex-col gap-3">
             <div class="flex items-center gap-2">
               <span
@@ -643,7 +641,7 @@ function onSelectBlur(e: FocusEvent) {
               </Transition>
             </div>
 
-            <!-- estimated payout display -->
+            
             <div
               :class="cn(
                 'flex items-center justify-between px-4 py-3 rounded-xl border transition-all duration-300',
@@ -668,9 +666,9 @@ function onSelectBlur(e: FocusEvent) {
             </div>
           </section>
 
-          <!-- ── CTA buttons ────────────────────────────────────────────── -->
+          
           <div class="flex flex-col sm:flex-row gap-3 pt-1">
-            <!-- cancel -->
+            
             <button
               type="button"
               class="group relative flex-1 h-12 rounded-2xl border border-border/70 bg-surface-2/50 font-body text-sm font-semibold text-muted-foreground hover:border-neon-mint/35 hover:text-foreground hover:bg-surface-2/80 transition-all duration-300 touch-press overflow-hidden sm:max-w-[160px]"
@@ -684,7 +682,7 @@ function onSelectBlur(e: FocusEvent) {
               <span class="relative z-10 tracking-wide">キャンセル</span>
             </button>
 
-            <!-- submit — gold gradient matching image -->
+            
             <button
               type="submit"
               :disabled="!canSubmit || submitting"
@@ -698,7 +696,7 @@ function onSelectBlur(e: FocusEvent) {
               )"
               aria-label="出金を申請する"
             >
-              <!-- shimmer sweep -->
+              
               <span
                 v-if="canSubmit && !submitting"
                 class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/[0.25] to-transparent group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
@@ -720,7 +718,7 @@ function onSelectBlur(e: FocusEvent) {
             </button>
           </div>
 
-          <!-- screen reader status -->
+          
           <p aria-live="polite" aria-atomic="true" class="sr-only">
             {{ submitting ? '出金処理中です。しばらくお待ちください。' : '' }}
           </p>
@@ -728,7 +726,7 @@ function onSelectBlur(e: FocusEvent) {
         </form>
       </Transition>
 
-      <!-- security note -->
+      
       <div
         v-if="!submitted"
         class="flex items-center justify-center gap-2 mt-8 text-[11px] font-body text-muted-foreground/60 animate-fade-up delay-300"

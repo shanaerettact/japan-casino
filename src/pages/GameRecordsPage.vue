@@ -24,7 +24,6 @@ import { cn } from '@/lib/utils'
 
 const router = useRouter()
 
-// ── filter state ────────────────────────────────────────────────────────────
 type TimeFrame = '24h' | '7d' | '30d' | '60d' | '90d'
 
 const timeFrames: { key: TimeFrame; label: string }[] = [
@@ -66,7 +65,6 @@ const selectedGameLabel = computed(
   () => gameOptions.find(g => g.id === selectedGame.value)?.label ?? 'すべてのゲーム',
 )
 
-// ── mock records ─────────────────────────────────────────────────────────────
 interface GameRecord {
   id: string
   game: string
@@ -110,7 +108,6 @@ const filteredRecords = computed(() => {
   })
 })
 
-// ── summary stats ────────────────────────────────────────────────────────────
 const stats = computed(() => {
   const records = filteredRecords.value
   const totalBet  = records.reduce((s, r) => s + r.bet, 0)
@@ -121,7 +118,6 @@ const stats = computed(() => {
   return { totalBet, totalPay, netPnL, totalGames: records.length, wins, winRate }
 })
 
-// ── helpers ──────────────────────────────────────────────────────────────────
 function fmt(n: number) { return n.toLocaleString('ja-JP') }
 
 const resultConfig = {
@@ -137,7 +133,6 @@ const gameIconMap: Record<string, unknown> = {
   poker:    Star,
 }
 
-// Group records by date for section headers
 const groupedRecords = computed(() => {
   const groups: { date: string; records: GameRecord[] }[] = []
   const seen: Record<string, number> = {}
@@ -162,7 +157,7 @@ function formatDate(d: string) {
     class="min-h-screen bg-background pt-20 pb-28 md:pb-16 relative overflow-x-hidden"
     aria-label="ゲーム記録"
   >
-    <!-- ambient glow -->
+    
     <div class="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
       <div class="absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-neon-mint/[0.05] blur-[120px]" />
       <div class="absolute top-1/2 -right-40 w-[400px] h-[400px] rounded-full bg-neon-purple/[0.06] blur-[100px]" />
@@ -171,7 +166,7 @@ function formatDate(d: string) {
 
     <div class="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 space-y-5">
 
-      <!-- ── page header ─────────────────────────────────────────────────── -->
+      
       <div class="flex items-center gap-3 sm:gap-4 animate-slide-left">
         <button
           type="button"
@@ -197,7 +192,7 @@ function formatDate(d: string) {
           </div>
         </div>
 
-        <!-- filter toggle (mobile) -->
+        
         <button
           type="button"
           class="sm:hidden flex items-center justify-center size-10 rounded-xl border transition-all duration-300 touch-press shrink-0"
@@ -215,7 +210,7 @@ function formatDate(d: string) {
         </button>
       </div>
 
-      <!-- ── summary stats ───────────────────────────────────────────────── -->
+      
       <div
         class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 animate-fade-up"
         aria-label="集計サマリー"
@@ -250,7 +245,7 @@ function formatDate(d: string) {
             </p>
             <p class="font-body text-[10px] text-muted-foreground mt-1 tracking-wide">{{ card.label }}</p>
           </div>
-          <!-- subtle top accent line -->
+          
           <div
             :class="cn('absolute top-0 left-3 right-3 h-[1.5px] rounded-full opacity-60', card.color.replace('text-', 'bg-'))"
             aria-hidden="true"
@@ -258,7 +253,7 @@ function formatDate(d: string) {
         </div>
       </div>
 
-      <!-- ── filters ─────────────────────────────────────────────────────── -->
+      
       <Transition name="slide-filters">
         <section
           v-show="filtersOpen || true"
@@ -267,7 +262,7 @@ function formatDate(d: string) {
         >
           <div class="p-4 sm:p-5 space-y-4">
 
-            <!-- time frame pills -->
+            
             <div>
               <p class="font-display text-[9px] font-black tracking-[0.25em] text-muted-foreground mb-2.5 uppercase">
                 期間
@@ -291,7 +286,7 @@ function formatDate(d: string) {
                   @click="selectedTime = tf.key"
                 >
                   {{ tf.label }}
-                  <!-- active indicator dot -->
+                  
                   <span
                     v-if="selectedTime === tf.key"
                     class="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-neon-mint animate-neon-pulse"
@@ -301,7 +296,7 @@ function formatDate(d: string) {
               </div>
             </div>
 
-            <!-- game dropdown -->
+            
             <div>
               <p class="font-display text-[9px] font-black tracking-[0.25em] text-muted-foreground mb-2.5 uppercase">
                 ゲーム
@@ -322,7 +317,7 @@ function formatDate(d: string) {
                   />
                 </button>
 
-                <!-- dropdown panel -->
+                
                 <Transition name="dropdown">
                   <div
                     v-if="gameDropOpen"
@@ -330,7 +325,7 @@ function formatDate(d: string) {
                     role="listbox"
                     aria-label="ゲームリスト"
                   >
-                    <!-- search inside dropdown -->
+                    
                     <div class="p-2 border-b border-border/40">
                       <div class="relative">
                         <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/60" aria-hidden="true" />
@@ -381,13 +376,13 @@ function formatDate(d: string) {
         </section>
       </Transition>
 
-      <!-- ── records list ─────────────────────────────────────────────────── -->
+      
       <section aria-label="ベット詳細" class="space-y-4 animate-fade-up delay-200">
         <h2 class="font-display text-[10px] font-black tracking-[0.25em] text-muted-foreground px-1 uppercase">
           ベット詳細 &mdash; {{ filteredRecords.length }} 件
         </h2>
 
-        <!-- empty state -->
+        
         <Transition name="fade-icon">
           <div
             v-if="filteredRecords.length === 0"
@@ -403,14 +398,14 @@ function formatDate(d: string) {
           </div>
         </Transition>
 
-        <!-- date groups -->
+        
         <template v-if="filteredRecords.length > 0">
           <div
             v-for="group in groupedRecords"
             :key="group.date"
             class="space-y-2"
           >
-            <!-- date header -->
+            
             <div class="flex items-center gap-3 px-1">
               <span class="font-body text-[11px] font-semibold text-muted-foreground">
                 {{ formatDate(group.date) }}
@@ -421,7 +416,7 @@ function formatDate(d: string) {
               </span>
             </div>
 
-            <!-- record cards -->
+            
             <div class="rounded-2xl border border-border/50 bg-surface-1/60 backdrop-blur-md overflow-hidden">
               <ul role="list" class="divide-y divide-border/30">
                 <li
@@ -429,7 +424,7 @@ function formatDate(d: string) {
                   :key="record.id"
                   class="group relative flex items-center gap-3 sm:gap-4 px-4 py-3.5 sm:py-4 hover:bg-surface-2/40 transition-all duration-200"
                 >
-                  <!-- game icon tile -->
+                  
                   <div
                     class="flex items-center justify-center size-10 sm:size-11 rounded-xl bg-neon-purple/10 border border-neon-purple/20 shrink-0 group-hover:bg-neon-purple/18 transition-colors duration-200"
                     aria-hidden="true"
@@ -441,13 +436,13 @@ function formatDate(d: string) {
                     />
                   </div>
 
-                  <!-- main info -->
+                  
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 min-w-0">
                       <span class="font-body text-sm font-semibold text-foreground truncate">
                         {{ record.game }}
                       </span>
-                      <!-- result badge -->
+                      
                       <span
                         :class="cn(
                           'flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-lg border text-[10px] font-display font-black tracking-wide',
@@ -462,7 +457,7 @@ function formatDate(d: string) {
                       </span>
                     </div>
 
-                    <!-- round ID + time -->
+                    
                     <div class="flex items-center gap-2 mt-0.5">
                       <span class="font-mono text-[10px] text-muted-foreground/60 truncate">{{ record.roundId }}</span>
                       <span class="text-muted-foreground/30 text-[10px]" aria-hidden="true">·</span>
@@ -470,7 +465,7 @@ function formatDate(d: string) {
                     </div>
                   </div>
 
-                  <!-- bet / payout amounts -->
+                  
                   <div class="flex flex-col items-end gap-1 shrink-0">
                     <div class="flex items-center gap-1">
                       <span class="font-body text-[9px] text-muted-foreground/60">BET</span>
@@ -502,7 +497,7 @@ function formatDate(d: string) {
                     </div>
                   </div>
 
-                  <!-- left accent bar on hover -->
+                  
                   <span
                     :class="cn(
                       'absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity duration-200',
@@ -519,7 +514,7 @@ function formatDate(d: string) {
       </section>
     </div>
 
-    <!-- close game dropdown on outside click -->
+    
     <div
       v-if="gameDropOpen"
       class="fixed inset-0 z-20"

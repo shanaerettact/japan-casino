@@ -18,11 +18,9 @@ import { cn } from '@/lib/utils'
 
 const router = useRouter()
 
-// ── props / emits ──────────────────────────────────────────────────────────
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ (e: 'close'): void }>()
 
-// ── form state ─────────────────────────────────────────────────────────────
 const username    = ref('')
 const password    = ref('')
 const verifyCode  = ref('')
@@ -30,7 +28,6 @@ const showPass    = ref(false)
 const submitting  = ref(false)
 const submitted   = ref(false)
 
-// captcha (mock 4-char code)
 const captchaChars = ['N', 'K', '7', 'Z', 'A', '3', 'Q', 'V', 'X', '5', 'B', 'P']
 function genCaptcha() {
   return Array.from({ length: 4 }, () => captchaChars[Math.floor(Math.random() * captchaChars.length)]).join('')
@@ -38,7 +35,6 @@ function genCaptcha() {
 const captchaValue = ref(genCaptcha())
 function refreshCaptcha() { captchaValue.value = genCaptcha() }
 
-// ── validation ─────────────────────────────────────────────────────────────
 const usernameError = computed(() => {
   if (!username.value) return ''
   if (username.value.length < 3) return 'ユーザー名は3文字以上必要です'
@@ -86,7 +82,6 @@ const canSubmit = computed(() =>
   !submitting.value
 )
 
-// ── submit ─────────────────────────────────────────────────────────────────
 async function handleSubmit() {
   if (!canSubmit.value) return
   submitting.value = true
@@ -107,7 +102,6 @@ function close() {
   }, 300)
 }
 
-// 背景（首頁等）捲動鎖定
 function setDocumentScrollLocked(locked: boolean) {
   const html = document.documentElement
   const body = document.body
@@ -128,7 +122,6 @@ onUnmounted(() => {
   setDocumentScrollLocked(false)
 })
 
-// close on ESC
 watch(() => props.open, (v) => {
   if (!v) return
   const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') close() }
@@ -139,7 +132,7 @@ watch(() => props.open, (v) => {
 
 <template>
   <Teleport to="body">
-    <!-- backdrop -->
+    
     <Transition name="modal-fade">
       <div
         v-if="open"
@@ -149,14 +142,14 @@ watch(() => props.open, (v) => {
         aria-labelledby="register-title"
         @click.self="close"
       >
-        <!-- blur overlay -->
+        
         <div
           class="absolute inset-0 bg-background/70 backdrop-blur-md"
           aria-hidden="true"
           @click="close"
         />
 
-        <!-- panel -->
+        
         <div
           :class="cn(
             'relative z-10 w-full max-w-md',
@@ -165,19 +158,19 @@ watch(() => props.open, (v) => {
             'shadow-[0_0_0_1px_oklch(0.62_0.28_305/0.10),0_32px_80px_-12px_oklch(0_0_0/0.7),0_0_80px_oklch(0.62_0.28_305/0.12)]',
           )"
         >
-          <!-- top neon accent bar -->
+          
           <div
             class="h-[2px] w-full rounded-t-3xl bg-linear-to-r from-neon-purple via-neon-mint to-neon-purple animate-neon-pulse"
             aria-hidden="true"
           />
 
-          <!-- corner chrome -->
+          
           <div class="absolute top-4 left-4 w-5 h-5 border-t border-l border-neon-mint/40 rounded-tl-lg pointer-events-none" aria-hidden="true" />
           <div class="absolute top-4 right-4 w-5 h-5 border-t border-r border-neon-purple/40 rounded-tr-lg pointer-events-none" aria-hidden="true" />
           <div class="absolute bottom-4 left-4 w-5 h-5 border-b border-l border-neon-purple/40 rounded-bl-lg pointer-events-none" aria-hidden="true" />
           <div class="absolute bottom-4 right-4 w-5 h-5 border-b border-r border-neon-mint/40 rounded-br-lg pointer-events-none" aria-hidden="true" />
 
-          <!-- close button -->
+          
           <button
             type="button"
             aria-label="閉じる"
@@ -187,10 +180,10 @@ watch(() => props.open, (v) => {
             <X class="w-4 h-4" aria-hidden="true" />
           </button>
 
-          <!-- content -->
+          
           <div class="px-6 pt-7 pb-7">
 
-            <!-- ── success state ── -->
+            
             <Transition name="success-fade" mode="out-in">
               <div v-if="submitted" key="success" class="flex flex-col items-center gap-5 py-8 text-center">
                 <div class="relative">
@@ -221,11 +214,11 @@ watch(() => props.open, (v) => {
                 </button>
               </div>
 
-              <!-- ── form state ── -->
+              
               <div v-else key="form">
-                <!-- header -->
+                
                 <div class="flex flex-col items-center gap-3 mb-7">
-                  <!-- logo mark -->
+                  
                   <div class="relative">
                     <div class="w-14 h-14 rounded-2xl bg-neon-purple/20 border border-neon-purple/35 flex items-center justify-center glow-purple">
                       <Zap class="w-7 h-7 text-neon-mint" aria-hidden="true" />
@@ -245,10 +238,10 @@ watch(() => props.open, (v) => {
                   </div>
                 </div>
 
-                <!-- form -->
+                
                 <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">
 
-                  <!-- username -->
+                  
                   <div class="flex flex-col gap-1.5">
                     <label for="reg-username" class="font-body text-xs font-semibold text-muted-foreground tracking-wider flex items-center gap-1.5">
                       <User class="w-3.5 h-3.5 text-neon-purple" aria-hidden="true" />
@@ -296,7 +289,7 @@ watch(() => props.open, (v) => {
                     </p>
                   </div>
 
-                  <!-- password -->
+                  
                   <div class="flex flex-col gap-1.5">
                     <label for="reg-password" class="font-body text-xs font-semibold text-muted-foreground tracking-wider flex items-center gap-1.5">
                       <Lock class="w-3.5 h-3.5 text-neon-purple" aria-hidden="true" />
@@ -329,7 +322,7 @@ watch(() => props.open, (v) => {
                       </button>
                     </div>
 
-                    <!-- strength bar -->
+                    
                     <div v-if="password" class="flex flex-col gap-1">
                       <div class="flex gap-1" aria-hidden="true">
                         <div
@@ -347,7 +340,7 @@ watch(() => props.open, (v) => {
                     </div>
                   </div>
 
-                  <!-- verification code -->
+                  
                   <div class="flex flex-col gap-1.5">
                     <label for="reg-verify" class="font-body text-xs font-semibold text-muted-foreground tracking-wider flex items-center gap-1.5">
                       <ShieldCheck class="w-3.5 h-3.5 text-neon-purple" aria-hidden="true" />
@@ -379,12 +372,12 @@ watch(() => props.open, (v) => {
                         />
                       </div>
 
-                      <!-- captcha display -->
+                      
                       <div
                         class="relative flex items-center justify-center w-28 h-11 rounded-xl border border-neon-purple/35 bg-surface-2 overflow-hidden select-none cursor-default shrink-0"
                         aria-label="認証コード画像"
                       >
-                        <!-- scanline overlay -->
+                        
                         <div
                           class="absolute inset-0 opacity-25 pointer-events-none"
                           style="
@@ -398,7 +391,7 @@ watch(() => props.open, (v) => {
                           "
                           aria-hidden="true"
                         />
-                        <!-- noise dots -->
+                        
                         <div class="absolute inset-0 opacity-15" aria-hidden="true"
                           style="background-image: radial-gradient(oklch(0.82 0.19 168) 1px, transparent 1px); background-size: 6px 6px;"
                         />
@@ -426,14 +419,14 @@ watch(() => props.open, (v) => {
                     </p>
                   </div>
 
-                  <!-- divider -->
+                  
                   <div class="flex items-center gap-3 my-1" aria-hidden="true">
                     <div class="flex-1 h-[1px] bg-border/60" />
                     <span class="text-[10px] font-body text-muted-foreground tracking-widest">REGISTER</span>
                     <div class="flex-1 h-[1px] bg-border/60" />
                   </div>
 
-                  <!-- submit / registration CTA -->
+                  
                   <div
                     :class="cn(
                       'relative rounded-2xl p-[1.5px] transition-all duration-300',
@@ -458,7 +451,7 @@ watch(() => props.open, (v) => {
                           : 'bg-surface-3 text-muted-foreground cursor-not-allowed',
                       )"
                     >
-                      <!-- idle state -->
+                      
                       <span
                         v-if="!submitting"
                         class="relative z-10 flex items-center justify-center gap-2"
@@ -468,7 +461,7 @@ watch(() => props.open, (v) => {
                         <ChevronRight class="w-4 h-4 shrink-0" aria-hidden="true" />
                       </span>
 
-                      <!-- loading state -->
+                      
                       <span
                         v-else
                         class="relative z-10 flex items-center justify-center gap-2"
@@ -479,14 +472,14 @@ watch(() => props.open, (v) => {
                         処理中...
                       </span>
 
-                      <!-- shimmer sweep (fires on group-hover) -->
+                      
                       <span
                         v-if="canSubmit"
                         class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/[0.12] to-transparent group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none"
                         aria-hidden="true"
                       />
 
-                      <!-- inner mint glow edge -->
+                      
                       <span
                         v-if="canSubmit"
                         class="absolute inset-0 rounded-[14px] ring-1 ring-neon-mint/20 pointer-events-none"
@@ -495,7 +488,7 @@ watch(() => props.open, (v) => {
                     </button>
                   </div>
 
-                  <!-- status live region for screen readers -->
+                  
                   <p
                     aria-live="polite"
                     aria-atomic="true"
@@ -504,7 +497,7 @@ watch(() => props.open, (v) => {
                     {{ submitting ? '登録処理中です。しばらくお待ちください。' : '' }}
                   </p>
 
-                  <!-- full registration link -->
+                  
                   <div class="flex items-center justify-center">
                     <button
                       type="button"
@@ -517,7 +510,7 @@ watch(() => props.open, (v) => {
                     </button>
                   </div>
 
-                  <!-- footer note -->
+                  
                   <p class="text-center text-[10px] font-body text-muted-foreground leading-relaxed">
                     登録することで、
                     <a href="#" class="text-neon-purple hover:underline underline-offset-2 transition-colors">利用規約</a>

@@ -22,7 +22,6 @@ import { cn } from '@/lib/utils'
 
 const router = useRouter()
 
-// ── deposit methods ────────────────────────────────────────────────────────
 interface DepositMethod {
   id: string
   label: string
@@ -82,7 +81,6 @@ const methods: DepositMethod[] = [
   },
 ]
 
-// ── state ──────────────────────────────────────────────────────────────────
 const selectedMethodId = ref<string | null>(null)
 const rawAmount = ref('')
 const selectOpen = ref(false)
@@ -114,7 +112,6 @@ const canSubmit = computed(() => {
   return true
 })
 
-// live amount validation
 watch(rawAmount, () => {
   if (!selectedMethod.value) { amountError.value = ''; return }
   const n = numericAmount.value
@@ -127,7 +124,6 @@ watch(rawAmount, () => {
     amountError.value = ''
 })
 
-// focus amount input when method selected
 watch(selectedMethodId, async () => {
   amountError.value = ''
   await nextTick()
@@ -167,7 +163,6 @@ function reset() {
   amountError.value = ''
 }
 
-// close select on outside click
 function onSelectBlur(e: FocusEvent) {
   if (!(e.relatedTarget as HTMLElement)?.closest('[data-select-panel]'))
     selectOpen.value = false
@@ -186,7 +181,7 @@ const methodIconColor: Record<string, string> = {
     class="relative min-h-screen bg-background pt-16 pb-28 overflow-x-hidden"
     aria-label="入金ページ"
   >
-    <!-- ambient background glows -->
+    
     <div
       class="pointer-events-none fixed inset-0 z-0 overflow-hidden"
       aria-hidden="true"
@@ -196,7 +191,7 @@ const methodIconColor: Record<string, string> = {
       <div class="absolute bottom-0 left-1/3 w-[360px] h-[360px] rounded-full bg-neon-purple/[0.04] blur-[90px]" />
     </div>
 
-    <!-- top neon bar -->
+    
     <div
       class="fixed top-16 left-0 right-0 z-10 h-[1px] bg-linear-to-r from-transparent via-neon-purple/40 to-transparent"
       aria-hidden="true"
@@ -204,7 +199,7 @@ const methodIconColor: Record<string, string> = {
 
     <div class="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
 
-      <!-- ── page header ─────────────────────────────────────────────────── -->
+      
       <div class="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8 animate-slide-left">
         <button
           type="button"
@@ -236,19 +231,19 @@ const methodIconColor: Record<string, string> = {
         </div>
       </div>
 
-      <!-- ── deposit / withdraw tab switcher ──────────────────────────────── -->
+      
       <div
         class="relative flex rounded-2xl border border-border/60 bg-surface-2/40 backdrop-blur-md p-1 mb-8 sm:mb-10 animate-fade-up"
         role="tablist"
         aria-label="入出金切り替え"
       >
-        <!-- sliding indicator -->
+        
         <span
           class="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-xl bg-neon-purple/20 border border-neon-purple/35 ring-1 ring-neon-purple/20 transition-transform duration-300 ease-[cubic-bezier(0.34,1.2,0.64,1)] pointer-events-none"
           :style="{ transform: 'translateX(0%)' }"
           aria-hidden="true"
         />
-        <!-- deposit tab (active) -->
+        
         <button
           type="button"
           role="tab"
@@ -259,7 +254,7 @@ const methodIconColor: Record<string, string> = {
           <ArrowDownToLine class="w-4 h-4 shrink-0" aria-hidden="true" />
           入金
         </button>
-        <!-- withdraw tab -->
+        
         <button
           type="button"
           role="tab"
@@ -272,7 +267,7 @@ const methodIconColor: Record<string, string> = {
         </button>
       </div>
 
-      <!-- ── success state ───────────────────────────────────────────────── -->
+      
       <Transition name="scale-fade" mode="out-in">
         <div
           v-if="submitted"
@@ -314,7 +309,7 @@ const methodIconColor: Record<string, string> = {
           </button>
         </div>
 
-        <!-- ── main form ───────────────────────────────────────────────── -->
+        
         <form
           v-else
           novalidate
@@ -323,7 +318,7 @@ const methodIconColor: Record<string, string> = {
           @submit.prevent="handleSubmit"
         >
 
-          <!-- step 1 — method selector -->
+          
           <section aria-labelledby="method-label">
             <div class="flex items-center gap-2 mb-3">
               <span
@@ -338,7 +333,7 @@ const methodIconColor: Record<string, string> = {
               </label>
             </div>
 
-            <!-- method cards (desktop) -->
+            
             <div
               class="hidden sm:grid grid-cols-2 gap-3"
               role="radiogroup"
@@ -359,7 +354,7 @@ const methodIconColor: Record<string, string> = {
                 )"
                 @click="selectMethod(m.id)"
               >
-                <!-- active indicator bar -->
+                
                 <span
                   :class="cn(
                     'absolute left-0 top-4 bottom-4 w-[3px] rounded-full bg-neon-purple transition-all duration-300',
@@ -368,7 +363,7 @@ const methodIconColor: Record<string, string> = {
                   aria-hidden="true"
                 />
 
-                <!-- shimmer on hover -->
+                
                 <span
                   class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-neon-purple/[0.06] to-transparent group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
                   aria-hidden="true"
@@ -390,7 +385,7 @@ const methodIconColor: Record<string, string> = {
                       aria-hidden="true"
                     />
                   </div>
-                  <!-- radio indicator -->
+                  
                   <span
                     :class="cn(
                       'size-4 rounded-full border-2 transition-all duration-300 flex items-center justify-center',
@@ -429,7 +424,7 @@ const methodIconColor: Record<string, string> = {
               </button>
             </div>
 
-            <!-- method select dropdown (mobile) -->
+            
             <div class="sm:hidden relative" @blur.capture="onSelectBlur">
               <button
                 type="button"
@@ -522,7 +517,7 @@ const methodIconColor: Record<string, string> = {
             </div>
           </section>
 
-          <!-- step 2 — amount (only shown after method selection) -->
+          
           <Transition name="slide-section">
             <section
               v-if="selectedMethod"
@@ -543,7 +538,7 @@ const methodIconColor: Record<string, string> = {
                 </label>
               </div>
 
-              <!-- method info bar -->
+              
               <div
                 class="flex items-center gap-4 px-4 py-2.5 rounded-xl bg-neon-purple/[0.07] border border-neon-purple/15"
               >
@@ -562,7 +557,7 @@ const methodIconColor: Record<string, string> = {
                 </div>
               </div>
 
-              <!-- amount input -->
+              
               <div class="relative">
                 <div
                   :class="cn(
@@ -574,7 +569,7 @@ const methodIconColor: Record<string, string> = {
                         : 'border-border/70 focus-within:border-neon-purple/55 focus-within:ring-1 focus-within:ring-neon-purple/25',
                   )"
                 >
-                  <!-- yen prefix -->
+                  
                   <span
                     class="flex items-center justify-center h-full pl-4 pr-2 font-display text-lg font-black text-neon-purple shrink-0 select-none"
                     aria-hidden="true"
@@ -595,7 +590,7 @@ const methodIconColor: Record<string, string> = {
                     @input="handleAmountInput"
                   />
 
-                  <!-- clear button -->
+                  
                   <Transition name="fade-quick">
                     <button
                       v-if="numericAmount > 0"
@@ -609,7 +604,7 @@ const methodIconColor: Record<string, string> = {
                   </Transition>
                 </div>
 
-                <!-- error / hint -->
+                
                 <Transition name="fade-quick">
                   <p
                     v-if="amountError"
@@ -630,7 +625,7 @@ const methodIconColor: Record<string, string> = {
                 </Transition>
               </div>
 
-              <!-- quick-select amounts -->
+              
               <div>
                 <p class="font-body text-[11px] text-muted-foreground mb-2.5 tracking-wide">クイック選択</p>
                 <div
@@ -655,7 +650,7 @@ const methodIconColor: Record<string, string> = {
                     )"
                     @click="applyQuick(amt)"
                   >
-                    <!-- shimmer on hover -->
+                    
                     <span
                       class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-neon-purple/[0.08] to-transparent group-hover:translate-x-full transition-transform duration-500 pointer-events-none"
                       aria-hidden="true"
@@ -663,7 +658,7 @@ const methodIconColor: Record<string, string> = {
                     <span class="relative z-10 tabular-nums">
                       ¥{{ amt.toLocaleString('ja-JP') }}
                     </span>
-                    <!-- active zap -->
+                    
                     <Zap
                       v-if="numericAmount === amt"
                       class="relative z-10 w-3 h-3 text-neon-mint"
@@ -673,7 +668,7 @@ const methodIconColor: Record<string, string> = {
                 </div>
               </div>
 
-              <!-- summary card (when valid amount) -->
+              
               <Transition name="slide-section">
                 <div
                   v-if="canSubmit"
@@ -706,9 +701,9 @@ const methodIconColor: Record<string, string> = {
                 </div>
               </Transition>
 
-              <!-- CTA buttons -->
+              
               <div class="flex flex-col sm:flex-row gap-3 pt-2">
-                <!-- cancel -->
+                
                 <button
                   type="button"
                   class="group relative flex-1 h-12 rounded-2xl border border-border/70 bg-surface-2/50 font-body text-sm font-semibold text-muted-foreground hover:border-neon-purple/35 hover:text-foreground hover:bg-surface-2/80 transition-all duration-300 touch-press overflow-hidden sm:max-w-[160px]"
@@ -722,7 +717,7 @@ const methodIconColor: Record<string, string> = {
                   <span class="relative z-10 tracking-wide">キャンセル</span>
                 </button>
 
-                <!-- submit -->
+                
                 <div
                   :class="cn(
                     'flex-1 relative rounded-2xl p-[1.5px] transition-all duration-300',
@@ -745,7 +740,7 @@ const methodIconColor: Record<string, string> = {
                     )"
                     aria-label="入金を申請する"
                   >
-                    <!-- shimmer -->
+                    
                     <span
                       v-if="canSubmit && !submitting"
                       class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/[0.12] to-transparent group-hover:translate-x-full transition-transform duration-700 pointer-events-none"
@@ -771,7 +766,7 @@ const methodIconColor: Record<string, string> = {
                 </div>
               </div>
 
-              <!-- screen reader status -->
+              
               <p aria-live="polite" aria-atomic="true" class="sr-only">
                 {{ submitting ? '入金処理中です。しばらくお待ちください。' : '' }}
               </p>
@@ -781,7 +776,7 @@ const methodIconColor: Record<string, string> = {
         </form>
       </Transition>
 
-      <!-- security note -->
+      
       <div
         v-if="!submitted"
         class="flex items-center justify-center gap-2 mt-8 text-[11px] font-body text-muted-foreground/60 animate-fade-up delay-300"
@@ -794,25 +789,25 @@ const methodIconColor: Record<string, string> = {
 </template>
 
 <style scoped>
-/* dropdown slide */
+
 .dropdown-enter-active { transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1); }
 .dropdown-leave-active { transition: opacity 0.14s ease, transform 0.14s ease; }
 .dropdown-enter-from  { opacity: 0; transform: translateY(-6px) scale(0.97); }
 .dropdown-leave-to    { opacity: 0; transform: translateY(-4px) scale(0.97); }
 
-/* section slide in */
+
 .slide-section-enter-active { transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34,1.2,0.64,1); }
 .slide-section-leave-active { transition: opacity 0.2s ease; }
 .slide-section-enter-from   { opacity: 0; transform: translateY(12px); }
 .slide-section-leave-to     { opacity: 0; }
 
-/* scale-fade for success */
+
 .scale-fade-enter-active { transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1); }
 .scale-fade-leave-active { transition: opacity 0.2s ease; }
 .scale-fade-enter-from   { opacity: 0; transform: scale(0.96); }
 .scale-fade-leave-to     { opacity: 0; transform: scale(0.96); }
 
-/* quick fade */
+
 .fade-quick-enter-active { transition: opacity 0.15s ease; }
 .fade-quick-leave-active { transition: opacity 0.1s ease; }
 .fade-quick-enter-from,

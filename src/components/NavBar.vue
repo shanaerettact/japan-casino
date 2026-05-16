@@ -22,11 +22,10 @@ import {
 
 import { cn } from '@/lib/utils'
 import ThemeToggle from '@/components/ThemeToggle.vue'
-import RegisterModal from '@/components/RegisterModal.vue'
+import LoginModal from '@/components/LoginModal.vue'
 
 const registerOpen = ref(false)
 
-// Mock user — replace with store / auth
 const user = ref({
   nickname: 'ネコ侍',
   avatarInitial: 'ネ',
@@ -65,7 +64,7 @@ const navLinks: NavLink[] = [
   { label: 'マイページ', slug: 'profile', to: '/account', icon: User },
 ]
 
-/** 底部 Tab：維持原先「全ゲーム・キャンペーン・サポート」三鍵（與 sheet / 頂欄 navLinks 分離） */
+
 const bottomTabLinks: NavLink[] = [
   { label: '全ゲーム', slug: 'all', to: '/category/all', icon: Zap },
   { label: 'キャンペーン', slug: 'promotions', to: '/promotions', icon: Tv2 },
@@ -193,7 +192,7 @@ onUnmounted(() => {
       </ul>
 
       <div class="flex items-center justify-end gap-1.5 sm:gap-2.5 shrink-0 min-w-0">
-        <!-- Wallet + points（全寬度顯示；極窄螢幕精簡） -->
+        
         <div
           class="flex items-center h-8 sm:h-9 rounded-lg sm:rounded-xl border border-border/80 bg-surface-2/65 backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(139,92,246,0.06)] overflow-hidden ring-1 ring-neon-purple/10 max-w-[min(100%,11rem)] sm:max-w-none"
           role="group"
@@ -234,7 +233,7 @@ onUnmounted(() => {
           </button>
         </div>
 
-        <!-- User nickname -->
+        
         <button
           type="button"
           class="flex items-center gap-1.5 sm:gap-2 h-8 sm:h-9 pl-0.5 sm:pl-1 pr-2 sm:pr-3 rounded-lg sm:rounded-xl border border-border/80 bg-surface-2/65 backdrop-blur-md ring-1 ring-neon-purple/10 hover:border-neon-purple/45 hover:ring-neon-purple/25 hover:bg-surface-2/85 transition-all duration-300 group touch-press min-w-0 max-w-[7.5rem] sm:max-w-[140px] lg:max-w-[200px]"
@@ -357,7 +356,7 @@ onUnmounted(() => {
     </Transition>
   </Teleport>
 
-  <RegisterModal :open="registerOpen" @close="registerOpen = false" />
+  <LoginModal :open="registerOpen" @close="registerOpen = false" />
 
   <nav
     aria-label="Mobile bottom navigation"

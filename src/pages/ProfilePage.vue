@@ -25,7 +25,6 @@ import { cn } from '@/lib/utils'
 
 const router = useRouter()
 
-// ── mock user data ──────────────────────────────────────────────────────────
 const user = ref({
   nickname: 'ネコ侍',
   fullName: '山田 太郎',
@@ -56,7 +55,6 @@ function formatNum(n: number) {
   return n.toLocaleString('ja-JP')
 }
 
-// ── menu sections ───────────────────────────────────────────────────────────
 interface MenuItem {
   label: string
   sublabel?: string
@@ -132,7 +130,6 @@ const settingsItems: MenuItem[] = [
   },
 ]
 
-// ── active nav state ─────────────────────────────────────────────────────────
 const accentClasses: Record<string, { icon: string; bg: string; border: string; glow: string }> = {
   purple: {
     icon: 'text-neon-purple',
@@ -160,7 +157,6 @@ const accentClasses: Record<string, { icon: string; bg: string; border: string; 
   },
 }
 
-// ── logout ───────────────────────────────────────────────────────────────────
 const logoutConfirm = ref(false)
 function handleLogout() {
   if (!logoutConfirm.value) {
@@ -186,7 +182,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
     class="min-h-screen bg-background pt-20 pb-28 md:pb-16 relative overflow-x-hidden"
     aria-label="マイページ"
   >
-    <!-- ambient glow blobs -->
+    
     <div class="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
       <div class="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-neon-purple/[0.06] blur-[120px]" />
       <div class="absolute top-1/3 -right-40 w-[420px] h-[420px] rounded-full bg-neon-mint/[0.05] blur-[100px]" />
@@ -194,7 +190,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
 
     <div class="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 space-y-5">
 
-      <!-- ── page header ──────────────────────────────────────────────────── -->
+      
       <div class="flex items-center gap-3 animate-slide-left">
         <button
           type="button"
@@ -212,21 +208,21 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
         </div>
       </div>
 
-      <!-- ── avatar + identity card ──────────────────────────────────────── -->
+      
       <div
         class="relative rounded-2xl border border-border/60 bg-surface-1/70 backdrop-blur-md overflow-hidden animate-fade-up"
       >
-        <!-- top gradient strip -->
+        
         <div
           class="absolute top-0 left-0 right-0 h-[2px] bg-linear-to-r from-neon-purple via-neon-mint to-neon-purple"
           aria-hidden="true"
         />
-        <!-- scanline texture -->
+        
         <div class="absolute inset-0 scanline opacity-40 pointer-events-none" aria-hidden="true" />
 
         <div class="relative p-5 sm:p-6">
           <div class="flex items-start gap-4 sm:gap-5">
-            <!-- avatar -->
+            
             <div class="relative shrink-0">
               <div
                 class="relative size-16 sm:size-20 rounded-2xl overflow-hidden ring-2 ring-neon-purple/40 glow-purple"
@@ -236,7 +232,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
                   {{ user.avatarInitial }}
                 </span>
               </div>
-              <!-- VIP badge -->
+              
               <span
                 :class="cn(
                   'absolute -bottom-1.5 -right-1.5 px-1.5 py-0.5 rounded-md text-[9px] font-display font-black tracking-widest text-black leading-none bg-linear-to-r',
@@ -249,14 +245,14 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
               </span>
             </div>
 
-            <!-- info -->
+            
             <div class="flex-1 min-w-0 pt-0.5">
               <h2 class="font-display text-base sm:text-lg font-black text-foreground tracking-wide truncate">
                 {{ user.nickname }}
               </h2>
               <p class="font-body text-xs text-muted-foreground mt-0.5 truncate">{{ user.fullName }}</p>
 
-              <!-- member ID -->
+              
               <button
                 type="button"
                 class="mt-2 flex items-center gap-1.5 group/id touch-press"
@@ -274,7 +270,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
             </div>
           </div>
 
-          <!-- ── stats row ──────────────────────────────────────────────── -->
+          
           <div class="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
             <div
               v-for="stat in [
@@ -295,7 +291,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
         </div>
       </div>
 
-      <!-- ── VIP progress card ────────────────────────────────────────────── -->
+      
       <div
         class="relative rounded-2xl border border-yellow-500/25 bg-surface-1/70 backdrop-blur-md overflow-hidden animate-fade-up delay-100"
       >
@@ -322,7 +318,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
             </button>
           </div>
 
-          <!-- progress bar -->
+          
           <div class="space-y-1.5">
             <div class="flex justify-between font-mono text-[10px] text-muted-foreground">
               <span>{{ formatNum(user.vipCurrentXP) }} XP</span>
@@ -340,7 +336,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
                 class="absolute inset-y-0 left-0 rounded-full bg-linear-to-r from-yellow-500 to-yellow-300 transition-all duration-1000 ease-out"
                 :style="{ width: user.vipProgress + '%' }"
               >
-                <!-- shimmer -->
+                
                 <span class="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-shimmer" aria-hidden="true" />
               </div>
             </div>
@@ -351,7 +347,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
         </div>
       </div>
 
-      <!-- ── account section ─────────────────────────────────────────────── -->
+      
       <section aria-labelledby="account-heading" class="animate-fade-up delay-200">
         <h2
           id="account-heading"
@@ -368,7 +364,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
                 :aria-label="`${item.label}ページへ`"
                 @click="item.to && router.push(item.to)"
               >
-                <!-- icon -->
+                
                 <div
                   :class="cn(
                     'flex items-center justify-center size-9 rounded-xl border shrink-0 transition-all duration-300',
@@ -384,7 +380,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
                   />
                 </div>
 
-                <!-- label -->
+                
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-2">
                     <span class="font-body text-sm font-semibold text-foreground group-hover:text-neon-purple transition-colors duration-200">
@@ -416,7 +412,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
         </div>
       </section>
 
-      <!-- ── history section ─────────────────────────────────────────────── -->
+      
       <section aria-labelledby="history-heading" class="animate-fade-up delay-300">
         <h2
           id="history-heading"
@@ -465,7 +461,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
         </div>
       </section>
 
-      <!-- ── settings section ────────────────────────────────────────────── -->
+      
       <section aria-labelledby="settings-heading" class="animate-fade-up delay-400">
         <h2
           id="settings-heading"
@@ -514,7 +510,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
         </div>
       </section>
 
-      <!-- ── security badge ──────────────────────────────────────────────── -->
+      
       <div
         class="flex items-center gap-3 px-4 py-3 rounded-xl border border-neon-mint/20 bg-neon-mint/[0.05] animate-fade-up delay-500"
       >
@@ -524,7 +520,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
         </p>
       </div>
 
-      <!-- ── logout ──────────────────────────────────────────────────────── -->
+      
       <div class="animate-fade-up delay-500">
         <button
           type="button"
@@ -555,14 +551,14 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
         </p>
       </div>
 
-      <!-- bottom padding for mobile nav bar -->
+      
       <div class="h-4" aria-hidden="true" />
     </div>
   </main>
 </template>
 
 <style scoped>
-/* fade icon transition for copy / check */
+
 .fade-icon-enter-active,
 .fade-icon-leave-active {
   transition: opacity 0.15s ease, transform 0.15s ease;
@@ -576,7 +572,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
   transform: scale(0.7);
 }
 
-/* shimmer on VIP progress bar */
+
 @keyframes shimmer {
   from { transform: translateX(-100%); }
   to   { transform: translateX(200%); }

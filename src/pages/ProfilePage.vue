@@ -65,13 +65,7 @@ interface MenuItem {
 }
 
 const accountItems: MenuItem[] = [
-  {
-    label: 'ウォレット',
-    sublabel: `${formatNum(user.value.points)} pt 残高`,
-    icon: Wallet,
-    to: '/deposit',
-    accent: 'purple',
-  },
+
   {
     label: 'チャージ',
     sublabel: '入金・追加チャージ',
@@ -85,14 +79,6 @@ const accountItems: MenuItem[] = [
     icon: ArrowUpFromLine,
     to: '/withdraw',
     accent: 'mint',
-  },
-  {
-    label: 'VIPクラブ',
-    sublabel: `${user.value.vipName} メンバー`,
-    icon: Crown,
-    to: '/vip',
-    accent: 'gold',
-    badge: user.value.vipName,
   },
 ]
 
@@ -114,13 +100,6 @@ const historyItems: MenuItem[] = [
 ]
 
 const settingsItems: MenuItem[] = [
-  {
-    label: '銀行口座設定',
-    sublabel: '出金先の管理',
-    icon: Landmark,
-    to: '/account/bank',
-    accent: 'mint',
-  },
   {
     label: '設定',
     sublabel: 'セキュリティ・通知',
@@ -179,7 +158,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
 
 <template>
   <main
-    class="min-h-screen bg-background pt-20 pb-28 md:pb-16 relative overflow-x-hidden"
+    class="min-h-screen bg-background pt-20 relative overflow-x-hidden"
     aria-label="マイページ"
   >
     
@@ -292,60 +271,6 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
       </div>
 
       
-      <div
-        class="relative rounded-2xl border border-yellow-500/25 bg-surface-1/70 backdrop-blur-md overflow-hidden animate-fade-up delay-100"
-      >
-        <div class="absolute top-0 left-0 right-0 h-[2px] bg-linear-to-r from-yellow-500 via-yellow-300 to-yellow-500" aria-hidden="true" />
-        <div class="p-4 sm:p-5">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-2">
-              <div class="flex items-center justify-center size-8 rounded-lg bg-yellow-400/15 border border-yellow-400/25">
-                <Crown class="w-4 h-4 text-yellow-400" aria-hidden="true" />
-              </div>
-              <div>
-                <p class="font-display text-xs font-black tracking-widest text-yellow-400">VIPクラブ</p>
-                <p class="font-body text-[10px] text-muted-foreground">{{ user.vipName }} → {{ user.vipNextLevel }}</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              class="flex items-center gap-1 font-body text-[10px] text-yellow-400/80 hover:text-yellow-400 transition-colors touch-press"
-              aria-label="VIPクラブの詳細ページへ"
-              @click="router.push('/vip')"
-            >
-              詳細
-              <ChevronRight class="w-3 h-3" aria-hidden="true" />
-            </button>
-          </div>
-
-          
-          <div class="space-y-1.5">
-            <div class="flex justify-between font-mono text-[10px] text-muted-foreground">
-              <span>{{ formatNum(user.vipCurrentXP) }} XP</span>
-              <span>{{ formatNum(user.vipRequiredXP) }} XP</span>
-            </div>
-            <div
-              class="relative h-2.5 rounded-full bg-surface-3/80 overflow-hidden border border-border/40"
-              role="progressbar"
-              :aria-valuenow="user.vipProgress"
-              aria-valuemin="0"
-              aria-valuemax="100"
-              :aria-label="`VIP進捗 ${user.vipProgress}%`"
-            >
-              <div
-                class="absolute inset-y-0 left-0 rounded-full bg-linear-to-r from-yellow-500 to-yellow-300 transition-all duration-1000 ease-out"
-                :style="{ width: user.vipProgress + '%' }"
-              >
-                
-                <span class="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-shimmer" aria-hidden="true" />
-              </div>
-            </div>
-            <p class="font-body text-[9px] text-muted-foreground text-right">
-              {{ user.vipProgress }}% 完了
-            </p>
-          </div>
-        </div>
-      </div>
 
       
       <section aria-labelledby="account-heading" class="animate-fade-up delay-200">

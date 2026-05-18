@@ -211,8 +211,8 @@ const filtered = computed(() =>
 
       
       <div class="text-center mt-8 sm:mt-10 px-4">
-        <a
-          href="/category/all"
+        <RouterLink
+          to="/category/all"
           :class="cn(
             'inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl w-full sm:w-auto justify-center',
             'font-display font-bold text-sm tracking-wider',
@@ -222,7 +222,7 @@ const filtered = computed(() =>
           )"
         >
           {{ t('featured.viewAll') }}
-        </a>
+        </RouterLink>
       </div>
     </div>
   </section>

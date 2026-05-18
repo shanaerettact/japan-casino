@@ -15,9 +15,11 @@ import {
   ChevronDown,
 } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/composables/useI18n'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 const helpPane = computed(() => {
   if (route.name === 'help-chat') return 'chat' as const
@@ -32,61 +34,30 @@ const headerIcon = computed(() => {
 })
 
 const pageTitle = computed(() => {
-  if (helpPane.value === 'chat') return '線上客服'
-  if (helpPane.value === 'faq') return '常見問題'
-  return '教學・幫助'
+  if (helpPane.value === 'chat') return t('help.chatTitle')
+  if (helpPane.value === 'faq') return t('help.faqTitle')
+  return t('help.guideTitle')
 })
 
 const pageSubtitle = computed(() => {
-  if (helpPane.value === 'chat') return 'ONLINE SUPPORT'
-  if (helpPane.value === 'faq') return 'FAQ'
-  return 'GUIDE & HELP'
+  if (helpPane.value === 'chat') return t('help.chatSubtitle')
+  if (helpPane.value === 'faq') return t('help.faqSubtitle')
+  return t('help.guideSubtitle')
 })
 
-const blocks: {
-  title: string
-  desc: string
-  icon: unknown
-  to?: string
-  hint?: string
-}[] = [
-  {
-    title: 'はじめての方へ',
-    desc: 'アカウント・ポイント・遊び方の流れをまとめています。',
-    icon: BookOpen,
-    hint: '上部メニューから各機能へ進めます。',
-  },
-  {
-    title: 'ゲームの見方',
-    desc: 'カテゴリからタイトルを選び、詳細ページでプレイできます。',
-    icon: Gamepad2,
-    to: '/category/all',
-  },
-  {
-    title: '入出金・出金',
-    desc: '出金申請や残高の確認はこちらから。',
-    icon: Wallet,
-    to: '/account/withdraw',
-  },
-  {
-    title: 'ベット・ゲーム記録',
-    desc: '期間やゲーム館でフィルターして履歴を確認できます。',
-    icon: History,
-    to: '/account/game-history',
-  },
-  {
-    title: 'Cyber Neo UI',
-    desc: '言語切替やデザインコンセプトについて。',
-    icon: Sparkles,
-    to: '/about/cyber-neo',
-  },
-]
+const blocks = computed(() => [
+  { title: t('help.block1Title'), desc: t('help.block1Desc'), icon: BookOpen, hint: t('help.block1Hint') },
+  { title: t('help.block2Title'), desc: t('help.block2Desc'), icon: Gamepad2, to: '/category/all' },
+  { title: t('help.block3Title'), desc: t('help.block3Desc'), icon: Wallet,   to: '/account/withdraw' },
+  { title: t('help.block4Title'), desc: t('help.block4Desc'), icon: History,  to: '/account/game-history' },
+  { title: t('help.block5Title'), desc: t('help.block5Desc'), icon: Sparkles, to: '/about/cyber-neo' },
+])
 
-const faqItems: { q: string; a: string }[] = [
-  { q: 'ポイントの確認方法は？', a: '画面上部のウォレット表示、またはマイページから残高と履歴をご確認いただけます。' },
-  { q: '出金までどのくらいかかりますか？', a: '金融機関・方式により異なります。申請後、審査と振込処理に通常 1〜3 営業日程度を目安にしてください。' },
-  { q: 'ゲームが起動しない場合', a: 'ブラウザのキャッシュ削除、タブの再読み込み、別ブラウザでのお試しを推奨します。改善しない場合は線上客服までご連絡ください。' },
-]
+const faqItems = computed(() => [
+  { q: t('help.faqQ1'), a: t('help.faqA1') },
+  { q: t('help.faqQ2'), a: t('help.faqA2') },
+  { q: t('help.faqQ3'), a: t('help.faqA3') },
+])
 
 const openFaqIndex = ref<number | null>(0)
 
@@ -135,7 +106,7 @@ function toggleFaq(i: number) {
 
       <template v-if="helpPane === 'guide'">
         <p class="font-body text-sm text-muted-foreground leading-relaxed animate-fade-up delay-100">
-          NekoVerse の使い方・よくある導線をまとめました。下のカードから該当する項目へ移動できます。
+          {{ t('help.guideDesc') }}
         </p>
 
         <ul class="space-y-2.5 list-none p-0 m-0" role="list">
@@ -180,9 +151,9 @@ function toggleFaq(i: number) {
         >
           <MessageCircle class="w-5 h-5 text-neon-mint shrink-0 mt-0.5" aria-hidden="true" />
           <div>
-            <p class="font-body text-sm font-semibold text-foreground">その他のサポート</p>
+            <p class="font-body text-sm font-semibold text-foreground">{{ t('help.otherSupportTitle') }}</p>
             <p class="font-body text-xs text-muted-foreground mt-1 leading-relaxed">
-              お困りの際はアプリ内のサポート（メニュー）からお問い合わせください。返信までにお時間をいただく場合があります。
+              {{ t('help.otherSupportDesc') }}
             </p>
             <div class="flex flex-wrap gap-2 mt-3">
               <RouterLink
@@ -190,14 +161,14 @@ function toggleFaq(i: number) {
                 class="inline-flex items-center gap-1.5 text-xs font-semibold text-neon-mint hover:text-neon-purple transition-colors"
               >
                 <Headphones class="w-3.5 h-3.5" aria-hidden="true" />
-                線上客服へ
+                {{ t('help.toChat') }}
               </RouterLink>
               <RouterLink
                 to="/help/faq"
                 class="inline-flex items-center gap-1.5 text-xs font-semibold text-neon-mint hover:text-neon-purple transition-colors"
               >
                 <CircleHelp class="w-3.5 h-3.5" aria-hidden="true" />
-                常見問題へ
+                {{ t('help.toFaq') }}
               </RouterLink>
             </div>
           </div>
@@ -206,7 +177,7 @@ function toggleFaq(i: number) {
 
       <template v-else-if="helpPane === 'chat'">
         <p class="font-body text-sm text-muted-foreground leading-relaxed">
-          カスタマーサポートへお繋ぎします。混雑状況によりお待ちいただく場合があります。
+          {{ t('help.chatDesc') }}
         </p>
         <div class="rounded-2xl border border-neon-mint/30 bg-surface-1/70 backdrop-blur-md p-4 sm:p-5 space-y-4 ring-1 ring-neon-mint/10">
           <div class="flex items-center gap-3">
@@ -214,32 +185,32 @@ function toggleFaq(i: number) {
               <Headphones class="w-6 h-6 text-neon-mint" aria-hidden="true" />
             </div>
             <div>
-              <p class="font-display text-sm font-black text-foreground tracking-wide">チャット受付</p>
-              <p class="font-body text-xs text-muted-foreground mt-0.5">平日 10:00–22:00（JST）目安</p>
+              <p class="font-display text-sm font-black text-foreground tracking-wide">{{ t('help.chatReception') }}</p>
+              <p class="font-body text-xs text-muted-foreground mt-0.5">{{ t('help.chatHours') }}</p>
             </div>
           </div>
           <p class="font-body text-[13px] text-muted-foreground leading-relaxed">
-            デモ環境のため、実際のチャット接続は未接続です。本番では FAQ をご確認のうえ、必要に応じてこちらからセッションを開始できる想定です。
+            {{ t('help.chatDesc') }}
           </p>
           <button
             type="button"
             class="w-full h-11 rounded-xl font-display text-xs font-black tracking-widest bg-neon-mint/20 text-neon-mint border border-neon-mint/40 hover:bg-neon-mint/30 transition-all touch-press opacity-60 cursor-not-allowed"
             disabled
           >
-            チャットを開始（準備中）
+            {{ t('help.chatStartBtn') }}
           </button>
           <RouterLink
             to="/help/faq"
             class="block text-center font-body text-xs text-neon-purple hover:text-neon-mint transition-colors"
           >
-            先に常見問題を見る →
+            {{ t('help.chatSeeFaq') }}
           </RouterLink>
         </div>
       </template>
 
       <template v-else>
         <p class="font-body text-sm text-muted-foreground leading-relaxed">
-          よくあるご質問です。該当がない場合は線上客服へお問い合わせください。
+          {{ t('help.faqDesc') }}
         </p>
         <ul class="space-y-2 list-none p-0 m-0" role="list">
           <li
@@ -277,7 +248,7 @@ function toggleFaq(i: number) {
           class="flex items-center justify-center gap-2 rounded-2xl border border-neon-purple/35 bg-neon-purple/8 py-3 font-body text-sm font-semibold text-neon-purple hover:bg-neon-purple/12 transition-colors touch-press"
         >
           <Headphones class="w-4 h-4" aria-hidden="true" />
-          線上客服へ
+          {{ t('help.faqSeeChat') }}
         </RouterLink>
       </template>
     </div>

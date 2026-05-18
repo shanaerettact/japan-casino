@@ -1,11 +1,20 @@
 <script setup lang="ts">
-import { Zap, Twitter, Youtube, Github, MessageCircle } from 'lucide-vue-next'
+import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
+import { Twitter, Youtube, Github, MessageCircle } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
+
+interface FooterLink {
+  label: string
+  to: string
+}
 
 interface FooterSection {
   heading: string
-  headingEn: string
-  links: string[]
+  links: FooterLink[]
 }
 
 interface Social {
@@ -14,20 +23,24 @@ interface Social {
   href: string
 }
 
-const footerLinks: FooterSection[] = [
+const footerLinks = computed<FooterSection[]>(() => [
   {
-    heading: 'ゲーム', headingEn: 'Games',
-    links: ['新着ゲーム / New', '人気ゲーム / Popular', '無料ゲーム / Free', 'ジャンル / Genres'],
+    heading: t('nav.help'),
+    links: [
+      { label: t('nav.helpChat'), to: '/help/chat' },
+      { label: t('nav.helpFaq'), to: '/help/faq' },
+    ],
   },
   {
-    heading: 'コミュニティ', headingEn: 'Community',
-    links: ['フォーラム / Forums', 'ランキング / Rankings', 'イベント / Events', 'ブログ / Blog'],
+    heading: t('nav.aboutCyberNeo'),
+    links: [
+      { label: t('nav.aboutCyberNeoLink'), to: '/about/cyber-neo' },
+      { label: t('nav.privacy'), to: '/about/privacy' },
+      { label: t('nav.terms'), to: '/about/terms' },
+      { label: t('nav.responsibleGambling'), to: '/about/responsible-gambling' },
+    ],
   },
-  {
-    heading: 'サポート', headingEn: 'Support',
-    links: ['ヘルプ / Help', 'お問い合わせ / Contact', 'プライバシー / Privacy', '利用規約 / Terms'],
-  },
-]
+])
 
 const socials: Social[] = [
   { label: 'Twitter / X', icon: Twitter,       href: '#' },
@@ -38,31 +51,24 @@ const socials: Social[] = [
 </script>
 
 <template>
-  <footer class="relative mt-8 border-t border-border" role="contentinfo">
-    
+  <footer class="relative border-t border-border" role="contentinfo">
+
     <div class="h-[2px] w-full bg-linear-to-r from-neon-purple via-neon-mint to-neon-purple animate-neon-pulse" aria-hidden="true" />
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-16">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
 
-        
+        <!-- Brand -->
         <div class="lg:col-span-2">
-          <a href="#" class="flex items-center gap-2.5 mb-4" aria-label="NekoVerse home">
-            <div class="relative w-9 h-9">
-              <div class="absolute inset-0 rounded-xl bg-neon-purple/30 glow-purple" aria-hidden="true" />
-              <Zap class="absolute inset-0 m-auto w-5 h-5 text-neon-mint" aria-hidden="true" />
-            </div>
-            <span class="font-display text-xl font-black tracking-widest text-foreground">
-              NEKO<span class="text-neon-purple">VERSE</span>
-            </span>
-          </a>
+          <RouterLink to="/" class="flex items-center gap-2.5 mb-4" aria-label="Neo Cyber home">
+            <img src="/logo.png" alt="Neo Cyber" class="h-10 w-auto object-contain" />
+          </RouterLink>
           <p class="text-sm font-body text-muted-foreground leading-relaxed max-w-xs">
             日本最大のサイバーパンクアニメゲームポータル。究極のゲーム体験を、あなたの手に。
             <br />
             <span class="text-muted-foreground/60 text-xs">Japan's premier cyberpunk anime gaming destination.</span>
           </p>
 
-          
           <div class="flex items-center gap-3 mt-6" role="list" aria-label="Social media links">
             <a
               v-for="social in socials"
@@ -82,29 +88,28 @@ const socials: Social[] = [
           </div>
         </div>
 
-        
+        <!-- Link sections -->
         <div v-for="section in footerLinks" :key="section.heading">
           <h3 class="font-display font-bold text-sm text-foreground tracking-wider mb-4">
             {{ section.heading }}
-            <span class="block text-xs font-body text-muted-foreground font-normal">{{ section.headingEn }}</span>
           </h3>
           <ul class="space-y-2.5" role="list">
-            <li v-for="link in section.links" :key="link">
-              <a
-                href="#"
+            <li v-for="link in section.links" :key="link.to">
+              <RouterLink
+                :to="link.to"
                 class="text-sm font-body text-muted-foreground hover:text-neon-mint transition-colors duration-200 leading-relaxed"
               >
-                {{ link }}
-              </a>
+                {{ link.label }}
+              </RouterLink>
             </li>
           </ul>
         </div>
+
       </div>
 
-      
       <div class="mt-12 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
         <p class="text-xs font-body text-muted-foreground">
-          © 2026 NekoVerse Inc. All rights reserved. — 全著作権所有
+          © 2026 Neo Cyber Inc. All rights reserved. — 全著作権所有
         </p>
         <div class="flex items-center gap-2">
           <div class="w-1.5 h-1.5 rounded-full bg-neon-mint animate-neon-pulse" aria-hidden="true" />

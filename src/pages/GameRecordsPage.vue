@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, inject, nextTick, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from '@/composables/useI18n'
 import {
   ArrowLeft,
   History,
@@ -25,6 +26,8 @@ import { VueDatePicker } from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import { cn } from '@/lib/utils'
 import { ThemeKey } from '@/composables/useTheme'
+
+const { t } = useI18n()
 
 type RangePickerExpose = {
   openMenu: () => void
@@ -155,13 +158,13 @@ const themeCtx = inject(ThemeKey, null)
 
 type TimeFrame = 'yesterday' | 'today' | 'last_week' | 'this_week' | 'this_month'
 
-const timeFrames: { key: TimeFrame; label: string }[] = [
-  { key: 'yesterday', label: '昨天' },
-  { key: 'today', label: '今天' },
-  { key: 'last_week', label: '上周' },
-  { key: 'this_week', label: '本周' },
-  { key: 'this_month', label: '本月' },
-]
+const timeFrames = computed<{ key: TimeFrame; label: string }[]>(() => [
+  { key: 'yesterday',  label: t('records.timeYesterday') },
+  { key: 'today',      label: t('records.timeToday') },
+  { key: 'last_week',  label: t('records.timeLastWeek') },
+  { key: 'this_week',  label: t('records.timeThisWeek') },
+  { key: 'this_month', label: t('records.timeThisMonth') },
+])
 
 const selectedTime  = ref<TimeFrame>('this_week')
 const rangeMode = ref<'preset' | 'custom'>('preset')
@@ -219,16 +222,16 @@ watch(recordsTab, () => {
   gameDropOpen.value = false
 })
 
-const gameOptions = [
-  { id: 'all',      label: 'すべてのゲーム', icon: Gamepad2 },
-  { id: 'baccarat', label: 'バカラ',          icon: Spade },
-  { id: 'slots',    label: 'スロット',         icon: Zap },
-  { id: 'roulette', label: 'ルーレット',        icon: Dices },
-  { id: 'poker',    label: 'ポーカー',          icon: Star },
-]
+const gameOptions = computed(() => [
+  { id: 'all',      label: t('records.allGames'), icon: Gamepad2 },
+  { id: 'baccarat', label: t('records.baccarat'), icon: Spade },
+  { id: 'slots',    label: t('records.slots'),    icon: Zap },
+  { id: 'roulette', label: t('records.roulette'), icon: Dices },
+  { id: 'poker',    label: t('records.poker'),    icon: Star },
+])
 
 const filteredGameOptions = computed(() =>
-  gameOptions.filter(g =>
+  gameOptions.value.filter(g =>
     g.label.toLowerCase().includes(gameSearchQ.value.toLowerCase()) ||
     g.id.toLowerCase().includes(gameSearchQ.value.toLowerCase()),
   ),
@@ -241,7 +244,7 @@ function selectGame(id: string) {
 }
 
 const selectedGameLabel = computed(
-  () => gameOptions.find(g => g.id === selectedGame.value)?.label ?? 'すべてのゲーム',
+  () => gameOptions.value.find(g => g.id === selectedGame.value)?.label ?? t('records.allGames'),
 )
 
 interface GameRecord {
@@ -517,7 +520,7 @@ const reportByHall = computed(() => {
 <template>
   <main
     class="min-h-screen bg-background pt-20 relative overflow-x-hidden"
-    aria-label="ゲーム記録"
+    :aria-label="t('records.title')"
   >
     
     <div class="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
@@ -548,29 +551,12 @@ const reportByHall = computed(() => {
           </div>
           <div class="min-w-0">
             <h1 class="font-display text-xl sm:text-2xl font-black tracking-[0.12em] text-foreground text-glow-mint leading-none">
-              ゲーム記録
+              {{ t('records.title') }}
             </h1>
-            <p class="font-body text-[11px] sm:text-xs text-muted-foreground mt-0.5 tracking-wide">GAME RECORDS</p>
+            <p class="font-body text-[11px] sm:text-xs text-muted-foreground mt-0.5 tracking-wide">{{ t('records.subtitle') }}</p>
           </div>
         </div>
 
-        
-        <button
-          v-show="recordsTab === 'records'"
-          type="button"
-          class="sm:hidden flex items-center justify-center size-10 rounded-xl border transition-all duration-300 touch-press shrink-0"
-          :class="filtersOpen
-            ? 'border-neon-mint/50 bg-neon-mint/10 text-neon-mint'
-            : 'border-border/70 bg-surface-2/60 text-muted-foreground'"
-          :aria-label="filtersOpen ? 'フィルターを閉じる' : 'フィルターを開く'"
-          :aria-expanded="filtersOpen"
-          @click="filtersOpen = !filtersOpen"
-        >
-          <Transition name="fade-icon" mode="out-in">
-            <X v-if="filtersOpen" key="close" class="w-4 h-4" aria-hidden="true" />
-            <SlidersHorizontal v-else key="open" class="w-4 h-4" aria-hidden="true" />
-          </Transition>
-        </button>
       </div>
 
       
@@ -580,13 +566,13 @@ const reportByHall = computed(() => {
       >
         <div
           v-for="card in [
-            { label: '総ゲーム数', value: stats.totalGames, unit: '回', icon: Gamepad2, color: 'text-neon-purple', bg: 'bg-neon-purple/10', border: 'border-neon-purple/20' },
-            { label: '総ベット',   value: fmt(stats.totalBet), unit: 'pt', icon: CircleDollarSign, color: 'text-yellow-400', bg: 'bg-yellow-400/8', border: 'border-yellow-400/20' },
-            { label: '勝率',      value: stats.winRate + '%', unit: '', icon: Trophy, color: 'text-neon-mint', bg: 'bg-neon-mint/10', border: 'border-neon-mint/20' },
+            { label: t('records.totalGames'), value: stats.totalGames + t('records.totalGamesUnit'), unit: '', icon: Gamepad2, color: 'text-neon-purple', bg: 'bg-neon-purple/10', border: 'border-neon-purple/20' },
+            { label: t('records.totalBet'),   value: fmt(stats.totalBet), unit: t('records.totalBetUnit'), icon: CircleDollarSign, color: 'text-yellow-400', bg: 'bg-yellow-400/8', border: 'border-yellow-400/20' },
+            { label: t('records.winRate'),    value: stats.winRate + '%', unit: '', icon: Trophy, color: 'text-neon-mint', bg: 'bg-neon-mint/10', border: 'border-neon-mint/20' },
             {
-              label: '純損益',
+              label: t('records.netPnL'),
               value: (stats.netPnL >= 0 ? '+' : '') + fmt(stats.netPnL),
-              unit: 'pt',
+              unit: t('records.netPnLUnit'),
               icon: BarChart3,
               color: stats.netPnL >= 0 ? 'text-neon-mint' : 'text-destructive',
               bg:    stats.netPnL >= 0 ? 'bg-neon-mint/10' : 'bg-destructive/10',
@@ -639,7 +625,7 @@ const reportByHall = computed(() => {
           @click="recordsTab = 'records'"
         >
           <LayoutList class="w-4 h-4 shrink-0" aria-hidden="true" />
-          ベット記録
+          {{ t('records.tabRecords') }}
         </button>
         <button
           type="button"
@@ -654,7 +640,7 @@ const reportByHall = computed(() => {
           @click="recordsTab = 'report'"
         >
           <ChartColumnIncreasing class="w-4 h-4 shrink-0" aria-hidden="true" />
-          ベット報告
+          {{ t('records.tabReport') }}
         </button>
       </div>
 
@@ -670,7 +656,7 @@ const reportByHall = computed(() => {
               <div>
                 <p class="font-display text-[9px] font-black tracking-[0.25em] text-muted-foreground mb-2.5 uppercase flex items-center gap-1.5">
                   <CalendarRange class="w-3 h-3 text-neon-purple shrink-0" aria-hidden="true" />
-                  日期區間
+                  {{ t('records.dateRange') }}
                 </p>
                 <div
                   class="rounded-2xl border border-border/60 bg-surface-2/50 backdrop-blur-sm p-2 sm:p-3 ring-1 ring-neon-purple/5 game-records-dp"
@@ -708,7 +694,7 @@ const reportByHall = computed(() => {
                           @click.stop="openRangeFromStart"
                         >
                           <span class="block font-body text-[10px] font-semibold text-muted-foreground tracking-wide">
-                            開始
+                            {{ t('records.start') }}
                           </span>
                           <span
                             class="block font-display text-sm font-bold text-foreground tabular-nums mt-0.5 truncate pr-6"
@@ -720,7 +706,7 @@ const reportByHall = computed(() => {
                             role="button"
                             tabindex="0"
                             class="absolute right-2 top-1/2 -translate-y-1/2 flex size-6 items-center justify-center rounded-full text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/15 transition-colors touch-press"
-                            aria-label="日付をクリア"
+                            :aria-label="t('records.clear')"
                             @click.stop="clearRangeTrigger"
                           >
                             <X class="size-3.5" aria-hidden="true" />
@@ -737,7 +723,7 @@ const reportByHall = computed(() => {
                           @click.stop="openRangeFromEnd"
                         >
                           <span class="block font-body text-[10px] font-semibold text-muted-foreground tracking-wide">
-                            終了
+                            {{ t('records.end') }}
                           </span>
                           <span class="block font-display text-sm font-bold text-foreground tabular-nums mt-0.5 truncate pr-6">
                             {{ rangeEndLabel || '—' }}
@@ -758,7 +744,7 @@ const reportByHall = computed(() => {
                     <template #action-preview="{ formatValue }">
                       <div class="flex min-w-0 flex-1 flex-col gap-0.5 text-left pr-2">
                         <span class="font-body text-[10px] leading-snug text-muted-foreground">
-                          期間選択後に「套用」で記録を絞り込み
+                          {{ t('records.filterApply') }}
                         </span>
                         <span
                           v-if="formatValue"
@@ -773,7 +759,7 @@ const reportByHall = computed(() => {
                     v-if="customRangeActive"
                     class="mt-2.5 font-body text-[10px] text-neon-mint/90 tracking-wide px-0.5"
                   >
-                    已套用自訂區間
+                    {{ t('records.applyRange') }}
                   </p>
                   <button
                     v-if="customRangeModel"
@@ -781,14 +767,14 @@ const reportByHall = computed(() => {
                     class="mt-2 w-full h-9 rounded-xl border border-border/60 bg-surface-2/60 font-body text-xs font-semibold text-muted-foreground hover:text-neon-mint hover:border-neon-mint/35 hover:bg-neon-mint/10 transition-all duration-200 touch-press"
                     @click="clearCustomRange"
                   >
-                    クリア
+                    {{ t('records.clear') }}
                   </button>
                 </div>
               </div>
 
               <div>
                 <p class="font-display text-[9px] font-black tracking-[0.25em] text-muted-foreground mb-2.5 uppercase">
-                  期間
+                  {{ t('records.period') }}
                 </p>
                 <div
                   class="flex gap-1 sm:gap-1.5 w-full"
@@ -822,7 +808,7 @@ const reportByHall = computed(() => {
               
               <div>
                 <p class="font-display text-[9px] font-black tracking-[0.25em] text-muted-foreground mb-2.5 uppercase">
-                  ゲーム
+                  {{ t('records.game') }}
                 </p>
                 <div class="relative">
                   <button
@@ -861,7 +847,7 @@ const reportByHall = computed(() => {
                           <input
                             v-model="gameSearchQ"
                             type="search"
-                            placeholder="ゲームを検索..."
+                            :placeholder="t('records.gameSearch')"
                             class="w-full h-8 pl-8 pr-3 rounded-xl bg-surface-2/80 border border-border/50 font-body text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-neon-mint/40 transition-colors"
                             aria-label="ゲーム検索"
                           />
@@ -894,7 +880,7 @@ const reportByHall = computed(() => {
                           </button>
                         </li>
                         <li v-if="filteredGameOptions.length === 0" class="px-3 py-4 text-center font-body text-xs text-muted-foreground">
-                          ゲームが見つかりません
+                          {{ t('records.gameNotFound') }}
                         </li>
                       </ul>
                     </div>
@@ -908,7 +894,7 @@ const reportByHall = computed(() => {
         
         <section aria-label="ベット詳細" class="space-y-4 animate-fade-up delay-200">
           <h2 class="font-display text-[10px] font-black tracking-[0.25em] text-muted-foreground px-1 uppercase">
-            ベット詳細 &mdash; {{ filteredRecords.length }} 件
+            {{ t('records.betDetails') }} &mdash; {{ filteredRecords.length }} {{ t('records.records') }}
           </h2>
 
           
@@ -921,8 +907,8 @@ const reportByHall = computed(() => {
                 <History class="w-7 h-7 text-muted-foreground/40" aria-hidden="true" />
               </div>
               <div>
-                <p class="font-display text-sm font-black text-foreground tracking-wide">記録がありません</p>
-                <p class="font-body text-xs text-muted-foreground mt-1">選択した期間にゲーム記録は見つかりませんでした</p>
+                <p class="font-display text-sm font-black text-foreground tracking-wide">{{ t('records.noRecords') }}</p>
+                <p class="font-body text-xs text-muted-foreground mt-1">{{ t('records.noRecordsDesc') }}</p>
               </div>
             </div>
           </Transition>
@@ -944,31 +930,31 @@ const reportByHall = computed(() => {
                         scope="col"
                         class="w-[24%] max-w-0 px-1.5 py-2.5 text-center font-display text-[9px] font-black leading-tight tracking-wide text-foreground sm:px-3 sm:py-3.5 sm:text-[10px] sm:tracking-[0.2em]"
                       >
-                        館別
+                        {{ t('records.tableHall') }}
                       </th>
                       <th
                         scope="col"
                         class="w-[19%] max-w-0 px-1 py-2.5 text-right font-display text-[9px] font-black leading-tight tracking-wide text-foreground sm:px-2 sm:py-3.5 sm:text-[10px] sm:tracking-[0.2em]"
                       >
-                        投注金額
+                        {{ t('records.tableBet') }}
                       </th>
                       <th
                         scope="col"
                         class="w-[19%] max-w-0 px-1 py-2.5 text-right font-display text-[9px] font-black leading-tight tracking-wide text-foreground sm:px-2 sm:py-3.5 sm:text-[10px] sm:tracking-[0.2em]"
                       >
-                        有效投注
+                        {{ t('records.tableEffectiveBet') }}
                       </th>
                       <th
                         scope="col"
                         class="w-[18%] max-w-0 px-1 py-2.5 text-right font-display text-[9px] font-black leading-tight tracking-wide text-foreground sm:px-2 sm:py-3.5 sm:text-[10px] sm:tracking-[0.2em]"
                       >
-                        輸贏
+                        {{ t('records.tableWinLose') }}
                       </th>
                       <th
                         scope="col"
                         class="w-[20%] max-w-0 px-1.5 py-2.5 text-center font-display text-[9px] font-black leading-tight tracking-wide text-foreground sm:px-2 sm:py-3.5 sm:text-[10px] sm:tracking-[0.2em]"
                       >
-                        操作
+                        {{ t('records.tableAction') }}
                       </th>
                     </tr>
                   </thead>
@@ -1006,7 +992,7 @@ const reportByHall = computed(() => {
                           class="inline-flex min-w-0 max-w-full items-center justify-center rounded-full border border-destructive/35 bg-destructive px-2 py-1 font-body text-[10px] font-bold leading-none text-destructive-foreground shadow-[0_0_12px_oklch(0.58_0.22_25/0.25)] transition-all duration-200 hover:border-destructive/50 hover:bg-destructive/90 active:scale-[0.98] touch-press sm:px-3.5 sm:py-1.5 sm:text-[11px]"
                           @click="openRecordDetail(record)"
                         >
-                          詳細
+                          {{ t('records.detail') }}
                         </button>
                       </td>
                     </tr>
@@ -1014,7 +1000,7 @@ const reportByHall = computed(() => {
                 </table>
               </div>
               <p class="border-t border-border/35 px-3 py-2 text-center font-mono text-[10px] text-muted-foreground/70 sm:text-left sm:px-4">
-                pt · {{ filteredRecords.length }} 件
+                pt · {{ filteredRecords.length }} {{ t('records.records') }}
               </p>
             </div>
           </template>
@@ -1036,7 +1022,7 @@ const reportByHall = computed(() => {
             <div>
               <p class="font-display text-[9px] font-black tracking-[0.25em] text-muted-foreground mb-2.5 uppercase flex items-center gap-1.5">
                 <CalendarRange class="w-3 h-3 text-neon-purple shrink-0" aria-hidden="true" />
-                日期區間
+                {{ t('records.dateRange') }}
               </p>
               <div
                 class="rounded-2xl border border-border/60 bg-surface-2/50 backdrop-blur-sm p-2 sm:p-3 ring-1 ring-neon-purple/5 game-records-dp"
@@ -1074,7 +1060,7 @@ const reportByHall = computed(() => {
                         @click.stop="openRangeFromStart"
                       >
                         <span class="block font-body text-[10px] font-semibold text-muted-foreground tracking-wide">
-                          開始
+                          {{ t('records.start') }}
                         </span>
                         <span
                           class="block font-display text-sm font-bold text-foreground tabular-nums mt-0.5 truncate pr-6"
@@ -1103,7 +1089,7 @@ const reportByHall = computed(() => {
                         @click.stop="openRangeFromEnd"
                       >
                         <span class="block font-body text-[10px] font-semibold text-muted-foreground tracking-wide">
-                          終了
+                          {{ t('records.end') }}
                         </span>
                         <span class="block font-display text-sm font-bold text-foreground tabular-nums mt-0.5 truncate pr-6">
                           {{ rangeEndLabel || '—' }}
@@ -1124,7 +1110,7 @@ const reportByHall = computed(() => {
                   <template #action-preview="{ formatValue }">
                     <div class="flex min-w-0 flex-1 flex-col gap-0.5 text-left pr-2">
                       <span class="font-body text-[10px] leading-snug text-muted-foreground">
-                        期間選択後に「套用」で記録を絞り込み
+                        {{ t('records.filterApply') }}
                       </span>
                       <span
                         v-if="formatValue"
@@ -1139,7 +1125,7 @@ const reportByHall = computed(() => {
                   v-if="customRangeActive"
                   class="mt-2.5 font-body text-[10px] text-neon-mint/90 tracking-wide px-0.5"
                 >
-                  已套用自訂區間
+                  {{ t('records.applyRange') }}
                 </p>
                 <button
                   v-if="customRangeModel"
@@ -1147,14 +1133,14 @@ const reportByHall = computed(() => {
                   class="mt-2 w-full h-9 rounded-xl border border-border/60 bg-surface-2/60 font-body text-xs font-semibold text-muted-foreground hover:text-neon-mint hover:border-neon-mint/35 hover:bg-neon-mint/10 transition-all duration-200 touch-press"
                   @click="clearCustomRange"
                 >
-                  クリア
+                  {{ t('records.clear') }}
                 </button>
               </div>
             </div>
 
             <div>
               <p class="font-display text-[9px] font-black tracking-[0.25em] text-muted-foreground mb-2.5 uppercase">
-                期間
+                {{ t('records.period') }}
               </p>
               <div
                 class="flex gap-1 sm:gap-1.5 w-full"
@@ -1189,10 +1175,10 @@ const reportByHall = computed(() => {
 
         <div class="rounded-2xl border border-border/50 bg-surface-1/70 backdrop-blur-md p-3 sm:p-4">
           <h2 class="font-display text-[10px] font-black tracking-[0.25em] text-muted-foreground uppercase mb-1">
-            遊戲館別集計
+            {{ t('records.hallReport') }}
           </h2>
           <p class="font-body text-[11px] text-muted-foreground/80 mb-3">
-            此處可調整日期區間與期間預設；遊戲篩選請至「ベット記録」タブ。匯總各館碼量（有效投注合計）、輸贏、反水。
+            {{ t('records.hallReportDesc') }}
           </p>
 
           <div
@@ -1200,7 +1186,7 @@ const reportByHall = computed(() => {
             class="flex flex-col items-center justify-center gap-3 py-12 text-center rounded-xl border border-border/40 bg-surface-2/40"
           >
             <BarChart3 class="w-8 h-8 text-muted-foreground/40" aria-hidden="true" />
-            <p class="font-body text-sm text-muted-foreground">表示できる集計がありません</p>
+            <p class="font-body text-sm text-muted-foreground">{{ t('records.noReport') }}</p>
           </div>
 
           <ul
@@ -1234,14 +1220,14 @@ const reportByHall = computed(() => {
 
               <div class="px-1.5 py-2 space-y-1.5">
                 <div class="flex items-baseline justify-between gap-0.5">
-                  <span class="font-body text-[9px] sm:text-[10px] font-semibold tracking-[0.05em] uppercase text-foreground/80 shrink-0">碼量</span>
+                  <span class="font-body text-[9px] sm:text-[10px] font-semibold tracking-[0.05em] uppercase text-foreground/80 shrink-0">{{ t('records.hallTurnover') }}</span>
                   <span class="font-display text-[11px] sm:text-xs font-black tabular-nums text-foreground leading-none min-w-0 truncate text-right">{{ fmt(row.turnover) }}</span>
                 </div>
 
                 <div class="h-px bg-border/25" aria-hidden="true" />
 
                 <div class="flex items-baseline justify-between gap-0.5">
-                  <span class="font-body text-[9px] sm:text-[10px] font-semibold tracking-[0.05em] uppercase text-foreground/80 shrink-0">輸贏</span>
+                  <span class="font-body text-[9px] sm:text-[10px] font-semibold tracking-[0.05em] uppercase text-foreground/80 shrink-0">{{ t('records.hallWinLose') }}</span>
                   <span
                     class="font-display text-[11px] sm:text-xs font-black tabular-nums leading-none min-w-0 truncate text-right"
                     :class="row.net > 0 ? 'text-neon-mint' : row.net < 0 ? 'text-destructive' : 'text-muted-foreground'"
@@ -1251,7 +1237,7 @@ const reportByHall = computed(() => {
                 <div class="h-px bg-border/25" aria-hidden="true" />
 
                 <div class="flex items-baseline justify-between gap-0.5">
-                  <span class="font-body text-[9px] sm:text-[10px] font-semibold tracking-[0.05em] uppercase text-foreground/80 shrink-0">反水</span>
+                  <span class="font-body text-[9px] sm:text-[10px] font-semibold tracking-[0.05em] uppercase text-foreground/80 shrink-0">{{ t('records.hallRebate') }}</span>
                   <span
                     class="font-display text-[11px] sm:text-xs font-black tabular-nums leading-none min-w-0 truncate text-right"
                     :class="HALL_PALETTE[row.colorIdx].rebate"

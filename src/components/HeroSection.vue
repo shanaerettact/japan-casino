@@ -1,20 +1,26 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Zap, Play, Star, Users, Shield } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 interface Stat {
-  label: string
-  sublabel: string
   value: string
   icon: unknown
+  labelKey: string
 }
 
-const stats: Stat[] = [
-  { label: 'アクティブ', sublabel: 'Active Users',  value: '2.4M+',  icon: Users },
-  { label: 'タイトル数', sublabel: 'Games',          value: '1,800+', icon: Star },
-  { label: '実績',       sublabel: 'Achievements',  value: '50K+',   icon: Shield },
+const statDefs: Stat[] = [
+  { labelKey: 'hero.statActiveUsers', value: '2.4M+',  icon: Users },
+  { labelKey: 'hero.statGames',       value: '1,800+', icon: Star },
+  { labelKey: 'hero.statAchievements', value: '50K+',  icon: Shield },
 ]
+
+const stats = computed(() =>
+  statDefs.map((s) => ({ ...s, label: t(s.labelKey as Parameters<typeof t>[0]) }))
+)
 
 const tags: string[] = ['#CyberRPG', '#MechaBattle', '#NeonQuest', '#AnimeAction', '#GhostProtocol']
 
@@ -88,7 +94,7 @@ onUnmounted(() => {
           )"
         >
           <span class="w-1.5 h-1.5 rounded-full bg-neon-mint animate-neon-pulse" aria-hidden="true" />
-          NEW SEASON 12 — シーズン12 開幕
+          {{ t('hero.season') }}
         </div>
 
         
@@ -111,9 +117,7 @@ onUnmounted(() => {
             mounted ? 'animate-fade-up delay-200' : 'opacity-0',
           )"
         >
-          電脳都市へようこそ。最高峰のアニメゲームが集結した
-          <span class="text-foreground font-semibold">ネコバース</span>で、
-          究極のゲーム体験を解放せよ。
+          {{ t('hero.descPre') }}<span class="text-foreground font-semibold">{{ t('hero.descBrand') }}</span>{{ t('hero.descPost') }}
         </p>
 
         
@@ -151,7 +155,7 @@ onUnmounted(() => {
             )"
           >
             <Zap class="w-5 h-5" aria-hidden="true" />
-            今すぐプレイ
+            {{ t('hero.playNow') }}
           </a>
           <a
             href="#featured"
@@ -164,7 +168,7 @@ onUnmounted(() => {
             )"
           >
             <Play class="w-4 h-4 fill-neon-mint" aria-hidden="true" />
-            注目作を見る
+            {{ t('hero.viewFeatured') }}
           </a>
         </div>
 

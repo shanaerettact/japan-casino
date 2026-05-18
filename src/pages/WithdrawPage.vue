@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from '@/composables/useI18n'
 import {
   ArrowLeft,
   ArrowUpFromLine,
@@ -20,6 +21,7 @@ import {
 import { cn } from '@/lib/utils'
 
 const router = useRouter()
+const { t } = useI18n()
 
 interface WithdrawMethod {
   id: string
@@ -35,60 +37,20 @@ interface WithdrawMethod {
   color: string
 }
 
-const methods: WithdrawMethod[] = [
-  {
-    id: 'bank',
-    label: '銀行ATM',
-    labelEn: 'Bank ATM',
-    icon: Building2,
-    minAmount: 3_000,
-    maxAmount: 30_000,
-    exchangeRate: 1.00,
-    fee: '0.00 + 0.00%',
-    feeRate: 0,
-    availableBalance: 0,
-    color: 'neon-purple',
-  },
-  {
-    id: 'credit',
-    label: 'クレジット返金',
-    labelEn: 'Credit Refund',
-    icon: CreditCard,
-    minAmount: 1_000,
-    maxAmount: 50_000,
-    exchangeRate: 1.00,
-    fee: '0.00 + 2.00%',
-    feeRate: 0.02,
-    availableBalance: 0,
-    color: 'neon-mint',
-  },
-  {
-    id: 'crypto',
-    label: '暗号通貨',
-    labelEn: 'Cryptocurrency',
-    icon: Bitcoin,
-    minAmount: 500,
-    maxAmount: 500_000,
-    exchangeRate: 1.00,
-    fee: '0.00 + 0.00%',
-    feeRate: 0,
-    availableBalance: 0,
-    color: 'yellow-400',
-  },
-  {
-    id: 'convenience',
-    label: 'コンビニ払い',
-    labelEn: 'Convenience Store',
-    icon: Store,
-    minAmount: 1_000,
-    maxAmount: 49_000,
-    exchangeRate: 1.00,
-    fee: '0.00 + 0.00%',
-    feeRate: 0,
-    availableBalance: 0,
-    color: 'neon-purple',
-  },
+const methodsBases = [
+  { id: 'bank',        icon: Building2, minAmount: 3_000,  maxAmount: 30_000,  exchangeRate: 1.00, fee: '0.00 + 0.00%', feeRate: 0,    availableBalance: 0, color: 'neon-purple', labelKey: 'withdraw.methodBank' },
+  { id: 'credit',      icon: CreditCard, minAmount: 1_000, maxAmount: 50_000,  exchangeRate: 1.00, fee: '0.00 + 2.00%', feeRate: 0.02, availableBalance: 0, color: 'neon-mint',   labelKey: 'withdraw.methodCredit' },
+  { id: 'crypto',      icon: Bitcoin,    minAmount: 500,   maxAmount: 500_000, exchangeRate: 1.00, fee: '0.00 + 0.00%', feeRate: 0,    availableBalance: 0, color: 'yellow-400', labelKey: 'withdraw.methodCrypto' },
+  { id: 'convenience', icon: Store,      minAmount: 1_000, maxAmount: 49_000,  exchangeRate: 1.00, fee: '0.00 + 0.00%', feeRate: 0,    availableBalance: 0, color: 'neon-purple', labelKey: 'withdraw.methodConvenience' },
 ]
+
+const methods = computed<WithdrawMethod[]>(() =>
+  methodsBases.map((m) => ({
+    ...m,
+    label: t(m.labelKey as Parameters<typeof t>[0]),
+    labelEn: t(m.labelKey as Parameters<typeof t>[0]),
+  }))
+)
 
 const methodIconColor: Record<string, string> = {
   bank: 'text-neon-purple',
@@ -106,7 +68,7 @@ const submitted = ref(false)
 const amountInputRef = ref<HTMLInputElement | null>(null)
 
 const selectedMethod = computed(() =>
-  methods.find(m => m.id === selectedMethodId.value) ?? methods[0],
+  methods.value.find(m => m.id === selectedMethodId.value) ?? methods.value[0],
 )
 
 const numericAmount = computed(() => {
@@ -186,7 +148,7 @@ function onSelectBlur(e: FocusEvent) {
 <template>
   <main
     class="relative min-h-screen bg-background pt-16 pb-28 overflow-x-hidden"
-    aria-label="出金ページ"
+    :aria-label="t('withdraw.title')"
   >
     
     <div class="pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden="true">
@@ -226,10 +188,10 @@ function onSelectBlur(e: FocusEvent) {
           </div>
           <div class="min-w-0">
             <h1 class="font-display text-xl sm:text-2xl font-black tracking-[0.12em] text-foreground text-glow-mint leading-none">
-              出金
+              {{ t('withdraw.title') }}
             </h1>
             <p class="font-body text-[11px] sm:text-xs text-muted-foreground mt-0.5 tracking-wide">
-              WITHDRAW FUNDS
+              {{ t('withdraw.subtitle') }}
             </p>
           </div>
         </div>
@@ -248,24 +210,24 @@ function onSelectBlur(e: FocusEvent) {
             <CheckCircle2 class="w-10 h-10 text-neon-mint" aria-hidden="true" />
           </div>
           <div>
-            <p class="font-display text-lg font-black tracking-widest text-neon-mint text-glow-mint mb-1">申請完了</p>
+            <p class="font-display text-lg font-black tracking-widest text-neon-mint text-glow-mint mb-1">{{ t('withdraw.submitted') }}</p>
             <p class="font-body text-sm text-muted-foreground leading-relaxed">
-              出金申請を受け付けました。<br>処理が完了次第、指定口座へ振り込まれます。
+              {{ t('withdraw.submittedDesc') }}
             </p>
           </div>
           <div class="glass-card rounded-2xl border border-neon-mint/20 px-6 py-4 flex flex-col gap-2 w-full max-w-xs">
             <div class="flex justify-between items-center text-sm">
-              <span class="font-body text-muted-foreground">出金方法</span>
+              <span class="font-body text-muted-foreground">{{ t('withdraw.methodField') }}</span>
               <span class="font-body font-semibold text-foreground">{{ selectedMethod?.label }}</span>
             </div>
             <div class="flex justify-between items-center text-sm">
-              <span class="font-body text-muted-foreground">出金額</span>
+              <span class="font-body text-muted-foreground">{{ t('withdraw.amountField') }}</span>
               <span class="font-display font-black text-neon-mint text-glow-mint">
                 ¥{{ numericAmount.toLocaleString('ja-JP') }}
               </span>
             </div>
             <div class="flex justify-between items-center text-sm">
-              <span class="font-body text-muted-foreground">予估出款金額</span>
+              <span class="font-body text-muted-foreground">{{ t('withdraw.estimatedLabel') }}</span>
               <span class="font-display font-black text-yellow-400">
                 ¥{{ estimatedPayout.toLocaleString('ja-JP') }}
               </span>
@@ -276,7 +238,7 @@ function onSelectBlur(e: FocusEvent) {
             class="font-body text-sm text-neon-mint hover:text-neon-purple transition-colors duration-200 underline underline-offset-4"
             @click="reset"
           >
-            続けて出金する
+            {{ t('withdraw.continueWithdraw') }}
           </button>
         </div>
 
@@ -301,7 +263,7 @@ function onSelectBlur(e: FocusEvent) {
                 id="withdraw-method-label"
                 class="font-body text-sm font-semibold text-foreground tracking-wide"
               >
-                出金方法を選択
+                {{ t('withdraw.methodLabel') }}
               </label>
             </div>
 
@@ -374,12 +336,12 @@ function onSelectBlur(e: FocusEvent) {
                 <div class="flex items-center gap-3 pt-1 border-t border-border/40">
                   <div class="flex items-center gap-1">
                     <ShieldCheck class="w-3 h-3 text-muted-foreground/70 shrink-0" aria-hidden="true" />
-                    <span class="font-body text-[10px] text-muted-foreground/80">手数料 {{ m.fee }}</span>
+                    <span class="font-body text-[10px] text-muted-foreground/80">{{ t('withdraw.feeLabel') }} {{ m.fee }}</span>
                   </div>
                   <div class="flex items-center gap-1">
                     <Info class="w-3 h-3 text-muted-foreground/70 shrink-0" aria-hidden="true" />
                     <span class="font-body text-[10px] text-muted-foreground/80">
-                      最大 ¥{{ m.maxAmount.toLocaleString('ja-JP') }}
+                      {{ t('withdraw.maxLabel') }} ¥{{ m.maxAmount.toLocaleString('ja-JP') }}
                     </span>
                   </div>
                 </div>
@@ -454,7 +416,7 @@ function onSelectBlur(e: FocusEvent) {
                     </div>
                     <div class="flex-1 min-w-0">
                       <p class="font-body text-sm font-semibold leading-none mb-0.5">{{ m.label }}</p>
-                      <p class="font-body text-[10px] text-muted-foreground">手数料 {{ m.fee }}</p>
+                      <p class="font-body text-[10px] text-muted-foreground">{{ t('withdraw.feeLabel') }} {{ m.fee }}</p>
                     </div>
                     <Zap v-if="selectedMethodId === m.id" class="w-3.5 h-3.5 text-neon-mint shrink-0" aria-hidden="true" />
                   </li>
@@ -480,38 +442,38 @@ function onSelectBlur(e: FocusEvent) {
                 >
                   <component :is="selectedMethod.icon" :class="cn('w-3.5 h-3.5', methodIconColor[selectedMethod.id])" aria-hidden="true" />
                 </div>
-                <span class="font-body text-xs text-muted-foreground">出款方式:</span>
+                <span class="font-body text-xs text-muted-foreground">{{ t('withdraw.methodType') }}</span>
                 <span class="font-display text-sm font-black text-foreground tracking-wide">{{ selectedMethod.label }}</span>
               </div>
 
               
               <dl class="divide-y divide-border/30">
                 <div class="flex justify-between items-center px-4 py-2.5">
-                  <dt class="font-body text-xs text-muted-foreground">出金比值</dt>
+                  <dt class="font-body text-xs text-muted-foreground">{{ t('withdraw.exchangeRate') }}</dt>
                   <dd class="font-display text-xs font-black text-foreground tabular-nums">
                     {{ selectedMethod.exchangeRate.toFixed(2) }}
                   </dd>
                 </div>
                 <div class="flex justify-between items-center px-4 py-2.5">
-                  <dt class="font-body text-xs text-muted-foreground">提現方式最小出金</dt>
+                  <dt class="font-body text-xs text-muted-foreground">{{ t('withdraw.minAmount') }}</dt>
                   <dd class="font-display text-xs font-black text-foreground tabular-nums">
                     {{ selectedMethod.minAmount.toLocaleString('ja-JP') }}.00
                   </dd>
                 </div>
                 <div class="flex justify-between items-center px-4 py-2.5">
-                  <dt class="font-body text-xs text-muted-foreground">提現方式最大出金</dt>
+                  <dt class="font-body text-xs text-muted-foreground">{{ t('withdraw.maxAmount') }}</dt>
                   <dd class="font-display text-xs font-black text-foreground tabular-nums">
                     {{ selectedMethod.maxAmount.toLocaleString('ja-JP') }}.00
                   </dd>
                 </div>
                 <div class="flex justify-between items-center px-4 py-2.5">
-                  <dt class="font-body text-xs text-muted-foreground">提現手續費</dt>
+                  <dt class="font-body text-xs text-muted-foreground">{{ t('withdraw.fee') }}</dt>
                   <dd class="font-display text-xs font-black text-foreground tabular-nums">
                     {{ selectedMethod.fee }}
                   </dd>
                 </div>
                 <div class="flex justify-between items-center px-4 py-2.5">
-                  <dt class="font-body text-xs text-muted-foreground">可用余額</dt>
+                  <dt class="font-body text-xs text-muted-foreground">{{ t('withdraw.availableBalance') }}</dt>
                   <dd
                     :class="cn(
                       'font-display text-xs font-black tabular-nums',
@@ -537,7 +499,7 @@ function onSelectBlur(e: FocusEvent) {
                 for="withdraw-amount"
                 class="font-body text-sm font-semibold text-foreground tracking-wide"
               >
-                出金額を入力
+                {{ t('withdraw.amountLabel') }}
               </label>
             </div>
 
@@ -564,7 +526,7 @@ function onSelectBlur(e: FocusEvent) {
                   inputmode="numeric"
                   autocomplete="off"
                   :value="numericAmount > 0 ? numericAmount.toLocaleString('ja-JP') : ''"
-                  :placeholder="`請輸入金額`"
+                  :placeholder="t('withdraw.placeholder')"
                   :aria-label="`出金額 (最低 ¥${selectedMethod.minAmount.toLocaleString('ja-JP')}、最大 ¥${selectedMethod.maxAmount.toLocaleString('ja-JP')})`"
                   :aria-invalid="!!amountError"
                   :aria-describedby="amountError ? 'withdraw-amount-error' : 'withdraw-amount-hint'"
@@ -600,7 +562,7 @@ function onSelectBlur(e: FocusEvent) {
                   id="withdraw-amount-hint"
                   class="mt-2 text-[11px] font-body text-muted-foreground/70"
                 >
-                  最大 ¥{{ selectedMethod.maxAmount.toLocaleString('ja-JP') }}
+                  {{ t('withdraw.maxLabel') }} ¥{{ selectedMethod.maxAmount.toLocaleString('ja-JP') }}
                 </p>
               </Transition>
             </div>
@@ -615,7 +577,7 @@ function onSelectBlur(e: FocusEvent) {
               )"
               aria-label="予估出款金額"
             >
-              <span class="font-body text-xs text-muted-foreground">預估出款金額</span>
+              <span class="font-body text-xs text-muted-foreground">{{ t('withdraw.estimatedLabel') }}</span>
               <div class="flex items-center gap-1.5">
                 <span class="font-body text-xs text-muted-foreground/60">=</span>
                 <span
@@ -643,7 +605,7 @@ function onSelectBlur(e: FocusEvent) {
                 class="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/[0.04] to-transparent group-hover:translate-x-full transition-transform duration-500 pointer-events-none"
                 aria-hidden="true"
               />
-              <span class="relative z-10 tracking-wide">キャンセル</span>
+              <span class="relative z-10 tracking-wide">{{ t('withdraw.cancel') }}</span>
             </button>
 
             
@@ -668,16 +630,15 @@ function onSelectBlur(e: FocusEvent) {
               />
               <span v-if="!submitting" class="relative z-10 flex items-center justify-center gap-2">
                 <Zap class="w-4 h-4 shrink-0" aria-hidden="true" />
-                提交
+                {{ t('withdraw.submit') }}
               </span>
               <span
                 v-else
                 class="relative z-10 flex items-center justify-center gap-2"
                 aria-live="polite"
-                aria-label="処理中"
               >
                 <Loader2 class="w-4 h-4 animate-spin shrink-0" aria-hidden="true" />
-                処理中...
+                {{ t('withdraw.processing') }}
               </span>
             </button>
           </div>
@@ -696,7 +657,7 @@ function onSelectBlur(e: FocusEvent) {
         class="flex items-center justify-center gap-2 mt-8 text-[11px] font-body text-muted-foreground/60 animate-fade-up delay-300"
       >
         <ShieldCheck class="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-        <span>全ての取引は256bit SSL暗号化で保護されています</span>
+        <span>{{ t('withdraw.sslNotice') }}</span>
       </div>
 
     </div>

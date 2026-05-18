@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from '@/composables/useI18n'
 import {
   ArrowLeft,
   Receipt,
@@ -20,6 +21,7 @@ import {
 import { cn } from '@/lib/utils'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const user = ref({
   nickname: 'ネコ侍',
@@ -60,42 +62,42 @@ interface MenuItem {
   badge?: string
 }
 
-const accountItems: MenuItem[] = [
+const accountItems = computed<MenuItem[]>(() => [
   {
-    label: '出金',
-    sublabel: '残高を引き出す',
+    label: t('profile.withdrawLabel'),
+    sublabel: t('profile.withdrawSub'),
     icon: ArrowUpFromLine,
     to: '/withdraw',
     accent: 'mint',
   },
-]
+])
 
-const historyItems: MenuItem[] = [
+const historyItems = computed<MenuItem[]>(() => [
   {
-    label: '取引明細',
-    sublabel: '入出金の履歴',
+    label: t('profile.billingLabel'),
+    sublabel: t('profile.billingSub'),
     icon: Receipt,
     to: '/account/billing',
     accent: 'purple',
   },
   {
-    label: 'ゲーム記録',
-    sublabel: `${formatNum(user.value.gamesPlayed)} プレイ済み`,
+    label: t('profile.gameRecordsLabel'),
+    sublabel: t('profile.playsPlayed').replace('{n}', formatNum(user.value.gamesPlayed)),
     icon: History,
     to: '/account/game-history',
     accent: 'mint',
   },
-]
+])
 
-const settingsItems: MenuItem[] = [
+const settingsItems = computed<MenuItem[]>(() => [
   {
-    label: '設定',
-    sublabel: 'セキュリティ・通知',
+    label: t('profile.settingsLabel'),
+    sublabel: t('profile.settingsSub'),
     icon: Settings,
     to: '/account/settings',
     accent: 'purple',
   },
-]
+])
 
 const accentClasses: Record<string, { icon: string; bg: string; border: string; glow: string }> = {
   purple: {
@@ -147,7 +149,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
 <template>
   <main
     class="min-h-screen bg-background pt-20 relative overflow-x-hidden"
-    aria-label="マイページ"
+    :aria-label="t('profile.title')"
   >
     
     <div class="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
@@ -169,9 +171,9 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
         </button>
         <div>
           <h1 class="font-display text-xl sm:text-2xl font-black tracking-[0.12em] text-foreground text-glow-purple leading-none">
-            マイページ
+            {{ t('profile.title') }}
           </h1>
-          <p class="font-body text-[11px] sm:text-xs text-muted-foreground mt-0.5 tracking-wide">MY PROFILE</p>
+          <p class="font-body text-[11px] sm:text-xs text-muted-foreground mt-0.5 tracking-wide">{{ t('profile.subtitle') }}</p>
         </div>
       </div>
 
@@ -233,7 +235,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
                 </Transition>
               </button>
 
-              <p class="font-body text-[10px] text-muted-foreground/50 mt-1">登録: {{ user.joinDate }}</p>
+              <p class="font-body text-[10px] text-muted-foreground/50 mt-1">{{ t('profile.joinDate') }} {{ user.joinDate }}</p>
             </div>
           </div>
 
@@ -241,9 +243,9 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
           <div class="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
             <div
               v-for="stat in [
-                { label: 'ポイント', value: formatNum(user.points), unit: 'pt', icon: Zap, color: 'text-neon-purple' },
-                { label: '勝率', value: user.winRate + '%', unit: '', icon: TrendingUp, color: 'text-neon-mint' },
-                { label: 'ゲーム数', value: formatNum(user.gamesPlayed), unit: '回', icon: Star, color: 'text-yellow-400' },
+                { label: t('profile.points'), value: formatNum(user.points), icon: Zap, color: 'text-neon-purple' },
+                { label: t('profile.winRate'), value: user.winRate + '%', icon: TrendingUp, color: 'text-neon-mint' },
+                { label: t('profile.gamesPlayed'), value: formatNum(user.gamesPlayed) + t('profile.gamesUnit'), icon: Star, color: 'text-yellow-400' },
               ]"
               :key="stat.label"
               class="flex flex-col items-center justify-center gap-1 rounded-xl border border-border/50 bg-surface-2/50 py-3 px-2 text-center"
@@ -266,7 +268,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
           id="account-heading"
           class="font-display text-[10px] font-black tracking-[0.25em] text-muted-foreground mb-2 px-1 uppercase"
         >
-          アカウント
+          {{ t('profile.account') }}
         </h2>
         <div class="rounded-2xl border border-border/50 bg-surface-1/60 backdrop-blur-md overflow-hidden">
           <ul role="list" class="divide-y divide-border/40">
@@ -331,7 +333,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
           id="history-heading"
           class="font-display text-[10px] font-black tracking-[0.25em] text-muted-foreground mb-2 px-1 uppercase"
         >
-          履歴・記録
+          {{ t('profile.history') }}
         </h2>
         <div class="rounded-2xl border border-border/50 bg-surface-1/60 backdrop-blur-md overflow-hidden">
           <ul role="list" class="divide-y divide-border/40">
@@ -380,7 +382,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
           id="settings-heading"
           class="font-display text-[10px] font-black tracking-[0.25em] text-muted-foreground mb-2 px-1 uppercase"
         >
-          設定
+          {{ t('profile.settings') }}
         </h2>
         <div class="rounded-2xl border border-border/50 bg-surface-1/60 backdrop-blur-md overflow-hidden">
           <ul role="list" class="divide-y divide-border/40">
@@ -429,7 +431,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
       >
         <Shield class="w-4 h-4 text-neon-mint shrink-0" aria-hidden="true" />
         <p class="font-body text-[11px] text-muted-foreground leading-relaxed">
-          アカウントは<span class="text-neon-mint font-semibold">SSL 暗号化</span>で保護されています。
+          {{ t('profile.sslNotice') }}<span class="text-neon-mint font-semibold">{{ t('profile.sslBrand') }}</span>{{ t('profile.sslNoticeSuffix') }}
         </p>
       </div>
 
@@ -443,7 +445,7 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
               ? 'border-destructive/60 bg-destructive/15 text-destructive hover:bg-destructive/25'
               : 'border-border/60 bg-surface-2/40 text-muted-foreground hover:border-destructive/40 hover:text-destructive hover:bg-destructive/10',
           )"
-          :aria-label="logoutConfirm ? 'もう一度クリックして確定ログアウト' : 'ログアウト'"
+          :aria-label="logoutConfirm ? t('profile.logoutConfirmHint') : t('profile.logout')"
           @click="handleLogout"
         >
           <LogOut
@@ -453,14 +455,14 @@ const vipStyle = computed(() => vipColors[user.value.vipLevel] ?? vipColors[1])
             )"
             aria-hidden="true"
           />
-          <span>{{ logoutConfirm ? 'もう一度クリックして確定' : 'ログアウト' }}</span>
+          <span>{{ logoutConfirm ? t('profile.logoutConfirm') : t('profile.logout') }}</span>
         </button>
         <p
           v-if="logoutConfirm"
           class="text-center font-body text-[10px] text-destructive/70 mt-1.5"
           aria-live="polite"
         >
-          もう一度押すとログアウトします
+          {{ t('profile.logoutConfirmHint') }}
         </p>
       </div>
 

@@ -2,12 +2,14 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterView } from 'vue-router'
 import { provideTheme } from '@/composables/useTheme'
+import { provideI18n } from '@/composables/useI18n'
 import { cn } from '@/lib/utils'
 import { ChevronsUp } from 'lucide-vue-next'
 import NavBar from '@/components/NavBar.vue'
 import SiteFooter from '@/components/SiteFooter.vue'
 
 provideTheme()
+const { t } = provideI18n()
 
 const showFab = ref(false)
 
@@ -31,7 +33,7 @@ onUnmounted(() => {
   <div class="min-h-screen bg-background text-foreground">
     <NavBar />
 
-    <main id="main-content" class="pb-16 md:pb-0">
+    <main id="main-content" class="pb-10 md:pb-0">
       <RouterView />
     </main>
 
@@ -42,7 +44,7 @@ onUnmounted(() => {
         <button
           v-if="showFab"
           type="button"
-          aria-label="Scroll to top"
+          :aria-label="t('a11y.scrollToTop')"
           :class="cn(
             'fixed right-4 z-40 w-11 h-11 rounded-2xl flex items-center justify-center',
             'bg-neon-purple text-primary-foreground glow-purple',

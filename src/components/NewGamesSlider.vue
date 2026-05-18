@@ -15,7 +15,7 @@ const games: Game[] = [
     releaseDate: '2026.03.19',
     tag: 'NEW',
     tagColor: 'mint',
-    image: '/images/game-1.jpg',
+    image: '/images/game/baphomet.png',
     description: '刃を持て、電脳都市を駆け抜けろ。',
   },
   {
@@ -28,7 +28,7 @@ const games: Game[] = [
     releaseDate: '2026.02.14',
     tag: 'HOT',
     tagColor: 'purple',
-    image: '/images/game-2.jpg',
+    image: '/images/game/StormOfSeth2.png',
     description: '巨大メカを操り、世界の命運を握れ。',
   },
   {
@@ -41,7 +41,7 @@ const games: Game[] = [
     releaseDate: '2026.01.30',
     tag: 'NEW',
     tagColor: 'mint',
-    image: '/images/game-3.jpg',
+    image: '/images/game/BlackjackLink.jpg',
     description: '桜と闇の間で、忍びの剣が舞う。',
   },
   {
@@ -54,7 +54,7 @@ const games: Game[] = [
     releaseDate: '2025.12.10',
     tag: 'UPDATE',
     tagColor: 'amber',
-    image: '/images/game-4.jpg',
+    image: '/images/game/BigBassSplash.jpg',
     description: 'ネオン輝く天空島で、伝説の勇者となれ。',
   },
   {
@@ -67,7 +67,7 @@ const games: Game[] = [
     releaseDate: '2025.11.22',
     tag: 'FREE',
     tagColor: 'sky',
-    image: '/images/game-5.jpg',
+    image: '/images/game/BookofDead.jpg',
     description: '電脳戦場を制する戦術の天才になれ。',
   },
 ]
@@ -124,7 +124,7 @@ onUnmounted(() => clearTimeout(scrollTimer))
 <template>
   <section
     id="games"
-    class="py-16 sm:py-20 scroll-mt-20"
+    class="pt-16 sm:py-20 scroll-mt-20"
     aria-labelledby="new-games-heading"
   >
     

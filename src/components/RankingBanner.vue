@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Trophy, Zap, TrendingUp } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 interface Player {
   rank: number
@@ -45,7 +48,7 @@ function badgeClass(rank: number): string {
 </script>
 
 <template>
-  <section id="rankings" class="py-16 px-4 sm:px-6 scroll-mt-20" aria-labelledby="rankings-heading">
+  <section id="rankings" class="pt-16 px-4 sm:px-6 scroll-mt-20" aria-labelledby="rankings-heading">
     <div class="max-w-7xl mx-auto">
       <div
         :class="cn(
@@ -74,20 +77,20 @@ function badgeClass(rank: number): string {
           <div class="lg:w-64 shrink-0">
             <div class="flex items-center gap-2 mb-3">
               <Trophy class="w-5 h-5 text-amber-400" aria-hidden="true" />
-              <span class="text-xs font-body font-semibold text-amber-400 tracking-widest uppercase">Weekly Rankings</span>
+              <span class="text-xs font-body font-semibold text-amber-400 tracking-widest uppercase">{{ t('ranking.weekly') }}</span>
             </div>
             <h2 id="rankings-heading" class="font-display font-black text-2xl sm:text-3xl text-foreground">
-              TOP <span class="text-neon-purple text-glow-purple">PLAYERS</span>
+              TOP <span class="text-neon-purple text-glow-purple">{{ t('ranking.topPlayers') }}</span>
             </h2>
             <p class="mt-2 text-sm font-body text-muted-foreground leading-relaxed">
-              今週の精鋭プレイヤー — Compete to claim your spot on the global leaderboard.
+              {{ t('ranking.desc') }}
             </p>
             <a
               href="#"
               class="mt-4 inline-flex items-center gap-2 text-sm font-display font-bold text-neon-mint hover:text-foreground transition-colors duration-200"
             >
               <TrendingUp class="w-4 h-4" aria-hidden="true" />
-              Full Leaderboard →
+              {{ t('ranking.fullLeaderboard') }}
             </a>
           </div>
 
@@ -118,7 +121,7 @@ function badgeClass(rank: number): string {
 
               
               <div class="pt-3 border-t border-border">
-                <div class="text-xs font-body text-muted-foreground mb-1">Score</div>
+                <div class="text-xs font-body text-muted-foreground mb-1">{{ t('ranking.score') }}</div>
                 <div :class="scoreClass(player.rank)">{{ player.score }}</div>
               </div>
 

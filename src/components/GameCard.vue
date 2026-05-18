@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import { Star, Users, Clock, Zap } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 export interface Game {
   id: number
@@ -134,7 +137,7 @@ const tagStyles: Record<Game['tagColor'], string> = {
           class="ml-auto text-xs font-display font-bold text-neon-mint touch-press transition-colors duration-200"
           :aria-label="`Play ${props.game.title} now`"
         >
-          PLAY →
+          {{ t('game.play') }}
         </button>
       </div>
     </div>

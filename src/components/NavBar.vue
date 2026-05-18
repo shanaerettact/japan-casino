@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import {
   Menu,
@@ -28,31 +28,22 @@ import {
 } from 'lucide-vue-next'
 
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/composables/useI18n'
+import { languages } from '@/locales'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import LoginModal from '@/components/LoginModal.vue'
 
+const { lang, setLang, t } = useI18n()
+
 const registerOpen = ref(false)
 const languageModalOpen = ref(false)
-const selectedLang = ref<LangCode>('ja')
-
-function readStoredLang() {
-  if (typeof localStorage === 'undefined') return
-  const saved = localStorage.getItem(LANG_STORAGE) as LangCode | null
-  if (saved && languages.some(l => l.code === saved)) selectedLang.value = saved
-}
 
 function openLanguageModal() {
-  readStoredLang()
   languageModalOpen.value = true
 }
 
 function closeLanguageModal() {
   languageModalOpen.value = false
-}
-
-function pickNavLang(code: LangCode) {
-  selectedLang.value = code
-  localStorage.setItem(LANG_STORAGE, code)
 }
 
 const user = ref({
@@ -64,7 +55,8 @@ const user = ref({
 const pointsRefreshing = ref(false)
 
 function formatPoints(n: number) {
-  return n.toLocaleString('ja-JP')
+  const intlLocale: Record<string, string> = { ja: 'ja-JP', 'zh-TW': 'zh-TW', en: 'en-US' }
+  return n.toLocaleString(intlLocale[lang.value] ?? 'ja-JP')
 }
 
 function refreshPoints() {
@@ -81,62 +73,51 @@ interface NavLink {
   slug: string
   to: string | null
   icon: unknown
-  /** 为 true 时点击打开语言选择弹窗（不跳转） */
   openLanguageModal?: boolean
-  /** 次選單；有 children 時父層可不設 to，僅用於展開次選單 */
   children?: { label: string; to: string; icon: unknown }[]
 }
 
-const LANG_STORAGE = 'nekoverse-ui-lang'
-type LangCode = 'ja' | 'zh-TW' | 'en'
-
-const languages: { code: LangCode; label: string; note: string }[] = [
-  { code: 'ja', label: '日本語', note: 'UI 表示の標準' },
-  { code: 'zh-TW', label: '繁體中文', note: 'Traditional Chinese' },
-  { code: 'en', label: 'English', note: 'Interface language' },
-]
-
-const navLinks: NavLink[] = [
-  { label: '出金', slug: 'withdraw', to: '/account/withdraw', icon: ArrowUpFromLine },
-  { label: '取引明細', slug: 'billing', to: '/account/billing', icon: Receipt },
-  { label: 'ゲーム履歴', slug: 'game-history', to: '/account/game-history', icon: History },
+const navLinks = computed<NavLink[]>(() => [
+  { label: t('nav.withdraw'), slug: 'withdraw', to: '/account/withdraw', icon: ArrowUpFromLine },
+  { label: t('nav.billing'), slug: 'billing', to: '/account/billing', icon: Receipt },
+  { label: t('nav.gameHistory'), slug: 'game-history', to: '/account/game-history', icon: History },
   {
-    label: '教學・幫助',
+    label: t('nav.help'),
     slug: 'help',
     to: null,
     icon: BookOpen,
     children: [
-      { label: '線上客服', to: '/help/chat', icon: Headphones },
-      { label: '常見問題', to: '/help/faq', icon: CircleHelp },
+      { label: t('nav.helpChat'), to: '/help/chat', icon: Headphones },
+      { label: t('nav.helpFaq'), to: '/help/faq', icon: CircleHelp },
     ],
   },
-  { label: '言語設定', slug: 'language', to: null, icon: Languages, openLanguageModal: true },
+  { label: t('nav.language'), slug: 'language', to: null, icon: Languages, openLanguageModal: true },
   {
-    label: 'Cyber Neo について',
+    label: t('nav.aboutCyberNeo'),
     slug: 'about-cyber-neo',
     to: null,
     icon: Sparkles,
     children: [
-      { label: '關於 Cyber Neo', to: '/about/cyber-neo', icon: Sparkles },
-      { label: '隱私權', to: '/about/privacy', icon: Shield },
-      { label: '服務條款', to: '/about/terms', icon: FileText },
-      { label: '負責任博彩', to: '/about/responsible-gambling', icon: HeartHandshake },
+      { label: t('nav.aboutCyberNeoLink'), to: '/about/cyber-neo', icon: Sparkles },
+      { label: t('nav.privacy'), to: '/about/privacy', icon: Shield },
+      { label: t('nav.terms'), to: '/about/terms', icon: FileText },
+      { label: t('nav.responsibleGambling'), to: '/about/responsible-gambling', icon: HeartHandshake },
     ],
   },
-  { label: 'マイページ', slug: 'profile', to: '/account', icon: User },
-]
+  { label: t('nav.profile'), slug: 'profile', to: '/account', icon: User },
+])
 
-
-const bottomTabLinks: NavLink[] = [
-  { label: '全ゲーム', slug: 'all', to: '/category/all', icon: Zap },
-  { label: 'キャンペーン', slug: 'promotions', to: '/promotions', icon: Tv2 },
-  { label: 'サポート', slug: 'support', to: null, icon: MessageCircle },
-]
+const bottomTabLinks = computed<NavLink[]>(() => [
+  { label: t('nav.allGames'), slug: 'all', to: '/category/all', icon: Zap },
+  { label: t('nav.campaigns'), slug: 'promotions', to: '/promotions', icon: Tv2 },
+  { label: t('nav.support'), slug: 'support', to: null, icon: MessageCircle },
+])
 
 const route = useRoute()
 
-const scrolled   = ref(false)
-const open       = ref(false)
+const scrolled = ref(false)
+const open = ref(false)
+const mobileMenuOpenBtnRef = ref<HTMLButtonElement | null>(null)
 const notifPulse = ref(true)
 const openNavSubmenuSlug = ref<string | null>(null)
 const mobileOpenSubmenuSlug = ref<string | null>(null)
@@ -171,37 +152,36 @@ function handleScroll() {
   scrolled.value = window.scrollY > 20
 }
 
-function closeMenu() { open.value = false }
+function closeMenu() {
+  open.value = false
+  nextTick(() => {
+    mobileMenuOpenBtnRef.value?.focus({ preventScroll: true })
+  })
+}
 
 const lockBodyScroll = computed(
   () => open.value || languageModalOpen.value || registerOpen.value,
 )
 
-let bodyScrollLockY = 0
+function setDocumentScrollLock(locked: boolean) {
+  if (typeof document === 'undefined') return
+  if (locked) {
+    document.documentElement.style.overflow = 'hidden'
+    document.documentElement.style.overscrollBehavior = 'none'
+    document.body.style.overflow = 'hidden'
+    document.body.style.overscrollBehavior = 'none'
+  } else {
+    document.documentElement.style.overflow = ''
+    document.documentElement.style.overscrollBehavior = ''
+    document.body.style.overflow = ''
+    document.body.style.overscrollBehavior = ''
+  }
+}
 
 watch(
   lockBodyScroll,
   (locked) => {
-    if (typeof document === 'undefined') return
-    if (locked) {
-      bodyScrollLockY = window.scrollY
-      document.documentElement.style.overflow = 'hidden'
-      document.body.style.overflow = 'hidden'
-      document.body.style.position = 'fixed'
-      document.body.style.top = `-${bodyScrollLockY}px`
-      document.body.style.left = '0'
-      document.body.style.right = '0'
-      document.body.style.width = '100%'
-    } else {
-      document.documentElement.style.overflow = ''
-      document.body.style.overflow = ''
-      document.body.style.position = ''
-      document.body.style.top = ''
-      document.body.style.left = ''
-      document.body.style.right = ''
-      document.body.style.width = ''
-      window.scrollTo(0, bodyScrollLockY)
-    }
+    setDocumentScrollLock(locked)
   },
   { flush: 'sync' },
 )
@@ -210,7 +190,7 @@ const isOnHome = computed(() => route.path === '/')
 const activeCategorySlug = computed(() => {
   if (route.path.startsWith('/help')) return 'help'
   if (route.path.startsWith('/about/')) return 'about-cyber-neo'
-  const acc = navLinks.find(l => l.to !== null && route.path === l.to)?.slug
+  const acc = navLinks.value.find(l => l.to !== null && route.path === l.to)?.slug
   if (acc) return acc
   if (route.name === 'promotions') return 'promotions'
   return route.params.slug as string | undefined
@@ -230,7 +210,6 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
   window.addEventListener('mousedown', onDocumentPointerDown)
   notifTimer = setTimeout(() => { notifPulse.value = false }, 4000)
-  readStoredLang()
 })
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
@@ -238,12 +217,9 @@ onUnmounted(() => {
   clearTimeout(notifTimer)
   if (typeof document === 'undefined') return
   document.documentElement.style.overflow = ''
+  document.documentElement.style.overscrollBehavior = ''
   document.body.style.overflow = ''
-  document.body.style.position = ''
-  document.body.style.top = ''
-  document.body.style.left = ''
-  document.body.style.right = ''
-  document.body.style.width = ''
+  document.body.style.overscrollBehavior = ''
 })
 </script>
 
@@ -265,19 +241,20 @@ onUnmounted(() => {
     >
       <RouterLink
         to="/"
-        aria-label="NekoVerse home"
+        aria-label="Neo Cyber home"
         class="flex items-center gap-1 sm:gap-1.5 group shrink-0 touch-press min-w-0"
       >
-        <div class="relative size-6 shrink-0 rounded-md">
-          <div class="absolute inset-0 rounded-md bg-neon-purple/30 group-hover:bg-neon-purple/50 transition-colors duration-300 glow-purple" />
-          <Zap class="absolute inset-0 m-auto size-3.5 text-neon-mint group-hover:text-foreground transition-colors duration-300" aria-hidden="true" />
-        </div>
+        <img
+          src="/logo.png"
+          alt="Neo Cyber"
+          class="h-7 sm:h-8 w-auto object-contain shrink-0"
+        />
         <span class="font-display flex flex-col items-start justify-center gap-px leading-none text-[11px] sm:text-xs md:text-sm font-black">
           <span class="tracking-[0.06em] sm:tracking-[0.1em] md:tracking-[0.18em] text-foreground group-hover:text-neon-mint transition-colors duration-300 text-glow-mint">
-            NEKO
+            Neo
           </span>
           <span class="tracking-[0.06em] sm:tracking-[0.1em] md:tracking-[0.18em] text-neon-purple text-glow-purple">
-            VERSE
+            Cyber
           </span>
         </span>
         <span class="hidden lg:inline-flex items-center text-[8px] font-mono text-muted-foreground tracking-widest border border-border/80 rounded px-1 py-px leading-none ml-0.5 shrink-0">JP</span>
@@ -421,7 +398,7 @@ onUnmounted(() => {
         <div
           class="flex items-center h-8 sm:h-9 rounded-lg sm:rounded-xl border border-border/80 bg-surface-2/65 backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(139,92,246,0.06)] overflow-hidden ring-1 ring-neon-purple/10 max-w-[min(100%,11rem)] sm:max-w-none"
           role="group"
-          aria-label="ウォレット・ポイント"
+          :aria-label="t('wallet.label')"
         >
           <div class="flex items-center gap-1 sm:gap-1.5 pl-2 sm:pl-2.5 pr-1 sm:pr-2 h-full min-w-0 border-r border-border/60 bg-linear-to-r from-neon-purple/[0.07] to-transparent">
             <div class="flex items-center gap-1 sm:gap-1.5 min-w-0">
@@ -434,7 +411,7 @@ onUnmounted(() => {
           </div>
           <button
             type="button"
-            aria-label="ポイントを更新"
+            :aria-label="t('wallet.refresh')"
             :class="cn(
               'h-full px-2 sm:px-2.5 flex items-center justify-center text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10 transition-all duration-300 touch-press border-l border-transparent hover:border-neon-mint/15 shrink-0',
               pointsRefreshing ? 'pointer-events-none text-neon-mint' : '',
@@ -526,7 +503,7 @@ onUnmounted(() => {
           </div>
           <button
             type="button"
-            aria-label="Close menu"
+            :aria-label="t('a11y.closeMenu')"
             class="p-2 rounded-xl text-muted-foreground hover:text-neon-mint hover:bg-neon-mint/10 border border-transparent hover:border-neon-mint/25 transition-all duration-300 touch-press shrink-0"
             @click="closeMenu"
           >
@@ -660,13 +637,13 @@ onUnmounted(() => {
                 <Globe class="size-4 text-neon-mint" aria-hidden="true" />
               </div>
               <h2 id="lang-modal-title" class="font-display text-sm font-black tracking-wide text-foreground truncate">
-                言語設定
+                {{ t('lang.title') }}
               </h2>
             </div>
             <button
               type="button"
               class="flex size-8 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface-2 transition-colors touch-press"
-              aria-label="閉じる"
+              :aria-label="t('lang.close')"
               @click="closeLanguageModal"
             >
               <X class="size-4" aria-hidden="true" />
@@ -674,28 +651,28 @@ onUnmounted(() => {
           </div>
           <div class="p-4 max-h-[min(70vh,24rem)] overflow-y-auto">
             <p class="font-body text-[11px] text-muted-foreground mb-3">
-              表示する言語を選択してください
+              {{ t('lang.description') }}
             </p>
             <ul class="space-y-2" role="listbox" aria-label="言語一覧">
               <li v-for="l in languages" :key="l.code">
                 <button
                   type="button"
                   role="option"
-                  :aria-selected="selectedLang === l.code"
+                  :aria-selected="lang === l.code"
                   :class="cn(
                     'w-full flex items-center justify-between gap-3 rounded-xl border px-3.5 py-3 text-left transition-all duration-200 touch-press',
-                    selectedLang === l.code
+                    lang === l.code
                       ? 'border-neon-mint/45 bg-neon-mint/10 text-foreground ring-1 ring-neon-mint/20'
                       : 'border-border/50 bg-surface-2/45 hover:border-neon-mint/25',
                   )"
-                  @click="pickNavLang(l.code)"
+                  @click="setLang(l.code)"
                 >
                   <div>
                     <p class="font-body text-sm font-semibold">{{ l.label }}</p>
                     <p class="font-body text-[11px] text-muted-foreground/90 mt-0.5">{{ l.note }}</p>
                   </div>
                   <Check
-                    v-if="selectedLang === l.code"
+                    v-if="lang === l.code"
                     class="w-4 h-4 text-neon-mint shrink-0"
                     aria-hidden="true"
                   />
@@ -703,7 +680,7 @@ onUnmounted(() => {
               </li>
             </ul>
             <p class="font-body text-[10px] text-muted-foreground/75 mt-4 leading-relaxed">
-              設定はこの端末に保存されます。全文言の切り替えは今後のアップデートで接続予定です。
+              {{ t('lang.note') }}
             </p>
           </div>
         </div>
@@ -714,7 +691,7 @@ onUnmounted(() => {
   <nav
     aria-label="Mobile bottom navigation"
     :class="cn(
-      'fixed bottom-0 left-0 right-0 z-40 md:hidden',
+      'fixed -bottom-[1px] left-0 right-0 z-40 md:hidden',
       'glass-card border-t border-border',
       'flex items-stretch h-16',
       'transition-transform duration-300',
@@ -729,10 +706,10 @@ onUnmounted(() => {
         'flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-body transition-all duration-200 touch-press',
         isOnHome ? 'text-neon-purple' : 'text-muted-foreground',
       )"
-      aria-label="Home"
+      :aria-label="t('nav.home')"
     >
       <Home class="w-5 h-5 mb-0.5" aria-hidden="true" />
-      <span>Home</span>
+      <span>{{ t('nav.home') }}</span>
     </RouterLink>
 
     
@@ -771,8 +748,9 @@ onUnmounted(() => {
 
     
     <button
+      ref="mobileMenuOpenBtnRef"
       type="button"
-      aria-label="Open menu"
+      :aria-label="t('a11y.openMenu')"
       :aria-expanded="open"
       :class="cn(
         'flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-body transition-all duration-200 touch-press',
@@ -781,7 +759,7 @@ onUnmounted(() => {
       @click="open = !open"
     >
       <Menu class="w-5 h-5 mb-0.5" aria-hidden="true" />
-      <span>メニュー</span>
+      <span>{{ t('nav.menu') }}</span>
     </button>
   </nav>
 </template>

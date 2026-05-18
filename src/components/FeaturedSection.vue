@@ -2,11 +2,14 @@
 import { ref, computed } from 'vue'
 import { Zap, Star, Trophy, Crown, TrendingUp, Swords } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 interface Category {
   id: string
-  label: string
-  labelEn: string
+  labelKey: string
+  labelEnKey: string
   icon: unknown
 }
 
@@ -22,41 +25,49 @@ interface FeaturedGame {
   category: string[]
 }
 
-const categories: Category[] = [
-  { id: 'trending',  label: '注目',       labelEn: 'Trending',  icon: TrendingUp },
-  { id: 'top-rated', label: '高評価',     labelEn: 'Top Rated', icon: Star },
-  { id: 'action',    label: 'アクション', labelEn: 'Action',    icon: Swords },
-  { id: 'rpg',       label: 'RPG',        labelEn: 'RPG',       icon: Crown },
+const categoryDefs: Category[] = [
+  { id: 'trending',  labelKey: 'featured.trending',  labelEnKey: 'featured.trendingEn',  icon: TrendingUp },
+  { id: 'top-rated', labelKey: 'featured.topRated',  labelEnKey: 'featured.topRatedEn',  icon: Star },
+  { id: 'action',    labelKey: 'featured.action',    labelEnKey: 'featured.actionEn',    icon: Swords },
+  { id: 'rpg',       labelKey: 'featured.rpgEn',     labelEnKey: 'featured.rpgEn',       icon: Crown },
 ]
+
+const categories = computed(() =>
+  categoryDefs.map((c) => ({
+    ...c,
+    label: t(c.labelKey as Parameters<typeof t>[0]),
+    labelEn: t(c.labelEnKey as Parameters<typeof t>[0]),
+  }))
+)
 
 const featuredGames: FeaturedGame[] = [
   {
     id: 1, title: 'CYBER BLADE', titleJp: 'サイバーブレード', genre: 'Action RPG',
-    rating: 4.9, rank: 1, image: '/images/game-1.jpg',
+    rating: 4.9, rank: 1, image: '/images/game/baphomet.png',
     description: 'The most immersive cyberpunk RPG of 2026. Master the dual-blade combat system.',
     category: ['trending', 'action'],
   },
   {
     id: 2, title: 'MECH ZERO', titleJp: 'メックゼロ', genre: 'Mecha Battle',
-    rating: 4.7, rank: 2, image: '/images/game-2.jpg',
+    rating: 4.7, rank: 2, image: '/images/game/StormOfSeth2.png',
     description: 'Pilot colossal war machines through devastated cityscapes.',
     category: ['trending', 'action'],
   },
   {
     id: 3, title: 'SHADOW BLADE', titleJp: 'シャドウブレード', genre: 'Hack & Slash',
-    rating: 4.8, rank: 3, image: '/images/game-3.jpg',
+    rating: 4.8, rank: 3, image: '/images/game/BlackjackLink.jpg',
     description: 'Cherry blossoms and neon clash in this breathtaking ninja masterpiece.',
     category: ['top-rated', 'action'],
   },
   {
     id: 4, title: 'NEON EXODUS', titleJp: 'ネオンエクソダス', genre: 'JRPG',
-    rating: 4.6, rank: 4, image: '/images/game-4.jpg',
+    rating: 4.6, rank: 4, image: '/images/game/BookofDead.jpg',
     description: 'Embark on an epic journey across floating neon islands.',
     category: ['top-rated', 'rpg'],
   },
   {
     id: 5, title: 'GHOST PROTOCOL', titleJp: 'ゴーストプロトコル', genre: 'Strategy',
-    rating: 4.5, rank: 5, image: '/images/game-5.jpg',
+    rating: 4.5, rank: 5, image: '/images/game/GcLottery.png',
     description: 'Outsmart enemies across a glowing tactical battlefield.',
     category: ['top-rated', 'rpg'],
   },
@@ -72,24 +83,25 @@ const activeCategory = ref('trending')
 const filtered = computed(() =>
   featuredGames.filter((g) => g.category.includes(activeCategory.value)),
 )
+
 </script>
 
 <template>
-  <section id="featured" class="py-16 sm:py-20 scroll-mt-20" aria-labelledby="featured-heading">
+  <section id="featured" class="pt-16 sm:py-20 scroll-mt-20" aria-labelledby="featured-heading">
     <div class="max-w-7xl mx-auto">
 
       
       <div class="text-center mb-8 px-4 sm:px-6">
         <div class="flex items-center justify-center gap-2 mb-3">
           <div class="h-[2px] w-8 bg-neon-mint rounded-full" aria-hidden="true" />
-          <span class="text-xs font-body font-semibold text-neon-mint tracking-widest uppercase">注目タイトル</span>
+          <span class="text-xs font-body font-semibold text-neon-mint tracking-widest uppercase">{{ t('featured.badge') }}</span>
           <div class="h-[2px] w-8 bg-neon-mint rounded-full" aria-hidden="true" />
         </div>
         <h2 id="featured-heading" class="font-display font-black text-3xl sm:text-4xl text-foreground">
           FEATURED <span class="text-neon-purple text-glow-purple">GAMES</span>
         </h2>
         <p class="mt-2 text-sm font-body text-muted-foreground">
-          今週のピックアップ — Editor's picks this week
+          {{ t('featured.subtitle') }}
         </p>
       </div>
 
@@ -200,7 +212,7 @@ const filtered = computed(() =>
       
       <div class="text-center mt-8 sm:mt-10 px-4">
         <a
-          href="#"
+          href="/category/all"
           :class="cn(
             'inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl w-full sm:w-auto justify-center',
             'font-display font-bold text-sm tracking-wider',
@@ -209,8 +221,7 @@ const filtered = computed(() =>
             'active:scale-95 touch-press',
           )"
         >
-          すべて見る — View All Games
-          <span aria-hidden="true">→</span>
+          {{ t('featured.viewAll') }}
         </a>
       </div>
     </div>
